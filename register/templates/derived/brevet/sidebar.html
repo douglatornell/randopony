@@ -1,0 +1,32 @@
+{% extends "base/sidebar.html" %}
+
+{% block home-link %}
+<li>
+  <a href="{% url register.views.home %}">
+    Home
+  </a>
+</li>
+{% endblock %}
+
+{% block info-links %}
+<li>
+  <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}" class="selected">
+    {{brevet}}
+  </a>
+</li>
+<li>
+  <a href="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+    Register
+  </a>
+</li>
+<li>
+  <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf">
+    Event Entry Form (PDF)
+  </a>
+</li>
+<li>
+  <a href="http://www.randonneurs.bc.ca/introduction/2009_membership-and-waiver.pdf">
+    Club Membership Form (PDF)
+  </a>
+</li>
+{% endblock %}

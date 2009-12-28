@@ -1,0 +1,53 @@
+{% extends "derived/register/sidebar.html" %}
+
+{% block title %}RandoPony::{{brevet}}{% endblock %}
+
+{% block page-subtitle %}{{brevet}}{% endblock %}
+
+{% block content %}
+<h3>
+  {% ifequal brevet.region "LM" %}
+  Lower Mainland
+  {% endifequal %}
+  {% ifequal brevet.region "PR" %}
+  Peace Region
+  {% endifequal %}
+  {% ifequal brevet.region "SI" %}
+  Southern Interior
+  {% endifequal %}
+  {% ifequal brevet.region "VI" %}
+  Vancouver Island
+  {% endifequal %}
+  {{brevet.distance}}
+</h3>
+
+<p><strong>Route:</strong> {{ brevet.route_name }}</p>
+
+<form action="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}"
+      method="POST">
+  {{form.name.errors}}
+  <p>
+    <label for="id_name">Name:</label>
+    {{form.name}}
+  </p>
+  {{form.email.errors}}
+  <p>
+    <label for="id_email">Email:</label>
+    {{form.email}}
+  </p>
+  {{form.club_member.errors}}
+  <p>
+    <label for="id_club_member">Club member?</label>
+    {{form.club_member}}
+  </p>
+  {% if brevet.qual_info_reqd %}
+  <p>
+    {{brevet.qual_info_question}}<br />
+    {{form.qual_info.errors}}
+    <label for="id_qual_info">Qualifying info:</label>
+    {{form.qual_info}}
+  </p>
+  {% endif %}
+  <input type="submit" value="Register" />
+</form>
+{% endblock %}

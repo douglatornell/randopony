@@ -1,0 +1,79 @@
+{% extends "derived/brevet/sidebar.html" %}
+
+{% block title %}RandoPony::{{brevet}}{% endblock %}
+
+{% block page-subtitle %}{{brevet}}{% endblock %}
+
+{% block content %}
+<h3>
+  {% ifequal brevet.region "LM" %}
+  Lower Mainland
+  {% endifequal %}
+  {% ifequal brevet.region "PR" %}
+  Peace Region
+  {% endifequal %}
+  {% ifequal brevet.region "SI" %}
+  Southern Interior
+  {% endifequal %}
+  {% ifequal brevet.region "VI" %}
+  Vancouver Island
+  {% endifequal %}
+  {{brevet.distance}}
+</h3>
+
+<p><strong>Route:</strong> {{ brevet.route_name }}</p>
+
+<p><strong>Start:</strong> {{brevet.date|date:"D d-M-Y"}}
+at {{brevet.start_time|time:"H:i"}}</p>
+
+<p><strong>Start Location:</strong> {{brevet.start_location}}</p>
+
+{% if rider %}
+<div id="confirmation">
+  <p>You have pre-registered for this brevet. Cool! Your name should be
+  on the list below.</p>
+
+  <p>A confirmation email has been sent to you at {{rider_email}}, and to
+  the brevet organizer.</p>
+
+  <p>You can print out the
+  <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
+  title="BC Randonneurs Event Waiver Form">event waiver form</a> from
+  the club web site, fill it out, and bring it with you to the start to
+  save time and make the organizers like you event more.</p>
+
+  {% if not rider.club_member %}
+  <p>You have indicated that you are <strong>NOT</strong> a member of the
+  BC Randonneurs. You must be a member of the club to ride this
+  brevet. You print out the
+  <a href="http://www.randonneurs.bc.ca/introduction/2009_membership-and-waiver.pdf" title="BC Randonneurs Club Membership Form">club membership form</a>
+  from the club web site, fill it out, and bring it and the membership
+  fee with you to the start.</p>
+
+  <p>Have a great ride!</p>
+  {% endif %}
+</div <!-- id="confirmation" -->
+{% endif %}
+
+{% if rider_list %}
+<table>
+  <thead>
+    <tr>
+      <th>Pre-registered Riders</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rider in rider_list %}
+    <tr>
+      <td>{{rider.name}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+There are no pre-registered riders yet.
+<a href="{{ url register.views.register region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+Be the first!
+</a>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,189 @@
+"""View tests for RandoPony register app.
+
+:Author: Doug Latornell <djl@douglatornell.ca>
+:Created: 2009-12-06
+"""
+# Django:
+import django.test
+from django.core.urlresolvers import reverse
+# Application:
+import randopony.register.models as model
+
+
+class TestHomeView(django.test.TestCase):
+    fixtures = ['brevets']
+
+    def test_home_get(self):
+        """GET request for root page of register app works
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.home'))
+        self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_home_context(self):
+        """home view has correct context
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.home'))
+        self.failUnless(response.context['brevets'])
+
+
+    def test_home_base_sidebar(self):
+        """home view renders brevets list
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.home'))
+        self.failUnless('Home' in response.content)
+        self.failUnless('randonneurs.bc.ca' in response.content)
+        self.failUnless('Info for Brevet Organizers' in response.content)
+        self.failUnless("What's up with the pony?" in response.content)
+
+
+    def test_home_brevet_list(self):
+        """home view renders brevets list
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.home'))
+        self.failUnless('LM300 01-May-2010' in response.content)
+        self.failUnless('LM400 22-May-2010' in response.content)
+
+
+class TestBrevetView(django.test.TestCase):
+    fixtures = ['brevets', 'riders']
+
+    def test_brevet_get(self):
+        """GET request for brevet page works
+        """
+        response = self.client.get(
+            '/register/',
+            {'region': 'LM', 'distance': 300, 'date':'01May2010'})
+        self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_brevet_brevet_page_sidebar(self):
+        """brevet view renders correct sidebar
+        """
+        response = self.client.get('/register/LM300/01May2010/')
+        self.failUnless('LM300 01-May-2010' in response.content)
+        self.failUnless('Register' in response.content)
+        self.failUnless('Event Entry Form (PDF)' in response.content)
+        self.failUnless('Club Membership Form (PDF)' in response.content)
+
+
+    def test_brevet_brevet_page_body(self):
+        """brevet view renders correct page body
+        """
+        response = self.client.get('/register/LM400/22May2010/')
+        self.failUnless('Manning Park' in response.content)
+        self.failUnless('Doug Latornell' in response.content)
+        self.failIf('registered for this brevet. Cool!' in response.content)
+
+
+    def test_brevet_brevet_page_confirmation(self):
+        """brevet view renders correct sidebar
+        """
+        response = self.client.get('/register/LM400/22May2010/1/')
+        self.failUnless('for this brevet. Cool!' in response.content)
+
+
+class TestRegistrationFormView(django.test.TestCase):
+    fixtures = ['brevets']
+
+    def test_registration_form_get(self):
+        """GET request for registration from page works
+        """
+        response = self.client.get('/register/LM400/22May2010/form/')
+        self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_brevet_registration_form_sidebar(self):
+        """registration form view renders correct sidebar
+        """
+        response = self.client.get('/register/LM400/22May2010/')
+        self.failUnless('LM400 22-May-2010' in response.content)
+        self.failUnless('Register' in response.content)
+        self.failUnless('Event Entry Form (PDF)' in response.content)
+        self.failUnless('Club Membership Form (PDF)' in response.content)
+
+
+    def test_brevet_registration_form_body_with_qual_info(self):
+        """registration form view renders page with qual info question
+        """
+        response = self.client.get('/register/LM400/22May2010/form/')
+        self.failUnless('Manning Park' in response.content)
+        self.failUnless('Name:' in response.content)
+        self.failUnless('Email:' in response.content)
+        self.failUnless('Club member?' in response.content)
+        self.failUnless(
+            'recent 300 km brevet; e.g. LM300 1-May-' in response.content)
+        self.failUnless('Qualifying info:' in response.content)
+
+
+    def test_brevet_registration_form_body_wo_qual_info(self):
+        """registration form view renders correct page w/o qual info question
+        """
+        response = self.client.get('/register/LM300/01May2010/form/')
+        self.failIf('Qualifying info:' in response.content)
+
+
+class TestRegistrationFunction(django.test.TestCase):
+    fixtures = ['brevets', 'riders']
+
+    def test_registration_form_clean_submit(self):
+        """registration from submit w/ valid data redirects to brevet pg w/ msg
+        """
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                    {'name': 'Doug Latornell',
+                                     'email': 'djl@example.com',
+                                     'club_member': True},
+                                    follow=True)
+        rider_id = model.Rider.objects.order_by('-id')[0].id
+        self.assertRedirects(
+            response, '/register/LM300/01May2010/%(rider_id)d/' % vars())
+        self.assertContains(
+            response, 'You have pre-registered for this brevet. Cool!')
+        self.assertContains(
+            response, 'djl at example dot com')
+        self.assertNotContains(
+            response, 'You have indicated that you are NOT a member')
+
+
+class TestAboutPonyView(django.test.TestCase):
+    def test_about_pony_get(self):
+        """GET request for about RandoPony page works
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.about_pony'))
+        self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_about_pony_sidebar(self):
+        """organizer_info view renders expected sidebar
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.about_pony'))
+        self.failUnless('Home' in response.content)
+        self.failUnless('randonneurs.bc.ca' in response.content)
+        self.failUnless('Info for Brevet Organizers' in response.content)
+        self.failUnless("What's up with the pony?" in response.content)
+
+
+class TestOrganizerInfoView(django.test.TestCase):
+    def test_organizer_info_get(self):
+        """GET request for orgainzers info page works
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.organizer_info'))
+        self.failUnlessEqual(response.status_code, 200)
+
+
+    def test_organizer_info_sidebar(self):
+        """organizer_info view renders expected sidebar
+        """
+        response = self.client.get(
+            reverse('randopony.register.views.organizer_info'))
+        self.failUnless('Home' in response.content)
+        self.failUnless('randonneurs.bc.ca' in response.content)
+        self.failUnless('Info for Brevet Organizers' in response.content)
+        self.failUnless("What's up with the pony?" in response.content)

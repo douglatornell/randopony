@@ -1,0 +1,17 @@
+{% extends "base/sidebar.html" %}
+
+{% block home-link %}
+<li>
+  <a href="{% url register.views.home %}">
+    Home
+  </a>
+</li>
+{% endblock %}
+    
+{% block organizer-info-link %}
+<li>
+  <a href="{% url register.views.organizer_info %}" class="selected">
+    Info for Brevet Organizers
+  </a>
+</li>
+{% endblock %}
