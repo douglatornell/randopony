@@ -1,5 +1,12 @@
-# Django settings for randopony project.
+"""Django settings for RandoPony site.
+
+:Author: Doug Latornell <djl@douglatornell.ca>
+:Created: 2009-12-05
+"""
 from os import path
+
+
+project_path = path.dirname(__file__)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -11,8 +18,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-#project_dir = path.abspath(__file__)
-DATABASE_NAME = 'sqlite3.db'
+DATABASE_NAME = 'randopony.db'
 #'/home/doug/personal/django_env/randopony/sqlite3.db'             # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
@@ -38,12 +44,12 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = path.join(project_path, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = 'http://localhost/~doug/django_media/randopony'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -72,6 +78,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    '/Users/doug/python/randopony/templates',
+    '/Users/doug/python/randopony/register/templates'
 )
 
 INSTALLED_APPS = (
@@ -79,6 +87,5 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
-    'randopony.pony',
+    'randopony.register',
 )

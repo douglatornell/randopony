@@ -1,0 +1,37 @@
+{% extends "base/page.html" %}
+
+{% block sidebar %}
+<div id="sidebar">
+  <ul>
+    {% block home-link %}
+    <li>
+      <a href="{% url register.views.home %}" class="selected">
+	Home
+      </a>
+    </li>
+    {% endblock %}
+    
+    {% block brevet-list %}{% endblock %}
+    
+    {% block info-links %}{% endblock %}
+    
+    <li><a href="http://randonneurs.bc.ca">randonneurs.bc.ca</a></li>
+    
+    {% block organizer-info-link %}
+    <li>
+      <a href="{% url register.views.organizer_info %}">
+	Info for Brevet Organizers
+      </a>
+    </li>
+    {% endblock %}
+    
+    {% block pony-info-link %}
+    <li>
+      <a href="{% url register.views.about_pony %}">
+	What's up with the pony?
+      </a>
+    </li>
+    {% endblock %}
+ </ul>
+</div>
+{% endblock %}

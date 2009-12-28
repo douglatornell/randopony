@@ -1,0 +1,10 @@
+# Test data fixture for RandoPony register app Rider model
+
+- model: register.rider
+  pk: 1
+  fields:
+    brevet: 2
+    club_member: true
+    email: djl@douglatornell.ca
+    name: Doug Latornell
+    qual_info: LM300 1-May-2010

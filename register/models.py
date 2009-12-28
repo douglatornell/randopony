@@ -1,0 +1,73 @@
+"""Model classes for RandoPony site register app
+
+:Author: Doug Latornell <djl@douglatornell.ca>
+:Created: 2009-12-05
+"""
+from django.db import models
+from django.forms import ModelForm
+
+
+class Brevet(models.Model):
+    REGION_CHOICES = (
+        ('LM', 'Lower Mainland'),
+        ('PR', 'Peace Region'),
+        ('SI', 'Southern Interior'),
+        ('VI', 'Vancouver Island'),
+    )
+    DISTANCE_CHOICES = (
+        (200, '200 km'),
+        (300, '300 km'),
+        (400, '400 km'),
+        (600, '500 km'),
+        (1000, '1000 km'),
+        (1200, '1200 km'),
+        (2000, '2000 km'),
+    )
+
+    region = models.CharField(max_length=20, choices=REGION_CHOICES)
+    distance = models.IntegerField(choices=DISTANCE_CHOICES)
+    date = models.DateField()
+    route_name = models.CharField(max_length=50)
+    start_location = models.CharField(max_length=50)
+    start_time = models.TimeField()
+    organizer_email = models.EmailField()
+    qual_info_reqd = models.BooleanField(
+        "qualifying info req'd", default=False)
+    qual_info_question = models.CharField(
+        "qualifying info question", max_length=200, blank=True)
+
+    def __unicode__(self):
+        return ('%(region)s%(distance)d %(date)s'
+                % dict(region=self.region,
+                       distance=self.distance,
+                       date=self.date.strftime('%d-%b-%Y')))
+
+    class Meta():
+        ordering = ['date']
+
+
+class Rider(models.Model):
+    name = models.CharField(max_length=30)
+    email = models.EmailField()
+    club_member = models.BooleanField('club member?', default=False)
+    qual_info = models.CharField(
+        'qualifying info', max_length=100, blank=True)
+    brevet = models.ForeignKey(Brevet)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta():
+        ordering = ['name']
+
+
+class RiderForm(ModelForm):
+    class Meta:
+        model = Rider
+        exclude = ('brevet', )
+
+
+class RiderFormWithoutQualification(ModelForm):
+    class Meta:
+        model = Rider
+        exclude = ('brevet', 'qual_info')

@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+ <link rel="stylesheet" href="{{ MEDIA_URL }}/register/foxy.css" type="text/css" />
+  <title>{% block title %}{% endblock %}</title>
+</head>
+
+<body>
+<div id="wrap">
+
+ <div id="header">
+    <div id="innerheader">
+      <div id="title">
+	<h1>{% block page-title %}bc randonneurs{% endblock %}</h1>
+	<h2>
+	  {% block page-subtitle %}brevet pre-registration{% endblock %}
+	</h2>
+      </div>
+    </div>
+  </div>
+
+  
+  <div id="content">
+    <div id="page">
+    <div class="innerpage">
+     {% block content %}{% endblock %}
+    </div>
+    </div>
+
+    {% block sidebar %}{% endblock %}
+				
+   <div class="clear"></div>
+  </div> <!-- id="content" -->
+
+  {% block footer %}
+  <div id="footer">
+    <p>
+      &copy; 2009 douglatornell.ca |
+      Design: <a
+  href="http://justfreetemplates.com/preview/web-templates/206.html">
+  foxy template</a> by <a href="http://www.spyka.net">spyka webmaster</a>
+    </p>
+    <p>
+      <a href="http://djangopony.com/" class="ponybadge"
+         title="Magic! Ponies! Django! Whee!">
+        <img src="http://media.djangopony.com/img/small/badge.png"
+             width="210" height="65" alt="pony powered">
+      </a>
+    </p>
+  </div>
+  {% endblock %}
+</div> <!-- id="wrap" -->
+</body>
+</html>

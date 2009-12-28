@@ -1,0 +1,11 @@
+{% extends "base/sidebar.html" %}
+
+{% block brevet-list %}
+{% for brevet in brevets %}
+<li>
+  <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+    {{brevet}}
+  </a>
+</li>
+{% endfor %}
+{% endblock %}
