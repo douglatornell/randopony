@@ -45,7 +45,7 @@
     <label for="id_club_member">Club member?</label>
     {{form.club_member}}
   </p>
-  {% if brevet.qual_info_reqd %}
+  {% if brevet.qual_info_question %}
   <p>
     {{brevet.qual_info_question}}<br />
     {{form.qual_info.errors}}
@@ -58,9 +58,12 @@
     {{form.captcha.errors}}
     {{form.captcha}}
     {% if form.captcha.errors %}
-    <a href=" http://www.randonneurs.bc.ca/recbook1/sr_arc.html">Hint</a>
+    <a href="http://www.randonneurs.bc.ca/recbook1/sr_arc.html">Hint</a>
     {% endif %}
   </p>
   <input type="submit" value="Register" />
 </form>
+
+<img class="filler_img" src="{{ MEDIA_URL }}register/images/sign-on.jpg"
+     alt="Sign-on" />
 {% endblock %}
