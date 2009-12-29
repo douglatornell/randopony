@@ -62,7 +62,7 @@ class TestBrevetView(django.test.TestCase):
         self.failUnlessEqual(response.status_code, 200)
 
 
-    def test_brevet_brevet_page_sidebar(self):
+    def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
         response = self.client.get('/register/LM300/01May2010/')
@@ -72,16 +72,31 @@ class TestBrevetView(django.test.TestCase):
         self.failUnless('Club Membership Form (PDF)' in response.content)
 
 
-    def test_brevet_brevet_page_body(self):
-        """brevet view renders correct page body
+    def test_brevet_page_no_riders(self):
+        """brevet page has expected msg when no riders are registered
+        """
+        response = self.client.get('/register/LM300/01May2010/')
+        self.assertContains(response, 'Be the first!')
+
+
+    def test_brevet_page_1_rider(self):
+        """brevet view renders correct page body with 1 registered rider
         """
         response = self.client.get('/register/LM400/22May2010/')
-        self.failUnless('Manning Park' in response.content)
-        self.failUnless('Doug Latornell' in response.content)
-        self.failIf('registered for this brevet. Cool!' in response.content)
+        self.assertContains(response, 'Manning Park')
+        self.assertContains(response, '1 Pre-registered Rider')
+        self.assertContains(response, 'Doug Latornell')
+        self.assertNotContains(response, 'registered for this brevet. Cool!')
 
 
-    def test_brevet_brevet_page_confirmation(self):
+    def test_brevet_page_2_riders(self):
+        """brevet view renders correct page body with 2 registered riders
+        """
+        response = self.client.get('/register/LM200/17Apr2010/')
+        self.assertContains(response, '2 Pre-registered Riders')
+
+
+    def test_brevet_page_confirmation(self):
         """brevet view renders correct sidebar
         """
         response = self.client.get('/register/LM400/22May2010/1/')
