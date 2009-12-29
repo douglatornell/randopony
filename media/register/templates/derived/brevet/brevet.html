@@ -40,7 +40,7 @@ at {{brevet.start_time|time:"H:i"}}</p>
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
   the club web site, fill it out, and bring it with you to the start to
-  save time and make the organizers like you event more.</p>
+  save time and make the organizers like you even more.</p>
 
   {% if not rider.club_member %}
   <p>You have indicated that you are <strong>NOT</strong> a member of the
@@ -72,7 +72,7 @@ at {{brevet.start_time|time:"H:i"}}</p>
 </table>
 {% else %}
 There are no pre-registered riders yet.
-<a href="{{ url register.views.register region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+<a href="{{ url register.views.register region=brevet.region, distance=brevet.distance, date=brevet.date|date:"dMY" %}">
 Be the first!
 </a>
 {% endif %}
