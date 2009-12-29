@@ -85,3 +85,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'randopony.register',
 )
+
+# Application-specific settings:
+# CAPTCHA question and answer for brevet pre-registration
+REGISTRATION_FORM_CAPTCHA_QUESTION = (
+    'Are you a human? Are you a randonneur? Please prove it. '
+    'A Super Randonneur series consists of brevets of '
+    '200 km, 300 km, ___ km, and 600 km. Fill in the blank:'
+)
+REGISTRATION_FORM_CAPTCHA_ANSWER = 400
+
