@@ -2,10 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  {% block reset-css %}
   <link rel="stylesheet" type="text/css"
         href="http://yui.yahooapis.com/2.8.0r4/build/reset/reset-min.css">
+  {% endblock %}
+  {% block app-css %}
   <link rel="stylesheet" type="text/css"
         href="{{ MEDIA_URL }}register/foxy.css" />
+  {% endblock %}
+  {% block page-css %}{% endblock %}
   <title>{% block title %}{% endblock %}</title>
 </head>
 

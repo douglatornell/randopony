@@ -1,5 +1,10 @@
 {% extends "derived/register/sidebar.html" %}
 
+{% block page-css %}
+  <link rel="stylesheet" type="text/css"
+        href="{{ MEDIA_URL }}register/registration_form.css" />
+{% endblock %}
+
 {% block title %}RandoPony::{{brevet}}{% endblock %}
 
 {% block page-subtitle %}{{brevet}}{% endblock %}
@@ -48,6 +53,14 @@
     {{form.qual_info}}
   </p>
   {% endif %}
+ <p>
+    {{captcha_question}}
+    {{form.captcha.errors}}
+    {{form.captcha}}
+    {% if form.captcha.errors %}
+    <a href=" http://www.randonneurs.bc.ca/recbook1/sr_arc.html">Hint</a>
+    {% endif %}
+  </p>
   <input type="submit" value="Register" />
 </form>
 {% endblock %}

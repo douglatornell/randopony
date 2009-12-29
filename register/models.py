@@ -3,8 +3,10 @@
 :Author: Doug Latornell <djl@douglatornell.ca>
 :Created: 2009-12-05
 """
+from django import forms
+from django.conf import settings
 from django.db import models
-from django.forms import ModelForm
+from django.forms.util import ErrorList
 
 
 class Brevet(models.Model):
@@ -61,13 +63,38 @@ class Rider(models.Model):
         ordering = ['name']
 
 
-class RiderForm(ModelForm):
+class BaseRiderForm(forms.ModelForm):
+    """Base class for rider pre-registration ModelForms.
+
+    Adds CAPTCHA answer field and its validator to the form.
+    """
+    captcha = forms.IntegerField()
+
+    def clean_captcha(self):
+        """Vaalidate the CAPTCHA answer.
+        """
+        answer = self.cleaned_data['captcha']
+        if answer != settings.REGISTRATION_FORM_CAPTCHA_ANSWER:
+            self._errors['captcha'] = ErrorList(['Wrong! See hint.'])
+        return answer
+
+
+class RiderForm(BaseRiderForm):
+    """Rider pre-registration from for a brevet that requires qualifying info.
+    """
+    def __init__(self, *args, **kwargs):
+        """Make qualifying info a required field.
+        """
+        super(RiderForm, self).__init__(*args, **kwargs)
+        self.fields['qual_info'].required = True
+
+
     class Meta:
         model = Rider
         exclude = ('brevet', )
 
 
-class RiderFormWithoutQualification(ModelForm):
+class RiderFormWithoutQualification(BaseRiderForm):
     class Meta:
         model = Rider
         exclude = ('brevet', 'qual_info')

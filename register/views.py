@@ -62,7 +62,9 @@ def registration_form(request, region, distance, date):
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
     brevet = model.Brevet.objects.get(region=region, distance=distance,
                                 date=brevet_date)
-    # Choose the appropriate registration from class
+    # Get the CAPTCHA questions from the settings
+    captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
+    # Choose the appropriate registration form class
     if brevet.qual_info_reqd:
         form_class = model.RiderForm
     else:
@@ -86,7 +88,7 @@ def registration_form(request, region, distance, date):
         form = form_class()
     return render_to_response(
         'derived/register/registration_form.html',
-        {'brevet': brevet, 'form': form},
+        {'brevet': brevet, 'form': form, 'captcha_question': captcha_question},
         context_instance=RequestContext(request))
 
 

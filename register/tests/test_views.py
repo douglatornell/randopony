@@ -128,6 +128,17 @@ class TestRegistrationFormView(django.test.TestCase):
         self.failIf('Qualifying info:' in response.content)
 
 
+    def test_brevet_registration_form_has_captcha(self):
+        """registration form view renders captcha question
+        """
+        response = self.client.get('/register/LM300/01May2010/form/')
+        self.assertContains(
+            response, 'Are you a human? Are you a randonneur? Please prove it.')
+        self.assertContains(
+            response, 'A Super Randonneur series consists of brevets of '
+            '200 km, 300 km, ___ km, and 600 km. Fill in the blank:')
+
+
 class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
@@ -137,7 +148,8 @@ class TestRegistrationFunction(django.test.TestCase):
         response = self.client.post('/register/LM300/01May2010/form/',
                                     {'name': 'Doug Latornell',
                                      'email': 'djl@example.com',
-                                     'club_member': True},
+                                     'club_member': True,
+                                     'captcha': 400},
                                     follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
         self.assertRedirects(
@@ -147,7 +159,124 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(
             response, 'djl at example dot com')
         self.assertNotContains(
-            response, 'You have indicated that you are NOT a member')
+            response, 'You must be a member of the club to ride')
+
+
+    def test_registration_form_clean_submit_non_member(self):
+        """registration from submit redirects to brevet pg w/ non-member msg
+        """
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                    {'name': 'Fibber McGee',
+                                     'email': 'fibber@example.com',
+                                     'club_member': False,
+                                     'captcha': 400},
+                                    follow=True)
+        rider_id = model.Rider.objects.order_by('-id')[0].id
+        self.assertRedirects(
+            response, '/register/LM300/01May2010/%(rider_id)d/' % vars())
+        self.assertContains(
+            response, 'You have pre-registered for this brevet. Cool!')
+        self.assertContains(
+            response, 'fibber at example dot com')
+        self.assertContains(
+            response, 'You must be a member of the club to ride')
+
+
+    def test_registration_form_name_required(self):
+        """registration form name field must not be empty
+        """
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                     {'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'captcha': 400})
+        self.assertContains(response, 'This field is required.')
+        self.assertNotContains(response, 'Hint')
+
+
+    def test_registration_form_email_required(self):
+        """registration form email field must not be empty
+        """
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'club_member': False,
+                                      'captcha': 400})
+        self.assertContains(response, 'This field is required.')
+        self.assertNotContains(response, 'Hint')
+
+
+    def test_registration_form_email_valid(self):
+        """registration form email field must be valid
+        """
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber',
+                                      'club_member': False,
+                                      'captcha': 400})
+        self.assertContains(response, 'Enter a valid e-mail address.')
+        self.assertNotContains(response, 'Hint')
+
+
+    def test_registration_form_qual_info_required(self):
+        """registration form qualifying info field must not be empty
+        """
+        response = self.client.post('/register/LM400/22May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'captcha': 400})
+        self.assertContains(response, 'This field is required.')
+        self.assertNotContains(response, 'Hint')
+
+
+    def test_registration_form_captcah_answer_required(self):
+        """registration form CAPTCHA answer field must not be empty
+        """
+        response = self.client.post('/register/LM400/22May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'qual_info': 'LM300'})
+        self.assertContains(response, 'This field is required.')
+        self.assertContains(response, 'Hint')
+
+
+    def test_registration_form_captcha_answer_is_int(self):
+        """registration form CAPTCHA answer field must not be empty
+        """
+        response = self.client.post('/register/LM400/22May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'qual_info': 'LM300',
+                                      'captcha': 'afdga'})
+        self.assertContains(response, 'Enter a whole number.')
+        self.assertContains(response, 'Hint')
+
+
+    def test_registration_form_captcha_answer_is_int(self):
+        """registration form CAPTCHA answer field must not be empty
+        """
+        response = self.client.post('/register/LM400/22May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'qual_info': 'LM300',
+                                      'captcha': 'afdga'})
+        self.assertContains(response, 'Enter a whole number.')
+        self.assertContains(response, 'Hint')
+
+
+    def test_registration_form_captcha_answer_wrong(self):
+        """registration form CAPTCHA wrong answer
+        """
+        response = self.client.post('/register/LM400/22May2010/form/',
+                                     {'name': 'Fibber McGee',
+                                      'email': 'fibber@example.com',
+                                      'club_member': False,
+                                      'qual_info': 'LM300',
+                                      'captcha': 200})
+        self.assertContains(response, 'Wrong! See hint.')
+        self.assertContains(response, 'Hint')
 
 
 class TestAboutPonyView(django.test.TestCase):
