@@ -19,8 +19,10 @@ def home(request):
     """Display the welcome information and list of brevets.
     """
     brevet_list = model.Brevet.objects.all()
+    admin_email = h.email2words(settings.ADMINS[0][1])
     return render_to_response(
-        'derived/home/home.html', {'brevets': brevet_list},
+        'derived/home/home.html',
+        {'brevets': brevet_list, 'admin_email': admin_email},
         context_instance=RequestContext(request))
 
 

@@ -27,6 +27,7 @@ class TestHomeView(django.test.TestCase):
         response = self.client.get(
             reverse('randopony.register.views.home'))
         self.failUnless(response.context['brevets'])
+        self.failUnless(response.context['admin_email'])
 
 
     def test_home_base_sidebar(self):
