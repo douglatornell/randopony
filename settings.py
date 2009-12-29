@@ -1,4 +1,4 @@
-"""Django settings for RandoPony site.
+"""Django settings for development instance of RandoPony site.
 
 :Author: Doug Latornell <djl@douglatornell.ca>
 :Created: 2009-12-05
@@ -12,18 +12,13 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    # ('Your Name', 'your_email@domain.com'),
+    ('Doug Latornell', 'djl@douglatornell.ca'),
 )
 
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = path.join(project_path, 'randopony.db')
-#'/home/doug/personal/django_env/randopony/sqlite3.db'             # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -34,7 +29,7 @@ TIME_ZONE = 'America/Vancouver'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-ca'
 
 SITE_ID = 1
 
@@ -80,8 +75,6 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     path.join(project_path, 'media/templates'),
     path.join(project_path, 'media/register/templates'),
-#     '/Users/doug/python/randopony/templates',
-#     '/Users/doug/python/randopony/register/templates'
 )
 
 INSTALLED_APPS = (
