@@ -72,7 +72,7 @@ at {{brevet.start_time|time:"H:i"}}</p>
 </table>
 {% else %}
 There are no pre-registered riders yet.
-<a href="{{ url register.views.register region=brevet.region, distance=brevet.distance, date=brevet.date|date:"dMY" %}">
+<a href="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
 Be the first!
 </a>
 {% endif %}
