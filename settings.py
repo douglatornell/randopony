@@ -17,7 +17,10 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+DATABASE_ENGINE = 'sqlite3'
+# Use a different database file name from what's in the
+# webfaction-settings module to avoid nasty surprises if the
+# --delete-excluded option is used in rsync2wf.sh
 DATABASE_NAME = path.join(project_path, 'randopony.db')
 
 # Local time zone for this installation. Choices can be found here:
