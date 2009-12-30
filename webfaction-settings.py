@@ -18,7 +18,10 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = path.join(project_path, 'randopony.db')
+# Use a different database file name from what's in the development
+# settings module to avoid nasty surprises if the --delete-excluded
+# option is used in rsync2wf.sh
+DATABASE_NAME = path.join(project_path, 'randopony-production.db')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
