@@ -65,7 +65,7 @@ def registration_form(request, region, distance, date):
     # Get the CAPTCHA questions from the settings
     captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     # Choose the appropriate registration form class
-    if brevet.qual_info_reqd:
+    if brevet.qual_info_question:
         form_class = model.RiderForm
     else:
         form_class = model.RiderFormWithoutQualification

@@ -7,7 +7,6 @@
     distance: 300
     organizer_email: pumpkinrider@example.com
     qual_info_question: ''
-    qual_info_reqd: false
     region: LM
     route_name: Pemberton or Bust
     start_location: Who knows?
@@ -20,7 +19,6 @@
     distance: 400
     organizer_email: djl@douglatornell.ca
     qual_info_question: Please give the location and date of your most recent 300 km brevet; e.g. LM300 1-May-2010
-    qual_info_reqd: true
     region: LM
     route_name: Manning Park
     start_location: New Westminister
@@ -33,7 +31,6 @@
     distance: 200
     organizer_email: manfred@example.com
     qual_info_question: ''
-    qual_info_reqd: false
     region: LM
     route_name: Something
     start_location: Who knows?
