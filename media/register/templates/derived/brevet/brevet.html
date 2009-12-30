@@ -1,5 +1,10 @@
 {% extends "derived/brevet/sidebar.html" %}
 
+{% block page-css %}
+  <link rel="stylesheet" type="text/css"
+        href="{{ MEDIA_URL }}register/brevet.css" />
+{% endblock %}
+
 {% block title %}RandoPony::{{brevet}}{% endblock %}
 
 {% block page-subtitle %}{{brevet}}{% endblock %}
@@ -78,4 +83,7 @@ There are no pre-registered riders yet.
 Be the first!
 </a>
 {% endif %}
+
+<img class="filler_img" src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
+     alt="Sign-on" />
 {% endblock %}
