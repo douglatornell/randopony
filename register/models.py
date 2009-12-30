@@ -33,8 +33,6 @@ class Brevet(models.Model):
     start_location = models.CharField(max_length=50)
     start_time = models.TimeField()
     organizer_email = models.EmailField()
-#     qual_info_reqd = models.BooleanField(
-#         "qualifying info req'd", default=False)
     qual_info_question = models.TextField(
         "qualifying info question", blank=True,
         help_text='Optional question that will appear on the '

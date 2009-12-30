@@ -17,9 +17,6 @@ class BrevetAdmin(admin.ModelAdmin):
         (None, {'fields': ['region', 'distance', 'date', 'route_name',
                            'start_location', 'start_time', 
                            'organizer_email','qual_info_question' ]}),
-#         ('Qualifying info', {'fields': ['qual_info_reqd',
-#                                         'qual_info_question'],
-#                              'classes': ['collapse']})
     ]
     # Display the brevets distance choices as radio buttons instead of
     # a select list
