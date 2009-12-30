@@ -33,13 +33,14 @@ at {{brevet.start_time|time:"H:i"}}</p>
 
 <p><strong>Start Location:</strong> {{brevet.start_location}}</p>
 
-{% if rider %}
+{% if rider%}
+{% if not duplicate_registration %}
 <div id="confirmation">
   <p>You have pre-registered for this brevet. Cool! Your name should be
   on the list below.</p>
 
-  <p>A confirmation email has been sent to you at {{rider_email}}, and to
-  the brevet organizer.</p>
+  <p>A confirmation email has been sent to you at
+  <kbd>{{rider_email}}</kbd>, and to the brevet organizer.</p>
 
   <p>You can print out the
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
@@ -57,7 +58,20 @@ at {{brevet.start_time|time:"H:i"}}</p>
 
   <p>Have a great ride!</p>
   {% endif %}
-</div <!-- id="confirmation" -->
+</div> <!-- id="confirmation" -->
+{% endif %}
+
+{% if duplicate_registration %}
+<div id="duplicate_registration">
+  <p>Hmm... Someone using the name <kbd>{{rider.name}}</kbd> and the
+  email address <kbd>{{rider_email}}</kbd> has already pre-registered
+  for this brevet. Are you sure that you are registering for the
+  brevet you intended to?</p>
+
+  <p>If you are trying to change your email address, or club membership
+  status by re-registering, please contact the brevet organizer.</p>
+</div> <!-- id="duplicate_registration" -->
+{% endif %}
 {% endif %}
 
 {% if rider_list %}

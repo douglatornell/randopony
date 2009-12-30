@@ -28,7 +28,8 @@ def home(request):
 
 def brevet(request, region, distance, date, rider_id=None):
     """Display the brevet information, pre-registered riders list, and
-    sometimes the registration confirmation flash message.
+    sometimes the registration confirmation, or duplicate registration
+    flash message.
     """
     # Get the brevet instance to render
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
@@ -37,13 +38,12 @@ def brevet(request, region, distance, date, rider_id=None):
     # Get the rider instance to use for the confirmation message, if
     # applicable
     if rider_id is not None:
-        try:
-            rider = model.Rider.objects.get(pk=int(rider_id))
-        except:
-            raise
+        rider = model.Rider.objects.get(pk=int(rider_id))
     else:
         rider = None
     rider_email = None if not rider else h.email2words(rider.email)
+    duplicate_registration = (True if request.path.endswith('duplicate/')
+                              else False)
     # Get the list of pre-registered riders
     rider_list = model.Rider.objects.filter(
         brevet__region=region, brevet__distance=distance,
@@ -51,7 +51,8 @@ def brevet(request, region, distance, date, rider_id=None):
     return render_to_response(
         'derived/brevet/brevet.html',
         {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
-         'rider_email': rider_email},
+         'rider_email': rider_email,
+         'duplicate_registration': duplicate_registration},
         context_instance=RequestContext(request))
 
 
@@ -74,11 +75,23 @@ def registration_form(request, region, distance, date):
         try:
             rider = model.Rider(brevet=brevet)
             rider = form_class(request.POST, instance=rider)
-            rider = rider.save()
-            return redirect(
-                '/register/%(region)s%(distance)s/%(date)s/%(rider_id)d/'
-                % {'region': region, 'distance': distance, 'date': date,
-                   'rider_id': rider.id})
+            new_rider = rider.save(commit=False)
+            # Check for duplicate registration
+            try:
+                check_rider = model.Rider.objects.get(
+                    name=new_rider.name, email=new_rider.email, brevet=brevet)
+                return redirect(
+                    '/register/%(region)s%(distance)s/%(date)s/'
+                    '%(rider_id)d/duplicate/'
+                    % {'region': region, 'distance': distance, 'date': date,
+                       'rider_id': check_rider.id})
+            except model.Rider.DoesNotExist:
+                # Save new rider pre-registration
+                new_rider.save()
+                return redirect(
+                    '/register/%(region)s%(distance)s/%(date)s/%(rider_id)d/'
+                    % {'region': region, 'distance': distance, 'date': date,
+                       'rider_id': new_rider.id})
         except ValueError:
             # Validation error, so re-render form with rider inputs
             # and error messages
