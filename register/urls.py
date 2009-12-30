@@ -14,12 +14,20 @@ YEAR = '20\d\d'
 
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
+    # Brevet page with rider list
     (r'^(?P<region>(%(REGIONS)s))(?P<distance>%(DISTANCES)s)/'
       '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/$' % vars(),
       'brevet'),
+    # Brevet page with rider pre-registration confirmation message
     (r'^(?P<region>(%(REGIONS)s))(?P<distance>%(DISTANCES)s)/'
-      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/(?P<rider_id>\d+)/$'
-      % vars(), 'brevet'),
+      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/(?P<rider_id>\d+)/$' % vars(),
+      'brevet'),
+    # Brevet page with rider pre-registration duplication message
+    (r'^(?P<region>(%(REGIONS)s))(?P<distance>%(DISTANCES)s)/'
+      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/'
+      '(?P<rider_id>\d+)/duplicate/$' % vars(),
+      'brevet'),
+    # Rider pre-registration form page
     (r'^(?P<region>(%(REGIONS)s))(?P<distance>%(DISTANCES)s)/'
       '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/form/$' % vars(),
       'registration_form'),

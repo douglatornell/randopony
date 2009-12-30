@@ -3,6 +3,8 @@
 :Author: Doug Latornell <djl@douglatornell.ca>
 :Created: 2009-12-06
 """
+# Standard library:
+from datetime import datetime
 # Django:
 import django.test
 from django.core.urlresolvers import reverse
@@ -87,6 +89,7 @@ class TestBrevetView(django.test.TestCase):
         self.assertContains(response, '1 Pre-registered Rider')
         self.assertContains(response, 'Doug Latornell')
         self.assertNotContains(response, 'registered for this brevet. Cool!')
+        self.assertNotContains(response, 'Be the first!')
 
 
     def test_brevet_page_2_riders(self):
@@ -292,6 +295,36 @@ class TestRegistrationFunction(django.test.TestCase):
                                       'captcha': 200})
         self.assertContains(response, 'Wrong! See hint.')
         self.assertContains(response, 'Hint')
+
+
+    def test_registration_form_handles_duplicate_entry(self):
+        """registration form rejects duplicate entry w/ msg on brevet page
+        """
+        brevet_date = datetime.strptime('01May2010', '%d%b%Y').date()
+        brevet = model.Brevet.objects.get(
+            region='LM', distance=300, date=brevet_date)
+        model.Rider(
+            name='Doug Latornell',
+            email='djl@example.com',
+            brevet=brevet).save()
+        response = self.client.post('/register/LM300/01May2010/form/',
+                                    {'name': 'Doug Latornell',
+                                     'email': 'djl@example.com',
+                                     'club_member': True,
+                                     'captcha': 400},
+                                    follow=True)
+        rider_query = model.Rider.objects.filter(
+            name='Doug Latornell', email='djl@example.com', brevet=brevet)
+        rider_id = rider_query[0].id
+        self.assertRedirects(
+            response, '/register/LM300/01May2010/%(rider_id)d/duplicate/'
+            % vars())
+        self.assertContains(
+            response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
+        self.assertContains(
+            response, 'email address <kbd>djl at example dot com</kbd>')
+        self.assertNotContains(
+            response, 'You must be a member of the club to ride')
 
 
 class TestAboutPonyView(django.test.TestCase):
