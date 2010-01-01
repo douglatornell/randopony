@@ -8,6 +8,7 @@ from datetime import datetime
 # Django:
 from django.conf import settings
 from django.core import mail
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
@@ -65,7 +66,7 @@ def registration_form(request, region, distance, date):
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
     brevet = model.Brevet.objects.get(region=region, distance=distance,
                                 date=brevet_date)
-    # Get the CAPTCHA questions from the settings
+    # Get the CAPTCHA question from the settings
     captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     # Choose the appropriate registration form class
     if brevet.qual_info_question:
@@ -93,12 +94,17 @@ def registration_form(request, region, distance, date):
                 # Save new rider pre-registration and send emails to
                 # rider and brevet organizer
                 new_rider.save()
+                brevet_page_uri = '/'.join(
+                    ('http:/',
+                     request.META['HTTP_HOST'],
+                     '/register/%(region)s%(distance)s/%(date)s/' % vars()))
                 mail.send_mail(
                     'Pre-registration Confirmation for %(brevet)s Brevet'
                     % vars(),
                     render_to_string(
                         'email/to_rider.txt',
-                        {'brevet': brevet, 'rider': new_rider}),
+                        {'brevet': brevet, 'rider': new_rider,
+                         'brevet_page_uri': brevet_page_uri}),
                     brevet.organizer_email,
                     [new_rider.email])
                 mail.send_mail(
@@ -107,6 +113,7 @@ def registration_form(request, region, distance, date):
                     render_to_string(
                         'email/to_organizer.txt',
                         {'brevet': brevet, 'rider': new_rider,
+                         'brevet_page_uri': brevet_page_uri,
                          'admin_email': settings.ADMINS[0][1]}),
                     settings.REGISTRATION_EMAIL_FROM,
                     [brevet.organizer_email])

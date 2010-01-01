@@ -1,4 +1,4 @@
-You have pre-registered for the BC Randonneurs {{brevet}} brevet. Your name should appear on the list at {% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}.
+You have pre-registered for the BC Randonneurs {{brevet}} brevet. Your name should appear on the list at {{brevet_page_uri}}.
 
 This is an auto-generated email, but you can reply to it to contact the brevet organizer. 
 

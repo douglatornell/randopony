@@ -351,7 +351,9 @@ class TestRegistrationFunction(django.test.TestCase):
         self.failUnless(
             'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
             in mail.outbox[0].body)
-        self.failUnless('/register/LM300/01May2010/' in mail.outbox[0].body)
+        self.failUnless(
+            'http://testserver/register/LM300/01May2010/'
+            in mail.outbox[0].body)
         self.failUnless(
             'print out the event waiver form' in mail.outbox[0].body)
         self.failUnless(
@@ -410,7 +412,9 @@ class TestRegistrationFunction(django.test.TestCase):
         self.failUnlessEqual(
             mail.outbox[0].subject,
             'Pre-registration Confirmation for LM400 22-May-2010 Brevet')
-        self.failUnless('/register/LM400/22May2010/' in mail.outbox[0].body)
+        self.failUnless(
+            'http://testserver/register/LM400/22May2010/'
+            in mail.outbox[0].body)
         # Email to organizer
         self.failUnlessEqual(
             mail.outbox[1].subject,
