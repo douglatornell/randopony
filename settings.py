@@ -99,3 +99,10 @@ REGISTRATION_FORM_CAPTCHA_ANSWER = 400
 # Email from address for messages from registration form handler to
 # brevet organizer
 REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
+# SMTP server settings
+#
+# Use the Python standard library SMTP DebuggingServer to handle email
+# by printing it to stdout. Run the server with:
+#    python -m smtpd -n -c DebuggingServer localhost:1025
+EMAIL_HOST = '127.0.0.1'
+EMAIL_POST = 1025
