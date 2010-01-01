@@ -2,11 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  {% block reset-css %}
-  <link rel="stylesheet" type="text/css"
-        href="http://yui.yahooapis.com/2.8.0r4/build/reset/reset-min.css">
-  {% endblock %}
-  {% block app-css %}
+ {% block app-css %}
   <link rel="stylesheet" type="text/css"
         href="{{ MEDIA_URL }}register/foxy.css" />
   {% endblock %}
@@ -53,7 +49,8 @@
       <a href="http://djangopony.com/" class="ponybadge"
          title="Magic! Ponies! Django! Whee!">
         <img src="http://media.djangopony.com/img/small/badge.png"
-             width="210" height="65" alt="pony powered">
+             width="210" height="65" alt="pony powered"
+             style="border: 0px;">
       </a>
     </p>
   </div>
