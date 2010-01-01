@@ -7,9 +7,11 @@
 from datetime import datetime
 # Django:
 from django.conf import settings
+from django.core import mail
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.template.loader import render_to_string
 # Application:
 import randopony.register.helpers as h
 import randopony.register.models as model
@@ -80,14 +82,36 @@ def registration_form(request, region, distance, date):
             try:
                 check_rider = model.Rider.objects.get(
                     name=new_rider.name, email=new_rider.email, brevet=brevet)
+                # Redirect to brevet page with duplicate flag to
+                # trigger appropriate flash message
                 return redirect(
                     '/register/%(region)s%(distance)s/%(date)s/'
                     '%(rider_id)d/duplicate/'
                     % {'region': region, 'distance': distance, 'date': date,
                        'rider_id': check_rider.id})
             except model.Rider.DoesNotExist:
-                # Save new rider pre-registration
+                # Save new rider pre-registration and send emails to
+                # rider and brevet organizer
                 new_rider.save()
+                mail.send_mail(
+                    'Pre-registration Confirmation for %(brevet)s Brevet'
+                    % vars(),
+                    render_to_string(
+                        'email/to_rider.txt',
+                        {'brevet': brevet, 'rider': new_rider}),
+                    brevet.organizer_email,
+                    [new_rider.email])
+                mail.send_mail(
+                    '%(name)s has Pre-registered for the %(brevet)s'
+                    % dict(name=new_rider.name, brevet=brevet),
+                    render_to_string(
+                        'email/to_organizer.txt',
+                        {'brevet': brevet, 'rider': new_rider,
+                         'admin_email': settings.ADMINS[0][1]}),
+                    settings.REGISTRATION_EMAIL_FROM,
+                    [brevet.organizer_email])
+                # Redirect to brevet page with rider record id to
+                # trigger registartion confirmation flash message
                 return redirect(
                     '/register/%(region)s%(distance)s/%(date)s/%(rider_id)d/'
                     % {'region': region, 'distance': distance, 'date': date,

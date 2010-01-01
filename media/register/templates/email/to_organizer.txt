@@ -1,0 +1,13 @@
+{{rider.name}} has pre-registered for the {{brevet}} brevet.  Their name should appear along with the other pre-registered riders on the list at {% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}.
+
+They should have received a confirmation email that appears to have come from your email address so that they can contact you directly, if necessary.
+
+{{rider.name}} has indicated that they are {% if not rider.club_member %}NOT {% endif %}a club member, but you should confirm that against a current club membership list. {% if not rider.club_member %}They have been informed that they need to be a member to do the ride, and that they need to join beforehand, or at the start.{% endif %}
+
+{% if rider.qual_info %}They have listed {{rider.qual_info}} as their qualification for this brevet. Again, you should confirm that against a results list.{% endif %}
+
+This is an auto-generated email. If you are having problems with the RandoPony system please send email to {{admin_email}}.
+
+Sincerely,
+
+The Rando Pony

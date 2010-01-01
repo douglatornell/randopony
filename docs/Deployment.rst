@@ -67,6 +67,31 @@ Configure WebFaction to proxy requests to the Django app, and static media apps:
    * :kbd:`admin_media` mounted at :kbd:`/media/admin`
 
 
+Create a Django Settings Module
+===============================
+
+#. Copy :file:`randopony/settings.py` to
+ :file:`randopony/webfaction-settings.py` and edit it make the
+ settings appropriate for the deployment:
+
+  .. code-block:: python
+
+     DEBUG = False
+
+     ADMINS = (
+         ('Your Name', 'you@example.com'),
+     )
+
+     SECRET_KEY = 'a string of random characters, the longer the better'
+
+     EMAIL_USER_PASSWORD = 'password for the randopony email sender account''
+
+Review the other settings and change any that you think you need to,
+:kbd:`TIME_ZONE`, for example.  Note that you can change the
+:kbd:`REGISTRATION_FORM_CAPTCHA_QUESTION` and its answer, but the view
+code assumes that the answer is an integer.
+
+
 Copy RandoPony to WebFaction
 ============================
 
@@ -114,6 +139,34 @@ Configure the RandoPony Installation on WebFaction
 
       WSGIScriptAlias / /home/dlatornell/webapps/randopony/randopony.wsgi
 
+#. Tighten up security by making the database and settings files
+   read-write by owner only, and invisible to everyone else, and
+   removing world execute permission from the :file:`manage.py` file:
+
+   .. code-block: sh
+
+      cd ~/webapps/randopony/randopony/
+      chmod go-rw randopony-production.db webfaction-settings.py
+      chmod o-x manage.py
+
+
+Create a Mailbox and Email Address for RandoPony
+================================================
+
+WebFaction's SMTP server will only allow applications to send email
+from mailboxes and addresses that have been created in the control
+panel.
+
+#. Use the :guilabel:`E-mails > Mailboxes` menu to create a mailbox
+   called :kbd: `randopony`, and set its password to the value you put
+   in the :file:`webfaction-settings.py` file. 
+
+#. Use the :guilabel:`E-mails > E-mail addresses` menu to create an
+   address like :kbd: `randopony@sadahome.ca` that matches what you
+   put in the :file:`webfaction-settings.py` file, and target it at
+   the :kbd:`randopony` mailbox. You can create a fun autoreponder
+   message too, if you want.
+
 
 Initialize the Database and Start the App
 =========================================
@@ -129,7 +182,7 @@ Initialize the Database and Start the App
       cp webfaction-settings.py settings.py
       python2.5 manage.py syncdb
       ...
-      rm settings.py
+      rm settings.py*
 
 #. Restart Apache:
 
