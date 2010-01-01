@@ -7,6 +7,8 @@
 from datetime import datetime
 # Django:
 import django.test
+from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
 # Application:
 import randopony.register.models as model
@@ -300,6 +302,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_handles_duplicate_entry(self):
         """registration form rejects duplicate entry w/ msg on brevet page
         """
+        # Register for the brevet
         brevet_date = datetime.strptime('01May2010', '%d%b%Y').date()
         brevet = model.Brevet.objects.get(
             region='LM', distance=300, date=brevet_date)
@@ -307,12 +310,14 @@ class TestRegistrationFunction(django.test.TestCase):
             name='Doug Latornell',
             email='djl@example.com',
             brevet=brevet).save()
+        # Try to register again
         response = self.client.post('/register/LM300/01May2010/form/',
                                     {'name': 'Doug Latornell',
                                      'email': 'djl@example.com',
                                      'club_member': True,
                                      'captcha': 400},
                                     follow=True)
+        # Confirm the redriect, and flash message content
         rider_query = model.Rider.objects.filter(
             name='Doug Latornell', email='djl@example.com', brevet=brevet)
         rider_id = rider_query[0].id
@@ -325,6 +330,93 @@ class TestRegistrationFunction(django.test.TestCase):
             response, 'email address <kbd>djl at example dot com</kbd>')
         self.assertNotContains(
             response, 'You must be a member of the club to ride')
+
+
+    def test_registration_form_sends_emails_to_club_member(self):
+        """successful registration sends emails to member/rider & organizer
+        """
+        self.client.post('/register/LM300/01May2010/form/',
+                         {'name': 'Doug Latornell',
+                          'email': 'djl@example.com',
+                          'club_member': True,
+                          'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        # Email to rider
+        self.failUnlessEqual(
+            mail.outbox[0].subject,
+            'Pre-registration Confirmation for LM300 01-May-2010 Brevet')
+        self.failUnlessEqual(mail.outbox[0].to, ['djl@example.com'])
+        self.failUnlessEqual(
+            mail.outbox[0].from_email, 'pumpkinrider@example.com')
+        self.failUnless(
+            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
+            in mail.outbox[0].body)
+        self.failUnless('/register/LM300/01May2010/' in mail.outbox[0].body)
+        self.failUnless(
+            'print out the event waiver form' in mail.outbox[0].body)
+        self.failUnless(
+            'auto-generated email, but you can reply to it '
+            'to contact the brevet organizer'
+            in mail.outbox[0].body)
+        # Email to organizer
+        self.failUnlessEqual(
+            mail.outbox[1].subject,
+            'Doug Latornell has Pre-registered for the LM300 01-May-2010')
+        self.failUnlessEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
+        self.failUnlessEqual(
+            mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
+        self.failUnless(
+            'Doug Latornell has pre-registered for the LM300 01-May-2010 brevet'
+            in mail.outbox[1].body)
+        self.failUnless(
+            'has indicated that they are a club member' in mail.outbox[1].body)
+        self.failUnless(
+            'please send email to %s' % settings.ADMINS[0][1]
+            in mail.outbox[1].body)
+
+
+    def test_registration_form_sends_emails_to_non_member(self):
+        """successful registration sends emails to non-member/rider & organizer
+        """
+        self.client.post('/register/LM300/01May2010/form/',
+                         {'name': 'Fibber McGee',
+                          'email': 'fibber@example.com',
+                          'club_member': False,
+                          'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        # Email to rider
+        self.failUnlessEqual(mail.outbox[0].to, ['fibber@example.com'])
+        self.failUnless(
+            'indicated that you are NOT a member' in mail.outbox[0].body)
+        # Email to organizer
+        self.failUnless(
+            'has indicated that they are NOT a club member'
+            in mail.outbox[1].body)
+        self.failUnless(
+            'join beforehand, or at the start' in mail.outbox[1].body)
+         
+
+    def test_registration_form_sends_emails_with_qualifying_info(self):
+        """successful registration email to organizer includes qualifying info
+        """
+        self.client.post('/register/LM400/22May2010/form/',
+                         {'name': 'Fibber McGee',
+                          'email': 'fibber@example.com',
+                          'club_member': False,
+                          'qual_info': 'LM300',
+                          'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        # Email to rider
+        self.failUnlessEqual(
+            mail.outbox[0].subject,
+            'Pre-registration Confirmation for LM400 22-May-2010 Brevet')
+        self.failUnless('/register/LM400/22May2010/' in mail.outbox[0].body)
+        # Email to organizer
+        self.failUnlessEqual(
+            mail.outbox[1].subject,
+            'Fibber McGee has Pre-registered for the LM400 22-May-2010')
+        self.failUnless(
+            'listed LM300 as their qualification' in mail.outbox[1].body)
 
 
 class TestAboutPonyView(django.test.TestCase):

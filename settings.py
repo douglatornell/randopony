@@ -96,3 +96,6 @@ REGISTRATION_FORM_CAPTCHA_QUESTION = (
     '200 km, 300 km, ___ km, and 600 km. Fill in the blank:'
 )
 REGISTRATION_FORM_CAPTCHA_ANSWER = 400
+# Email from address for messages from registration form handler to
+# brevet organizer
+REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
