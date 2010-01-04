@@ -148,6 +148,8 @@ def organizer_info(request):
     """Info page for brevet organizers about how to get their brevet
     listed on the randopony site.
     """
+    admin_email = h.email2words(settings.ADMINS[0][1])
     return render_to_response(
         'derived/organizer-info/organizer-info.html',
+        {'admin_email': admin_email},
         context_instance=RequestContext(request))

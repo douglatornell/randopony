@@ -2,5 +2,42 @@
 
 {% block title %}RandoPony::Brevet Organizers Info{% endblock %}
 
+{% block page-subtitle %}getting the randopony to help with your brevet{% endblock %}
+
 {% block content %}
+
+<p>So you've read the blurb on the <a href="{% url register.views.home
+%}">Home</a> page and maybe even pre-registered for a brevet or
+two. Bur you're also the organizer of a future BC Randonneurs brevet,
+and now you're thinking "This is cool!  Can I get my brevet added to
+the <a href="{% url register.views.about_pony %}">RandoPony</a>?". You
+betcha!</p>
+
+<p>Just send an email to <kbd>{{admin_email}}</kbd> with the following
+information:
+</p>
+<ul>
+  <li>Region, distance and date of your brevet; e.g. VI200
+  21-Aug-2010</li>
+  <li>Route name</li>
+  <li>Start location and time</li>
+  <li>Email address that you want to receive rider pre-registration
+  notices at</li>
+</ul>
+
+<p>We'll add the brevet and pre-registration from pages for your event
+to the pony and notify the <a
+ href="http://randonneurs.bc.ca">randonneurs.bc.ca</a> webmaster so
+that they can make links from the club pages to your brevet page
+here. As riders pre-register for your event their names will appear in
+the list on the page for your brevet, and you'll receive email
+messages from the pony letting you know their name, email address, and
+club membership status. Easy, eh!?</p>
+
+<p>If you're visiting from another cycling club and are interested in
+getting a pony of your own, please read the
+<a href="{% url register.views.about_pony %}">What's up with the
+pony?</a> page for information on how you can get and deploy this
+open-source software.</p>
+
 {% endblock %}
