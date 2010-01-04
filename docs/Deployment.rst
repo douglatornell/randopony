@@ -26,7 +26,7 @@ Create the Django and Static Medai Applications
 #. Log into the WebFaction control panel.
 #. Use the :guilabel:`Domains / websites > Applications` menu to
     create a :kbd:`Django 1.1.1/mod_wsgi 2.5/Python 2.5` application
-    called :kbd:randopony`.
+    called :kbd:`randopony`.
 
 To reduce memory consumption (the primary resource limitation and
 package cost differentiator on WebFaction), and improve performace of
@@ -35,11 +35,11 @@ JavaScript, etc.) for RandoPony and the Django admin:
 
 #. Use the :guilabel:`Domains / websites > Applications` menu to
     create a :kbd:`Symbolic link to static-only app` application
-    called :kbd:randopony_media` that links to
+    called :kbd:`randopony_media` that links to
     :kbd:`/home/dlatornell/webapps/randopony/randopony/media` (this is
     the value to enter in the :guilabel:`Extra Info:` field.
 #. Also create a :kbd:`Symbolic link to static-only app` application
-    called :kbd:admin_media` that links to
+    called :kbd:`admin_media` that links to
     :kbd:`/home/dlatornell/webapps/randopony/lib/python2.5/django/contrib/admin/media`.
 
 
