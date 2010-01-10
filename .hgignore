@@ -1,2 +1,5 @@
 syntax: glob
 randopony.db
+.email_host_password
+.secret_key
+.webfaction_secret_key
