@@ -1,0 +1,18 @@
+RandoPony
+=========
+
+RandoPony is a Django project for online data management activities
+for the BC Randonneurs Cycling Club. It presently has 1 app, a brevet
+pre-registration system.
+
+RandoPony is copyright by Doug Latornell. It is released under a New
+BSD License; please see the LICENSE file. The source code is available
+at http://bitbucket.org/douglatornell/randopony/ and issues may be
+reported using the bitbucket issue tracker.
+
+The docs/ directory contains notes on the deployment of RandoPony on
+Webfaction.
+
+If you use RandoPony and decide to stay with the included CSS design
+(foxy), please note that it is used on the condition that the link
+back to its creator's site, http://www.spyka.net/, is preserved.
