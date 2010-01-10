@@ -54,7 +54,7 @@ MEDIA_URL = 'http://randopony.sadahome.ca/media/'
 ADMIN_MEDIA_PREFIX = 'http://randopony.sadahome.ca/media/admin/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '(zuva2iq64i=8$=gkt4mg+!vp(r8q%ifoj_(i4l*qn((dll49@'
+SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -97,4 +97,11 @@ REGISTRATION_FORM_CAPTCHA_QUESTION = (
     '200 km, 300 km, ___ km, and 600 km. Fill in the blank:'
 )
 REGISTRATION_FORM_CAPTCHA_ANSWER = 400
-
+# Email from address for messages from registration form handler to
+# brevet organizer
+REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
+# SMTP server settings
+EMAIL_HOST = 'smtp.webfaction.com'
+EMAIL_HOST_USER = 'randopony'
+EMAIL_HOST_PASSWORD = open(
+    path.join(project_path, '.email_host_password'), 'r').read()
