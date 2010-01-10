@@ -55,7 +55,7 @@ MEDIA_URL = 'http://localhost/~doug/django_media/randopony/'
 ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '06db005a-6b4e-492c-b965-ed071de7c80d'
+SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
