@@ -7,7 +7,7 @@ from django.conf.urls.defaults import *
 
 
 REGIONS = '(?i)LM|PR|SI|VI'
-DISTANCES = '[2|3|4|6|10|12|20]00'
+DISTANCES = '[12]000|1200|[2346]00'
 DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
 YEAR = '20\d\d'
