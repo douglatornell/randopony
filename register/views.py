@@ -97,7 +97,7 @@ def registration_form(request, region, distance, date):
                 brevet_page_uri = '/'.join(
                     ('http:/',
                      request.META['HTTP_HOST'],
-                     '/register/%(region)s%(distance)s/%(date)s/' % vars()))
+                     'register/%(region)s%(distance)s/%(date)s/' % vars()))
                 mail.send_mail(
                     'Pre-registration Confirmation for %(brevet)s Brevet'
                     % vars(),
