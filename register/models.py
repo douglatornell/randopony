@@ -29,8 +29,8 @@ class Brevet(models.Model):
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
     distance = models.IntegerField(choices=DISTANCE_CHOICES)
     date = models.DateField()
-    route_name = models.CharField(max_length=50)
-    start_location = models.CharField(max_length=50)
+    route_name = models.CharField(max_length=100)
+    start_location = models.CharField(max_length=100)
     start_time = models.TimeField()
     organizer_email = models.EmailField()
     qual_info_question = models.TextField(
