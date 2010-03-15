@@ -116,9 +116,14 @@ def registration_form(request, region, distance, date):
                 # Save new rider pre-registration and send emails to
                 # rider and brevet organizer
                 new_rider.save()
+                try:
+                    host = request.META['HTTP_HOST']
+                except KeyError:
+                    # Workaround for tests where there is no HTTP_HOST
+                    # in the request header
+                    host = 'testserver'
                 brevet_page_uri = '/'.join(
-                    ('http:/',
-                     request.META['HTTP_HOST'],
+                    ('http:/', host,
                      'register/%(region)s%(distance)s/%(date)s/' % vars()))
                 mail.send_mail(
                     'Pre-registration Confirmation for %(brevet)s Brevet'

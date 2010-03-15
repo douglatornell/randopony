@@ -30,7 +30,7 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.failUnless(response.context['brevets'])
+        self.failUnless(response.context['regions'])
         self.failUnless(response.context['admin_email'])
 
 
@@ -45,11 +45,18 @@ class TestHomeView(django.test.TestCase):
         self.failUnless("What's up with the pony?" in response.content)
 
 
-    def test_home_brevet_list(self):
-        """home view renders brevets list
+    def test_home_regions_list(self):
+        """home view renders regions list
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
+        self.failUnless('Lower Mainland' in response.content)
+
+
+    def test_region_brevets_list(self):
+        """region_brevets view renders brevets list
+        """
+        response = self.client.get('/register/LM-brevets/')
         self.failUnless('LM300 01-May-2010' in response.content)
         self.failUnless('LM400 22-May-2010' in response.content)
 
@@ -273,7 +280,7 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'Hint')
 
 
-    def test_registration_form_captcha_answer_is_int(self):
+    def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
         response = self.client.post('/register/LM400/22May2010/form/',
@@ -371,7 +378,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'Doug Latornell has pre-registered for the LM300 01-May-2010 brevet'
             in mail.outbox[1].body)
         self.failUnless(
-            'has indicated that they are a club member' in mail.outbox[1].body)
+            'has indicated that zhe is a club member' in mail.outbox[1].body)
         self.failUnless(
             'please send email to %s' % settings.ADMINS[0][1]
             in mail.outbox[1].body)
@@ -392,7 +399,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'indicated that you are NOT a member' in mail.outbox[0].body)
         # Email to organizer
         self.failUnless(
-            'has indicated that they are NOT a club member'
+            'has indicated that zhe is NOT a club member'
             in mail.outbox[1].body)
         self.failUnless(
             'join beforehand, or at the start' in mail.outbox[1].body)
