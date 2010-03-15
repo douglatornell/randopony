@@ -1,4 +1,8 @@
-/* Styles for brevet page with pre-registered riders list */
+/* Styles for brevet pre-registration pages */
+.errorlist {
+    color: red;
+}
+
 .filler_img {
     width: 90%;
     margin-top: 20px;
