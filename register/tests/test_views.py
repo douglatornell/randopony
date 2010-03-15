@@ -51,6 +51,25 @@ class TestHomeView(django.test.TestCase):
         response = self.client.get(
             reverse('randopony.register.views.home'))
         self.assertTrue('Lower Mainland' in response.content)
+        self.assertFalse('Vancouver Island' in response.content)
+
+
+class TestRegionBrevetsView(django.test.TestCase):
+    fixtures = ['brevets']
+
+    def test_region_brevets_get(self):
+        """GET request for root page of register app works
+        """
+        response = self.client.get('/register/LM-brevets/')
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_region_brevets_context(self):
+        """home view has correct context
+        """
+        response = self.client.get('/register/LM-brevets/')
+        self.assertTrue(response.context['region'])
+        self.assertTrue(response.context['brevets'])
 
 
     def test_region_brevets_list(self):
