@@ -8,8 +8,6 @@ from datetime import datetime
 # Django:
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -18,14 +16,37 @@ import randopony.register.helpers as h
 import randopony.register.models as model
 
 
+REGIONS = dict(
+    LM='Lower Mainland',
+    PR='Peace Region',
+    SI='Southern Interior',
+    VI='Vancouver Island'
+)
+
+
 def home(request):
-    """Display the welcome information and list of brevets.
+    """Display the welcome information and list of regions in the sidebar.
     """
     brevet_list = model.Brevet.objects.all()
+    region_list = [
+        dict(abbrev=region, long_name=REGIONS[region]) for region
+        in sorted(list(set([brevet.region for brevet in brevet_list])))
+    ]
     admin_email = h.email2words(settings.ADMINS[0][1])
     return render_to_response(
         'derived/home/home.html',
-        {'brevets': brevet_list, 'admin_email': admin_email},
+        {'regions': region_list, 'admin_email': admin_email},
+        context_instance=RequestContext(request))
+
+
+def region_brevets(request, region):
+    """Display a region image and the list of brevets in the sidebar.
+    """
+    brevet_list = model.Brevet.objects.filter(region=region)
+    return render_to_response(
+        'derived/region_brevets/region_brevets.html',
+        {'region': dict(abbrev=region, long_name=REGIONS[region]),
+         'brevets': brevet_list},
         context_instance=RequestContext(request))
 
 
@@ -54,6 +75,7 @@ def brevet(request, region, distance, date, rider_id=None):
     return render_to_response(
         'derived/brevet/brevet.html',
         {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
+         'region': dict(abbrev=region, long_name=REGIONS[region]),
          'rider_email': rider_email,
          'duplicate_registration': duplicate_registration},
         context_instance=RequestContext(request))

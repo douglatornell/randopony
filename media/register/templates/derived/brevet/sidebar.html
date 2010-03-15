@@ -8,6 +8,14 @@
 </li>
 {% endblock %}
 
+{% block region-link %}
+<li>
+  <a href="{% url register.views.region_brevets region=region.abbrev %}">
+    {{ region.long_name }}
+  </a>
+</li>
+{% endblock %}
+
 {% block info-links %}
 <li>
   <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}" class="selected">

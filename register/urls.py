@@ -3,7 +3,7 @@
 :Author: Doug Latornell <djl@douglatornell.ca>
 :Created: 2009-12-05
 """
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import patterns
 
 
 REGIONS = '(?i)LM|PR|SI|VI'
@@ -14,6 +14,8 @@ YEAR = '20\d\d'
 
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
+    # Region brevet pages
+    (r'^(?P<region>(%(REGIONS)s))-brevets/$' % vars(), 'region_brevets'),
     # Brevet page with rider list
     (r'^(?P<region>(%(REGIONS)s))(?P<distance>%(DISTANCES)s)/'
       '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/$' % vars(),

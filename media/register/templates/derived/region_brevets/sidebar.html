@@ -1,0 +1,28 @@
+{% extends "base/sidebar.html" %}
+
+{% block home-link %}
+<li>
+  <a href="{% url register.views.home %}">
+    Home
+  </a>
+</li>
+{% endblock %}
+
+{% block region-link %}
+<li>
+  <a href="{% url register.views.region_brevets region=region.abbrev %}"
+     class="selected">
+    {{ region.long_name }}
+  </a>
+</li>
+{% endblock %}
+
+{% block brevet-list %}
+{% for brevet in brevets %}
+<li>
+  <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+    {{brevet}}
+  </a>
+</li>
+{% endfor %}
+{% endblock %}
