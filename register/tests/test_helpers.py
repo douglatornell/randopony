@@ -15,5 +15,5 @@ class TestHelpers(django.test.TestCase):
     def test_email2words(self):
         """email2words translates email address to words
         """
-        self.failUnlessEqual(
+        self.assertEqual(
             h.email2words('djl@example.bc.ca'), 'djl at example dot bc dot ca')

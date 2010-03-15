@@ -22,7 +22,7 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
     def test_home_context(self):
@@ -30,8 +30,8 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.failUnless(response.context['regions'])
-        self.failUnless(response.context['admin_email'])
+        self.assertTrue(response.context['regions'])
+        self.assertTrue(response.context['admin_email'])
 
 
     def test_home_base_sidebar(self):
@@ -39,10 +39,10 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.failUnless('Home' in response.content)
-        self.failUnless('randonneurs.bc.ca' in response.content)
-        self.failUnless('Info for Brevet Organizers' in response.content)
-        self.failUnless("What's up with the pony?" in response.content)
+        self.assertTrue('Home' in response.content)
+        self.assertTrue('randonneurs.bc.ca' in response.content)
+        self.assertTrue('Info for Brevet Organizers' in response.content)
+        self.assertTrue("What's up with the pony?" in response.content)
 
 
     def test_home_regions_list(self):
@@ -50,15 +50,15 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.failUnless('Lower Mainland' in response.content)
+        self.assertTrue('Lower Mainland' in response.content)
 
 
     def test_region_brevets_list(self):
         """region_brevets view renders brevets list
         """
         response = self.client.get('/register/LM-brevets/')
-        self.failUnless('LM300 01-May-2010' in response.content)
-        self.failUnless('LM400 22-May-2010' in response.content)
+        self.assertTrue('LM300 01-May-2010' in response.content)
+        self.assertTrue('LM400 22-May-2010' in response.content)
 
 
 class TestBrevetView(django.test.TestCase):
@@ -70,17 +70,17 @@ class TestBrevetView(django.test.TestCase):
         response = self.client.get(
             '/register/',
             {'region': 'LM', 'distance': 300, 'date':'01May2010'})
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
         response = self.client.get('/register/LM300/01May2010/')
-        self.failUnless('LM300 01-May-2010' in response.content)
-        self.failUnless('Register' in response.content)
-        self.failUnless('Event Entry Form (PDF)' in response.content)
-        self.failUnless('Club Membership Form (PDF)' in response.content)
+        self.assertTrue('LM300 01-May-2010' in response.content)
+        self.assertTrue('Register' in response.content)
+        self.assertTrue('Event Entry Form (PDF)' in response.content)
+        self.assertTrue('Club Membership Form (PDF)' in response.content)
 
 
     def test_brevet_page_no_riders(self):
@@ -112,7 +112,7 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct sidebar
         """
         response = self.client.get('/register/LM400/22May2010/1/')
-        self.failUnless('for this brevet. Cool!' in response.content)
+        self.assertTrue('for this brevet. Cool!' in response.content)
 
 
 class TestRegistrationFormView(django.test.TestCase):
@@ -122,37 +122,37 @@ class TestRegistrationFormView(django.test.TestCase):
         """GET request for registration from page works
         """
         response = self.client.get('/register/LM400/22May2010/form/')
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
     def test_brevet_registration_form_sidebar(self):
         """registration form view renders correct sidebar
         """
         response = self.client.get('/register/LM400/22May2010/')
-        self.failUnless('LM400 22-May-2010' in response.content)
-        self.failUnless('Register' in response.content)
-        self.failUnless('Event Entry Form (PDF)' in response.content)
-        self.failUnless('Club Membership Form (PDF)' in response.content)
+        self.assertTrue('LM400 22-May-2010' in response.content)
+        self.assertTrue('Register' in response.content)
+        self.assertTrue('Event Entry Form (PDF)' in response.content)
+        self.assertTrue('Club Membership Form (PDF)' in response.content)
 
 
     def test_brevet_registration_form_body_with_qual_info(self):
         """registration form view renders page with qual info question
         """
         response = self.client.get('/register/LM400/22May2010/form/')
-        self.failUnless('Manning Park' in response.content)
-        self.failUnless('Name:' in response.content)
-        self.failUnless('Email:' in response.content)
-        self.failUnless('Club member?' in response.content)
-        self.failUnless(
+        self.assertTrue('Manning Park' in response.content)
+        self.assertTrue('Name:' in response.content)
+        self.assertTrue('Email:' in response.content)
+        self.assertTrue('Club member?' in response.content)
+        self.assertTrue(
             'recent 300 km brevet; e.g. LM300 1-May-' in response.content)
-        self.failUnless('Qualifying info:' in response.content)
+        self.assertTrue('Qualifying info:' in response.content)
 
 
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
         response = self.client.get('/register/LM300/01May2010/form/')
-        self.failIf('Qualifying info:' in response.content)
+        self.assertFalse('Qualifying info:' in response.content)
 
 
     def test_brevet_registration_form_has_captcha(self):
@@ -349,37 +349,37 @@ class TestRegistrationFunction(django.test.TestCase):
                           'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
-        self.failUnlessEqual(
+        self.assertEqual(
             mail.outbox[0].subject,
             'Pre-registration Confirmation for LM300 01-May-2010 Brevet')
-        self.failUnlessEqual(mail.outbox[0].to, ['djl@example.com'])
-        self.failUnlessEqual(
+        self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
+        self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
-        self.failUnless(
+        self.assertTrue(
             'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
             in mail.outbox[0].body)
-        self.failUnless(
+        self.assertTrue(
             'http://testserver/register/LM300/01May2010/'
             in mail.outbox[0].body)
-        self.failUnless(
+        self.assertTrue(
             'print out the event waiver form' in mail.outbox[0].body)
-        self.failUnless(
+        self.assertTrue(
             'auto-generated email, but you can reply to it '
             'to contact the brevet organizer'
             in mail.outbox[0].body)
         # Email to organizer
-        self.failUnlessEqual(
+        self.assertEqual(
             mail.outbox[1].subject,
             'Doug Latornell has Pre-registered for the LM300 01-May-2010')
-        self.failUnlessEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
-        self.failUnlessEqual(
+        self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
+        self.assertEqual(
             mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
-        self.failUnless(
+        self.assertTrue(
             'Doug Latornell has pre-registered for the LM300 01-May-2010 brevet'
             in mail.outbox[1].body)
-        self.failUnless(
+        self.assertTrue(
             'has indicated that zhe is a club member' in mail.outbox[1].body)
-        self.failUnless(
+        self.assertTrue(
             'please send email to %s' % settings.ADMINS[0][1]
             in mail.outbox[1].body)
 
@@ -394,14 +394,14 @@ class TestRegistrationFunction(django.test.TestCase):
                           'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
-        self.failUnlessEqual(mail.outbox[0].to, ['fibber@example.com'])
-        self.failUnless(
+        self.assertEqual(mail.outbox[0].to, ['fibber@example.com'])
+        self.assertTrue(
             'indicated that you are NOT a member' in mail.outbox[0].body)
         # Email to organizer
-        self.failUnless(
+        self.assertTrue(
             'has indicated that zhe is NOT a club member'
             in mail.outbox[1].body)
-        self.failUnless(
+        self.assertTrue(
             'join beforehand, or at the start' in mail.outbox[1].body)
          
 
@@ -416,17 +416,17 @@ class TestRegistrationFunction(django.test.TestCase):
                           'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
-        self.failUnlessEqual(
+        self.assertEqual(
             mail.outbox[0].subject,
             'Pre-registration Confirmation for LM400 22-May-2010 Brevet')
-        self.failUnless(
+        self.assertTrue(
             'http://testserver/register/LM400/22May2010/'
             in mail.outbox[0].body)
         # Email to organizer
-        self.failUnlessEqual(
+        self.assertEqual(
             mail.outbox[1].subject,
             'Fibber McGee has Pre-registered for the LM400 22-May-2010')
-        self.failUnless(
+        self.assertTrue(
             'listed LM300 as their qualification' in mail.outbox[1].body)
 
 
@@ -436,7 +436,7 @@ class TestAboutPonyView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.about_pony'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
     def test_about_pony_sidebar(self):
@@ -444,10 +444,10 @@ class TestAboutPonyView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.about_pony'))
-        self.failUnless('Home' in response.content)
-        self.failUnless('randonneurs.bc.ca' in response.content)
-        self.failUnless('Info for Brevet Organizers' in response.content)
-        self.failUnless("What's up with the pony?" in response.content)
+        self.assertTrue('Home' in response.content)
+        self.assertTrue('randonneurs.bc.ca' in response.content)
+        self.assertTrue('Info for Brevet Organizers' in response.content)
+        self.assertTrue("What's up with the pony?" in response.content)
 
 
 class TestOrganizerInfoView(django.test.TestCase):
@@ -456,7 +456,7 @@ class TestOrganizerInfoView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.organizer_info'))
-        self.failUnlessEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
 
 
     def test_organizer_info_sidebar(self):
@@ -464,7 +464,7 @@ class TestOrganizerInfoView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.organizer_info'))
-        self.failUnless('Home' in response.content)
-        self.failUnless('randonneurs.bc.ca' in response.content)
-        self.failUnless('Info for Brevet Organizers' in response.content)
-        self.failUnless("What's up with the pony?" in response.content)
+        self.assertTrue('Home' in response.content)
+        self.assertTrue('randonneurs.bc.ca' in response.content)
+        self.assertTrue('Info for Brevet Organizers' in response.content)
+        self.assertTrue("What's up with the pony?" in response.content)
