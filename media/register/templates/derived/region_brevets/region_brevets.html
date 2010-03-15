@@ -1,0 +1,21 @@
+{% extends "derived/region_brevets/sidebar.html" %}
+
+{% block title %}RandoPony::{{ region.long_name }}{% endblock %}
+
+{% block page-subtitle %}{{ region.long_name }} Brevets{% endblock %}
+
+{% block content %}
+<p>  Please click the tab on the right side of the page for the brevet
+  that you want to pre-register for.
+</p>
+
+{% ifequal region.abbrev "LM" %}
+<img class="filler_img" src="{{ MEDIA_URL }}register/images/LowerMainlandQuartet.jpg"
+     alt="Harrison Hotspings Road" />
+  {% endifequal %}
+
+{% ifequal region.abbrev "VI" %}
+<img class="filler_img" src="{{ MEDIA_URL }}register/images/VanIsDuo.jpg"
+     alt="Van Is Duo" />
+  {% endifequal %}
+{% endblock %}
