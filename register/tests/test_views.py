@@ -4,7 +4,7 @@
 :Created: 2009-12-06
 """
 # Standard library:
-from datetime import datetime
+from datetime import date, datetime, timedelta
 # Django:
 import django.test
 from django.conf import settings
@@ -57,6 +57,13 @@ class TestHomeView(django.test.TestCase):
 class TestRegionBrevetsView(django.test.TestCase):
     fixtures = ['brevets']
 
+    def setUp(self):
+        for brevet in model.Brevet.objects.all():
+            today = date.today()
+            if brevet.date <= today:
+                brevet.date = brevet.date.replace(year=today.year + 1)
+            brevet.save()
+
     def test_region_brevets_get(self):
         """GET request for root page of register app works
         """
@@ -76,12 +83,35 @@ class TestRegionBrevetsView(django.test.TestCase):
         """region_brevets view renders brevets list
         """
         response = self.client.get('/register/LM-brevets/')
-        self.assertTrue('LM300 01-May-2010' in response.content)
-        self.assertTrue('LM400 22-May-2010' in response.content)
+        for brevet in model.Brevet.objects.all():
+            self.assertTrue(unicode(brevet) in response.content)
+
+
+    def test_region_brevets_past_events(self):
+        """region_brevets view excludes past events correctly
+        """
+        today = date.today()
+        brevets = model.Brevet.objects.all()
+        recent_brevet = brevets[0]
+        recent_brevet.date = today - timedelta(days=2)
+        recent_brevet.save()
+        older_brevet = brevets[1]
+        older_brevet.date = today - timedelta(days=10)
+        older_brevet.save()
+        response = self.client.get('/register/LM-brevets/')
+        self.assertTrue(unicode(recent_brevet) in response.content)
+        self.assertFalse(unicode(older_brevet) in response.content)
 
 
 class TestBrevetView(django.test.TestCase):
     fixtures = ['brevets', 'riders']
+
+    def setUp(self):
+        for brevet in model.Brevet.objects.all():
+            today = date.today()
+            if brevet.date <= today:
+                brevet.date = brevet.date.replace(year=today.year + 1)
+            brevet.save()
 
     def test_brevet_get(self):
         """GET request for brevet page works
@@ -100,6 +130,16 @@ class TestBrevetView(django.test.TestCase):
         self.assertTrue('Register' in response.content)
         self.assertTrue('Event Entry Form (PDF)' in response.content)
         self.assertTrue('Club Membership Form (PDF)' in response.content)
+
+
+    def test_past_brevet_page(self):
+        """page for brevet >7 days ago is pointer to club site
+        """
+        response = self.client.get('/register/LM400/05May2009/')
+        self.assertContains(
+            response, 'brevet is over, and the RandoPony has moved on!')
+        self.assertContains(
+            response, 'http://randonneurs.bc.ca/results/09_times/09_times.html')
 
 
     def test_brevet_page_no_riders(self):
