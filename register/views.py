@@ -4,10 +4,11 @@
 :Created: 2009-12-05
 """
 # Standard library:
-from datetime import datetime
+from datetime import datetime, timedelta
 # Django:
 from django.conf import settings
 from django.core import mail
+from django.http import Http404
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -42,7 +43,11 @@ def home(request):
 def region_brevets(request, region):
     """Display a region image and the list of brevets in the sidebar.
     """
-    brevet_list = model.Brevet.objects.filter(region=region)
+    brevet_list = model.Brevet.objects.filter(
+            region=region
+        ).exclude(
+            date__lt=(datetime.today().date() - timedelta(days=7))
+        )
     return render_to_response(
         'derived/region_brevets/region_brevets.html',
         {'region': dict(abbrev=region, long_name=REGIONS[region]),
@@ -55,8 +60,21 @@ def brevet(request, region, distance, date, rider_id=None):
     sometimes the registration confirmation, or duplicate registration
     flash message.
     """
-    # Get the brevet instance to render
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
+    # Display a page with a link to the year's results on the club
+    # site for brevets more than 7 days in the past
+    if brevet_date < datetime.today().date() - timedelta(days=7):
+        date = '%s-%s-%s' % (date[:2], date[2:5], date[-4:])
+        year_digits = date[-2:]
+        results_url = (
+            'http://randonneurs.bc.ca/results/%(year_digits)s_times/'
+            '%(year_digits)s_times.html' % vars())
+        return render_to_response(
+            'derived/home/past_brevet.html',
+            {'brevet': '%(region)s%(distance)s %(date)s' % vars(),
+             'results_url': results_url},
+            context_instance=RequestContext(request))
+    # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
         region=region, distance=distance, date=brevet_date)
     # Get the rider instance to use for the confirmation message, if
