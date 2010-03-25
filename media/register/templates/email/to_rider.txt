@@ -1,9 +1,11 @@
-You have pre-registered for the BC Randonneurs {{brevet}} brevet. Your name should appear on the list at {{brevet_page_uri}}.
+You have pre-registered for the BC Randonneurs {{ brevet }} brevet. Your name should appear on the list at {{ brevet_page_uri }}.
 
 This is an auto-generated email, but you can reply to it to contact the brevet organizer. 
 
 You can print out the event waiver form from the club web site  <http://www.randonneurs.bc.ca/introduction/eventform.pdf>, fill it out, and bring it with you to the start to save time and make the organizers like you even more.
 
-{% if not rider.club_member %}You have indicated that you are NOT a member of the BC Randonneurs. You must be a member of the club to ride this brevet. You print out the club membership form  from the club web site <http://www.randonneurs.bc.ca/introduction/2009_membership-and-waiver.pdf>, fill it out, and bring it and the membership fee with you to the start.{% endif %}
+{% if not rider.club_member %}
+You have indicated that you are NOT a member of the BC Randonneurs. You must be a member of the club to ride this brevet. You print out the club membership form  from the club web site <http://www.randonneurs.bc.ca/introduction/2010_membership-and-waiver.pdf>, fill it out, and bring it and the membership fee with you to the start.
+{% endif %}
 
 Have a great ride!
