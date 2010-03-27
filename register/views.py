@@ -74,6 +74,11 @@ def brevet(request, region, distance, date, rider_id=None):
             {'brevet': '%(region)s%(distance)s %(date)s' % vars(),
              'results_url': results_url},
             context_instance=RequestContext(request))
+    # Registration for brevets closes at noon on the day before the event
+    registration_closed = False
+    if (brevet_date - datetime.today().date() < timedelta(days=2)
+        and datetime.now().hour > 12):
+        registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
         region=region, distance=distance, date=brevet_date)
@@ -95,7 +100,8 @@ def brevet(request, region, distance, date, rider_id=None):
         {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
          'region': dict(abbrev=region, long_name=REGIONS[region]),
          'rider_email': rider_email,
-         'duplicate_registration': duplicate_registration},
+         'duplicate_registration': duplicate_registration,
+         'registration_closed': registration_closed},
         context_instance=RequestContext(request))
 
 

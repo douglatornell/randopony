@@ -23,7 +23,7 @@
   {% ifequal brevet.region "VI" %}
   Vancouver Island
   {% endifequal %}
-  {{brevet.distance}}
+  {{ brevet.distance }}
 </h3>
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
@@ -33,7 +33,20 @@ at {{brevet.start_time|time:"H:i"}}</p>
 
 <p><strong>Start Location:</strong> {{brevet.start_location}}</p>
 
-{% if rider%}
+{% if registration_closed %}
+<div id="registration-closed">
+  <p>Pre-registration for this brevet is closed, but you can still
+  print out the <a
+   href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
+  title="BC Randonneurs Event Waiver Form">event waiver form</a> from
+  the club web site, fill it out, and bring it with you to the
+  start.</p>
+
+  <p>See you on the road!</p>
+</div>
+{% endif %}
+
+{% if rider %}
 {% if not duplicate_registration %}
 <div id="confirmation">
   <p>You have pre-registered for this brevet. Cool! Your name should be
@@ -52,7 +65,7 @@ at {{brevet.start_time|time:"H:i"}}</p>
   <p>You have indicated that you are <strong>NOT</strong> a member of the
   BC Randonneurs. You must be a member of the club to ride this
   brevet. You print out the
-  <a href="http://www.randonneurs.bc.ca/introduction/2009_membership-and-waiver.pdf" title="BC Randonneurs Club Membership Form">club membership form</a>
+  <a href="http://www.randonneurs.bc.ca/introduction/2010_membership-and-waiver.pdf" title="BC Randonneurs Club Membership Form">club membership form</a>
   from the club web site, fill it out, and bring it and the membership
   fee with you to the start.</p>
 
