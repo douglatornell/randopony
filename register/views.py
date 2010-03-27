@@ -79,7 +79,7 @@ def brevet(request, region, distance, date, rider_id=None):
     # hours ahead of Pacific time.
     registration_closed = False
     if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour >= 10):
+        and datetime.now().hour >= 14):
         registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
@@ -115,7 +115,7 @@ def registration_form(request, region, distance, date):
     # event. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.
     if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour >= 10):
+        and datetime.now().hour >= 14):
         raise Http404
     # Get the brevet instance that the rider is registering for
     brevet = model.Brevet.objects.get(region=region, distance=distance,
