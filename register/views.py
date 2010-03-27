@@ -77,7 +77,7 @@ def brevet(request, region, distance, date, rider_id=None):
     # Registration for brevets closes at noon on the day before the event
     registration_closed = False
     if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour > 12):
+        and datetime.now().hour >= 12):
         registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
