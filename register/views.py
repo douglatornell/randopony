@@ -74,10 +74,12 @@ def brevet(request, region, distance, date, rider_id=None):
             {'brevet': '%(region)s%(distance)s %(date)s' % vars(),
              'results_url': results_url},
             context_instance=RequestContext(request))
-    # Registration for brevets closes at noon on the day before the event
+    # Registration for brevets closes at noon on the day before the
+    # event. Note that the webfaction server hosting randopony is 2
+    # hours ahead of Pacific time.
     registration_closed = False
     if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour >= 12):
+        and datetime.now().hour >= 10):
         registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
@@ -108,8 +110,14 @@ def brevet(request, region, distance, date, rider_id=None):
 def registration_form(request, region, distance, date):
     """Brevet registration form page.
     """
-    # Get the brevet instance that the rider is registering for
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
+    # Registration for brevets closes at noon on the day before the
+    # event. Note that the webfaction server hosting randopony is 2
+    # hours ahead of Pacific time.
+    if (brevet_date - datetime.today().date() < timedelta(days=2)
+        and datetime.now().hour >= 10):
+        raise Http404
+    # Get the brevet instance that the rider is registering for
     brevet = model.Brevet.objects.get(region=region, distance=distance,
                                 date=brevet_date)
     # Get the CAPTCHA question from the settings
