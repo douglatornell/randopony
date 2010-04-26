@@ -31,7 +31,7 @@
 <p><strong>Start:</strong> {{brevet.date|date:"D d-M-Y"}}
 at {{brevet.start_time|time:"H:i"}}</p>
 
-<p><strong>Start Location:</strong> {{brevet.start_location}}</p>
+<p><strong>Start Location:</strong> {{ brevet.start_location }}</p>
 
 {% if registration_closed %}
 <div id="registration-closed">
@@ -53,7 +53,7 @@ at {{brevet.start_time|time:"H:i"}}</p>
   on the list below.</p>
 
   <p>A confirmation email has been sent to you at
-  <kbd>{{rider_email}}</kbd>, and to the brevet organizer.</p>
+  <kbd>{{ rider_email }}</kbd>, and to the brevet organizer.</p>
 
   <p>You can print out the
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
@@ -76,8 +76,8 @@ at {{brevet.start_time|time:"H:i"}}</p>
 
 {% if duplicate_registration %}
 <div id="duplicate_registration">
-  <p>Hmm... Someone using the name <kbd>{{rider.name}}</kbd> and the
-  email address <kbd>{{rider_email}}</kbd> has already pre-registered
+  <p>Hmm... Someone using the name <kbd>{{ rider.name }}</kbd> and the
+  email address <kbd>{{ rider_email }}</kbd> has already pre-registered
   for this brevet. Are you sure that you are registering for the
   brevet you intended to?</p>
 
@@ -92,14 +92,14 @@ at {{brevet.start_time|time:"H:i"}}</p>
   <thead>
     <tr>
       <th>
-	{{rider_list|length}} Pre-registered Rider{{rider_list|length|pluralize}}
+	    {{ rider_list|length }} Pre-registered Rider{{ rider_list|length|pluralize }}
       </th>
     </tr>
   </thead>
   <tbody>
     {% for rider in rider_list %}
     <tr>
-      <td>{{rider.name}}</td>
+      <td>{{ rider.name }}</td>
     </tr>
     {% endfor %}
   </tbody>
@@ -111,6 +111,8 @@ Be the first!
 </a>
 {% endif %}
 
+{% if show_filler_photo %}
 <img class="filler_img" src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
      alt="Sign-on" />
+{% endif %}
 {% endblock %}

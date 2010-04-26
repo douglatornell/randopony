@@ -97,11 +97,13 @@ def brevet(request, region, distance, date, rider_id=None):
     rider_list = model.Rider.objects.filter(
         brevet__region=region, brevet__distance=distance,
         brevet__date=brevet_date)
+    show_filler_photo = True if len(rider_list) < 15 else False
     return render_to_response(
         'derived/brevet/brevet.html',
         {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
          'region': dict(abbrev=region, long_name=REGIONS[region]),
          'rider_email': rider_email,
+         'show_filler_photo': show_filler_photo,
          'duplicate_registration': duplicate_registration,
          'registration_closed': registration_closed},
         context_instance=RequestContext(request))
