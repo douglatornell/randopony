@@ -4,7 +4,7 @@
 :Created: 2009-12-05
 """
 # Standard library:
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 # Django:
 from django.conf import settings
 from django.core import mail
@@ -78,8 +78,8 @@ def brevet(request, region, distance, date, rider_id=None):
     # event. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.
     registration_closed = False
-    if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour >= 14):
+    if (datetime.now() >= datetime.combine(brevet_date - timedelta(days=1),
+                                           time(14, 0))):
         registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
