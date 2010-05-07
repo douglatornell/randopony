@@ -84,6 +84,13 @@ def brevet(request, region, distance, date, rider_id=None):
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
         region=region, distance=distance, date=brevet_date)
+    # Suppress the registration closed message 1 hour after the brevet
+    # starts. Note that the webfaction server hosting randopony is 2
+    # hours ahead of Pacific time.
+    brevet_started = False
+    if (datetime.now() >= datetime.combine(
+            brevet_date, brevet.start_time) + timedelta(hours=3)):
+        brevet_started = True
     # Get the rider instance to use for the confirmation message, if
     # applicable
     if rider_id is not None:
@@ -105,7 +112,8 @@ def brevet(request, region, distance, date, rider_id=None):
          'rider_email': rider_email,
          'show_filler_photo': show_filler_photo,
          'duplicate_registration': duplicate_registration,
-         'registration_closed': registration_closed},
+         'registration_closed': registration_closed,
+         'brevet_started': brevet_started},
         context_instance=RequestContext(request))
 
 
