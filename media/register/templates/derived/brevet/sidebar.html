@@ -29,6 +29,7 @@
   </a>
 </li>
 {% endif %}
+{% if not brevet_started %}
 <li>
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf">
     Event Entry Form (PDF)
@@ -39,4 +40,5 @@
     Club Membership Form (PDF)
   </a>
 </li>
+{% endif %}
 {% endblock %}
