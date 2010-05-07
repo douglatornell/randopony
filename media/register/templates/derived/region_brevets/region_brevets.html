@@ -5,17 +5,24 @@
 {% block page-subtitle %}{{ region.long_name }} Brevets{% endblock %}
 
 {% block content %}
-<p>  Please click the tab on the right side of the page for the brevet
+<p>
+  Please click the tab on the right side of the page for the brevet
   that you want to pre-register for.
 </p>
 
 {% ifequal region.abbrev "LM" %}
 <img class="filler_img" src="{{ MEDIA_URL }}register/images/LowerMainlandQuartet.jpg"
      alt="Harrison Hotspings Road" />
-  {% endifequal %}
+{% endifequal %}
 
 {% ifequal region.abbrev "VI" %}
 <img class="filler_img" src="{{ MEDIA_URL }}register/images/VanIsDuo.jpg"
      alt="Van Is Duo" />
-  {% endifequal %}
+{% endifequal %}
+
+{% ifequal region.abbrev "SI" %}
+<img class="filler_img" src="{{ MEDIA_URL }}register/images/SouthIntLivestock.jpg"
+     alt="Southern Interior Peloton" />
+{% endifequal %}
+
 {% endblock %}
