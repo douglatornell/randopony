@@ -67,6 +67,22 @@ Configure WebFaction to proxy requests to the Django app, and static media apps:
    * :kbd:`admin_media` mounted at :kbd:`/media/admin`
 
 
+Install the South Django Database Migration Tool
+================================================
+
+#. Put the :kbd:`randopony` Python library directory on the :envvar:`PYTHONPATH`:
+
+    .. code-block:: sh
+    
+        export PYTHONPATH=$HOME/webapps/randopony/lib/python2.5
+
+#. Install South :
+
+    .. code-block:: sh
+    
+        easy_install-2.5 --install-dir=$HOME/webapps/randopony/lib/python2.5/ --script-dir $HOME/webapps/bin south
+
+
 Create a Django Settings Module
 ===============================
 
@@ -182,6 +198,19 @@ Initialize the Database and Start the App
       cp webfaction-settings.py settings.py
       python2.5 manage.py syncdb
       ...
+
+#. Use South to apply all of the database migrations necessary to
+    bring the database into sync with the current version of
+    :kbd:`randopony`:
+
+   .. code-block: sh
+      
+      python2.5 manage.py migrate register
+
+#. Delete the  temporary copy of :file:`webfaction-settings.py`:
+
+   .. code-block: sh
+      
       rm settings.py*
 
 #. Restart Apache:
