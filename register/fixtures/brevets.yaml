@@ -6,11 +6,12 @@
     date: 2010-05-01
     distance: 300
     organizer_email: pumpkinrider@example.com
-    qual_info_question: ''
+    info_question: ''
     region: LM
     route_name: Pemberton or Bust
     start_location: Who knows?
     start_time: '06:00'
+    alt_start_time: null
 
 - model: register.brevet
   pk: 2
@@ -18,11 +19,12 @@
     date: 2010-05-22
     distance: 400
     organizer_email: djl@douglatornell.ca
-    qual_info_question: Please give the location and date of your most recent 300 km brevet; e.g. LM300 1-May-2010
+    info_question: Please give the location and date of your most recent 300 km brevet; e.g. LM300 1-May-2010
     region: LM
     route_name: Manning Park
     start_location: New Westminister
-    start_time: '22:00'
+    start_time: '212:00'
+    alt_start_time: null
 
 - model: register.brevet
   pk: 3
@@ -30,8 +32,22 @@
     date: 2010-04-17
     distance: 200
     organizer_email: manfred@example.com
-    qual_info_question: ''
+    info_question: ''
     region: LM
     route_name: Something
     start_location: Who knows?
     start_time: '07:00'
+    alt_start_time: null
+
+- model: register.brevet
+  pk: 4
+  fields:
+    date: 2010-06-26
+    distance: 1000
+    organizer_email: alex@example.com
+    info_question: 'There are 2 start times for this brevet: 06:00 or 20:00. Please indicate which start you will use. (You can also propose an different start time, but you will have to "sell" it to the organizers and other riders.)'
+    region: LM
+    route_name: Bella Coola
+    start_location: Broadway & Alma St, Vancouver
+    start_time: '06:00'
+    alt_start_time: '20:00'

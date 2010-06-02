@@ -32,9 +32,10 @@ class Brevet(models.Model):
     route_name = models.CharField(max_length=100)
     start_location = models.CharField(max_length=100)
     start_time = models.TimeField()
+    alt_start_time = models.TimeField('alternate start time', blank=True, null=True)
     organizer_email = models.EmailField()
-    qual_info_question = models.TextField(
-        "qualifying info question", blank=True,
+    info_question = models.TextField(
+        "brevet info question", blank=True,
         help_text='Optional question that will appear on the '
                   'pre-registration form')
 
@@ -52,8 +53,8 @@ class Rider(models.Model):
     name = models.CharField(max_length=30)
     email = models.EmailField()
     club_member = models.BooleanField('club member?', default=False)
-    qual_info = models.CharField(
-        'qualifying info', max_length=100, blank=True)
+    info_answer = models.CharField(
+        'info answer', max_length=100, blank=True)
     brevet = models.ForeignKey(Brevet)
 
     def __unicode__(self):
@@ -71,7 +72,7 @@ class BaseRiderForm(forms.ModelForm):
     captcha = forms.IntegerField()
 
     def clean_captcha(self):
-        """Vaalidate the CAPTCHA answer.
+        """Validate the CAPTCHA answer.
         """
         answer = self.cleaned_data['captcha']
         if answer != settings.REGISTRATION_FORM_CAPTCHA_ANSWER:
@@ -86,7 +87,7 @@ class RiderForm(BaseRiderForm):
         """Make qualifying info a required field.
         """
         super(RiderForm, self).__init__(*args, **kwargs)
-        self.fields['qual_info'].required = True
+        self.fields['info_answer'].required = True
 
 
     class Meta:
@@ -97,4 +98,4 @@ class RiderForm(BaseRiderForm):
 class RiderFormWithoutQualification(BaseRiderForm):
     class Meta:
         model = Rider
-        exclude = ('brevet', 'qual_info')
+        exclude = ('brevet', 'info_answer')
