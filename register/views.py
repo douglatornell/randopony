@@ -128,12 +128,12 @@ def registration_form(request, region, distance, date):
         and datetime.now().hour >= 14):
         raise Http404
     # Get the brevet instance that the rider is registering for
-    brevet = model.Brevet.objects.get(region=region, distance=distance,
-                                date=brevet_date)
+    brevet = model.Brevet.objects.get(
+        region=region, distance=distance, date=brevet_date)
     # Get the CAPTCHA question from the settings
     captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     # Choose the appropriate registration form class
-    if brevet.qual_info_question:
+    if brevet.info_question:
         form_class = model.RiderForm
     else:
         form_class = model.RiderFormWithoutQualification

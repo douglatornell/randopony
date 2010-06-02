@@ -398,7 +398,7 @@ class TestRegistrationFunction(django.test.TestCase):
             response, 'You must be a member of the club to ride')
 
 
-    def test_registration_form_sends_emails_to_club_member(self):
+    def test_registration_form_sends_email_to_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
         self.client.post('/register/LM300/01May2010/form/',
@@ -443,7 +443,7 @@ class TestRegistrationFunction(django.test.TestCase):
             in mail.outbox[1].body)
 
 
-    def test_registration_form_sends_emails_to_non_member(self):
+    def test_registration_form_sends_email_to_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
         self.client.post('/register/LM300/01May2010/form/',
@@ -464,7 +464,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'join beforehand, or at the start' in mail.outbox[1].body)
          
 
-    def test_registration_form_sends_emails_with_qualifying_info(self):
+    def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
         """
         self.client.post('/register/LM400/22May2010/form/',

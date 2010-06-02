@@ -15,8 +15,8 @@ class BrevetAdmin(admin.ModelAdmin):
     # Set the grouping and order of the fields in the edit form
     fieldsets = [
         (None, {'fields': ['region', 'distance', 'date', 'route_name',
-                           'start_location', 'start_time', 
-                           'organizer_email','qual_info_question' ]}),
+                           'start_location', 'start_time',  'alt_start_time',
+                           'organizer_email','info_question' ]}),
     ]
     # Display the brevets distance choices as radio buttons instead of
     # a select list
@@ -34,7 +34,7 @@ class RiderAdmin(admin.ModelAdmin):
     # Set the grouping and order of the fields in the edit form
     fieldsets = [
         (None, {'fields': ['brevet', 'name', 'email']}),
-        ('Qualifying info', {'fields': ['club_member', 'qual_info']})
+        ('Qualifying info', {'fields': ['club_member', 'info_answer']})
     ]
 
 

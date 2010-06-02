@@ -28,8 +28,12 @@
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
-<p><strong>Start:</strong> {{brevet.date|date:"D d-M-Y"}}
-at {{brevet.start_time|time:"H:i"}}</p>
+<p><strong>Start:</strong> {{ brevet.date|date:"D d-M-Y" }}
+at {{ brevet.start_time|time:"H:i" }}
+{% if brevet.alt_start_time %}
+or {{ brevet.alt_start_time|time:"H:i" }}
+{% endif %}
+</p>
 
 <p><strong>Start Location:</strong> {{ brevet.start_location }}</p>
 

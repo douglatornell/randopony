@@ -25,33 +25,33 @@
 
 <form action="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}"
       method="POST">
-  {{form.name.errors}}
+  {{ form.name.errors }}
   <p>
     <label for="id_name">Name:</label>
-    {{form.name}}
+    {{ form.name }}
   </p>
-  {{form.email.errors}}
+  {{ form.email.errors }}
   <p>
     <label for="id_email">Email:</label>
-    {{form.email}}
+    {{ form.email }}
   </p>
-  {{form.club_member.errors}}
+  {{ form.club_member.errors }}
   <p>
     <label for="id_club_member">Club member?</label>
-    {{form.club_member}}
+    {{ form.club_member }}
   </p>
-  {% if brevet.qual_info_question %}
+  {% if brevet.info_question %}
   <p>
-    {{brevet.qual_info_question}}<br />
-    {{form.qual_info.errors}}
-    <label for="id_qual_info">Qualifying info:</label>
-    {{form.qual_info}}
+    {{ brevet.info_question }}<br />
+    {{ form.info_answer.errors }}
+    <label for="id_info_answer">Brevet info:</label>
+    {{ form.info_answer }}
   </p>
   {% endif %}
  <p>
-    {{captcha_question}}
-    {{form.captcha.errors}}
-    {{form.captcha}}
+    {{ captcha_question }}
+    {{ form.captcha.errors }}
+    {{ form.captcha }}
     {% if form.captcha.errors %}
     <a href="http://www.randonneurs.bc.ca/recbook1/sr_arc.html">Hint</a>
     {% endif %}
