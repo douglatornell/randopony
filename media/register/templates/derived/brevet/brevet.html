@@ -95,7 +95,7 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 <table>
   <thead>
     <tr>
-      <th>
+      <th colspan=2>
 	    {{ rider_list|length }} Pre-registered Rider{{ rider_list|length|pluralize }}
       </th>
     </tr>
@@ -104,6 +104,9 @@ or {{ brevet.alt_start_time|time:"H:i" }}
     {% for rider in rider_list %}
     <tr>
       <td>{{ rider.name }}</td>
+      {% if brevet.alt_start_time %}
+      <td>{{ rider.info_answer }}</td>
+      {% endif %}
     </tr>
     {% endfor %}
   </tbody>
