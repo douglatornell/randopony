@@ -3,10 +3,13 @@
 :Author: Doug Latornell <djl@douglatornell.ca>
 :Created: 2009-12-05
 """
+# Django:
 from django.conf.urls.defaults import patterns
+# Application:
+import randopony.register.models as model
 
 
-REGIONS = '(?i)LM|PR|SI|VI'
+REGIONS = '(?i)%s' % '|'.join(model.REGIONS.keys())
 DISTANCES = '[12]000|1200|[2346]00'
 DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'

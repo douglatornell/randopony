@@ -9,13 +9,19 @@ from django.db import models
 from django.forms.util import ErrorList
 
 
+REGIONS = dict(
+    LM='Lower Mainland',
+    PR='Peace Region',
+    SI='Southern Interior',
+    SW='Super Week',
+    VI='Vancouver Island'
+)
+
+
 class Brevet(models.Model):
-    REGION_CHOICES = (
-        ('LM', 'Lower Mainland'),
-        ('PR', 'Peace Region'),
-        ('SI', 'Southern Interior'),
-        ('VI', 'Vancouver Island'),
-    )
+    REGION_CHOICES = [
+        (key, REGIONS[key]) for key in sorted(REGIONS.keys())
+    ]
     DISTANCE_CHOICES = (
         (200, '200 km'),
         (300, '300 km'),

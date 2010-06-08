@@ -5,21 +5,7 @@
 {% block page-subtitle %}{{brevet}}{% endblock %}
 
 {% block content %}
-<h3>
-  {% ifequal brevet.region "LM" %}
-  Lower Mainland
-  {% endifequal %}
-  {% ifequal brevet.region "PR" %}
-  Peace Region
-  {% endifequal %}
-  {% ifequal brevet.region "SI" %}
-  Southern Interior
-  {% endifequal %}
-  {% ifequal brevet.region "VI" %}
-  Vancouver Island
-  {% endifequal %}
-  {{brevet.distance}}
-</h3>
+<h3>{{ region_name }} {{ brevet.distance }}</h3>
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
