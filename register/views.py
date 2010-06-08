@@ -17,20 +17,12 @@ import randopony.register.helpers as h
 import randopony.register.models as model
 
 
-REGIONS = dict(
-    LM='Lower Mainland',
-    PR='Peace Region',
-    SI='Southern Interior',
-    VI='Vancouver Island'
-)
-
-
 def home(request):
     """Display the welcome information and list of regions in the sidebar.
     """
     brevet_list = model.Brevet.objects.all()
     region_list = [
-        dict(abbrev=region, long_name=REGIONS[region]) for region
+        dict(abbrev=region, long_name=model.REGIONS[region]) for region
         in sorted(list(set([brevet.region for brevet in brevet_list])))
     ]
     admin_email = h.email2words(settings.ADMINS[0][1])
@@ -50,7 +42,7 @@ def region_brevets(request, region):
         )
     return render_to_response(
         'derived/region_brevets/region_brevets.html',
-        {'region': dict(abbrev=region, long_name=REGIONS[region]),
+        {'region': dict(abbrev=region, long_name=model.REGIONS[region]),
          'brevets': brevet_list},
         context_instance=RequestContext(request))
 
@@ -108,7 +100,7 @@ def brevet(request, region, distance, date, rider_id=None):
     return render_to_response(
         'derived/brevet/brevet.html',
         {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
-         'region': dict(abbrev=region, long_name=REGIONS[region]),
+         'region': dict(abbrev=region, long_name=model.REGIONS[region]),
          'rider_email': rider_email,
          'show_filler_photo': show_filler_photo,
          'duplicate_registration': duplicate_registration,
@@ -201,7 +193,10 @@ def registration_form(request, region, distance, date):
         form = form_class()
     return render_to_response(
         'derived/register/registration_form.html',
-        {'brevet': brevet, 'form': form, 'captcha_question': captcha_question},
+        {'brevet': brevet,
+         'region_name': model.REGIONS[region],
+         'form': form,
+         'captcha_question': captcha_question},
         context_instance=RequestContext(request))
 
 
