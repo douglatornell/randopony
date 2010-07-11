@@ -47,7 +47,7 @@ def region_brevets(request, region):
         context_instance=RequestContext(request))
 
 
-def brevet(request, region, distance, date, rider_id=None):
+def brevet(request, region, event, date, rider_id=None):
     """Display the brevet information, pre-registered riders list, and
     sometimes the registration confirmation, or duplicate registration
     flash message.
@@ -63,7 +63,7 @@ def brevet(request, region, distance, date, rider_id=None):
             '%(year_digits)s_times.html' % vars())
         return render_to_response(
             'derived/home/past_brevet.html',
-            {'brevet': '%(region)s%(distance)s %(date)s' % vars(),
+            {'brevet': '%(region)s%(event)s %(date)s' % vars(),
              'results_url': results_url},
             context_instance=RequestContext(request))
     # Registration for brevets closes at noon on the day before the
@@ -75,7 +75,7 @@ def brevet(request, region, distance, date, rider_id=None):
         registration_closed = True
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
-        region=region, distance=distance, date=brevet_date)
+        region=region, event=event, date=brevet_date)
     # Suppress the registration closed message 1 hour after the brevet
     # starts. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.
@@ -94,7 +94,7 @@ def brevet(request, region, distance, date, rider_id=None):
                               else False)
     # Get the list of pre-registered riders
     rider_list = model.Rider.objects.filter(
-        brevet__region=region, brevet__distance=distance,
+        brevet__region=region, brevet__event=event,
         brevet__date=brevet_date)
     show_filler_photo = True if len(rider_list) < 15 else False
     return render_to_response(
@@ -109,7 +109,7 @@ def brevet(request, region, distance, date, rider_id=None):
         context_instance=RequestContext(request))
 
 
-def registration_form(request, region, distance, date):
+def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
@@ -121,7 +121,7 @@ def registration_form(request, region, distance, date):
         raise Http404
     # Get the brevet instance that the rider is registering for
     brevet = model.Brevet.objects.get(
-        region=region, distance=distance, date=brevet_date)
+        region=region, event=event, date=brevet_date)
     # Get the CAPTCHA question from the settings
     captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     # Choose the appropriate registration form class
@@ -142,9 +142,9 @@ def registration_form(request, region, distance, date):
                 # Redirect to brevet page with duplicate flag to
                 # trigger appropriate flash message
                 return redirect(
-                    '/register/%(region)s%(distance)s/%(date)s/'
+                    '/register/%(region)s%(event)s/%(date)s/'
                     '%(rider_id)d/duplicate/'
-                    % {'region': region, 'distance': distance, 'date': date,
+                    % {'region': region, 'event': event, 'date': date,
                        'rider_id': check_rider.id})
             except model.Rider.DoesNotExist:
                 # Save new rider pre-registration and send emails to
@@ -158,7 +158,7 @@ def registration_form(request, region, distance, date):
                     host = 'testserver'
                 brevet_page_uri = '/'.join(
                     ('http:/', host,
-                     'register/%(region)s%(distance)s/%(date)s/' % vars()))
+                     'register/%(region)s%(event)s/%(date)s/' % vars()))
                 mail.send_mail(
                     'Pre-registration Confirmation for %(brevet)s Brevet'
                     % vars(),
@@ -181,8 +181,8 @@ def registration_form(request, region, distance, date):
                 # Redirect to brevet page with rider record id to
                 # trigger registartion confirmation flash message
                 return redirect(
-                    '/register/%(region)s%(distance)s/%(date)s/%(rider_id)d/'
-                    % {'region': region, 'distance': distance, 'date': date,
+                    '/register/%(region)s%(event)s/%(date)s/%(rider_id)d/'
+                    % {'region': region, 'event': event, 'date': date,
                        'rider_id': new_rider.id})
         except ValueError:
             # Validation error, so re-render form with rider inputs

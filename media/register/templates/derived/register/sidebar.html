@@ -10,12 +10,12 @@
 
 {% block info-links %}
 <li>
-  <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+  <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
     {{brevet}}
   </a>
 </li>
 <li>
-  <a href="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}" class="selected">
+  <a href="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
     Register
   </a>
 </li>
