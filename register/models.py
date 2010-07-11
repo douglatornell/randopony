@@ -22,7 +22,7 @@ class Brevet(models.Model):
     REGION_CHOICES = [
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
-    DISTANCE_CHOICES = (
+    EVENT_CHOICES = (
         (200, '200 km'),
         (300, '300 km'),
         (400, '400 km'),
@@ -30,10 +30,11 @@ class Brevet(models.Model):
         (1000, '1000 km'),
         (1200, '1200 km'),
         (2000, '2000 km'),
+        ('dinner', 'Dinner'),
     )
 
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
-    distance = models.IntegerField(choices=DISTANCE_CHOICES)
+    event = models.CharField(max_length=30, choices=EVENT_CHOICES)
     date = models.DateField()
     route_name = models.CharField(max_length=100)
     start_location = models.CharField(max_length=100)
@@ -46,9 +47,9 @@ class Brevet(models.Model):
                   'pre-registration form')
 
     def __unicode__(self):
-        return ('%(region)s%(distance)d %(date)s'
+        return ('%(region)s%(event)s %(date)s'
                 % dict(region=self.region,
-                       distance=self.distance,
+                       event=self.event,
                        date=self.date.strftime('%d-%b-%Y')))
 
     class Meta():

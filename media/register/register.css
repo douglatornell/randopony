@@ -3,10 +3,20 @@
     color: red;
 }
 
+h3.pad-heading {
+    padding-top: 2.5em;
+}
+
 .filler_img {
     width: 90%;
     margin-top: 20px;
     margin-bottom: 20px;
+    margin-left: 23px;
+}
+.filler_img_extra_margins {
+    width: 90%;
+    margin-top: 60px;
+    margin-bottom: 60px;
     margin-left: 23px;
 }
 

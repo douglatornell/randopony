@@ -5,11 +5,11 @@
 {% block page-subtitle %}{{brevet}}{% endblock %}
 
 {% block content %}
-<h3>{{ region_name }} {{ brevet.distance }}</h3>
+<h3>{{ region_name }} {{ brevet.event }}</h3>
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
-<form action="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}"
+<form action="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}"
       method="POST">
   {{ form.name.errors }}
   <p>

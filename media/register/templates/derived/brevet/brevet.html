@@ -10,9 +10,11 @@
 {% block page-subtitle %}{{ brevet }}{% endblock %}
 
 {% block content %}
-<h3>{{ region.long_name }} {{ brevet.distance }}</h3>
+<h3>{{ region.long_name }} {{ brevet.event|capfirst }}</h3>
 
+{% ifnotequal brevet.route_name|lower 'n/a' %}
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
+{% endifnotequal %}
 
 <p><strong>Start:</strong> {{ brevet.date|date:"D d-M-Y" }}
 at {{ brevet.start_time|time:"H:i" }}
@@ -21,11 +23,15 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 {% endif %}
 </p>
 
-<p><strong>Start Location:</strong> {{ brevet.start_location }}</p>
+<p><strong>
+{% ifnotequal brevet.route_name|lower 'n/a' %}
+Start
+{% endifnotequal %}
+Location:</strong> {{ brevet.start_location }}</p>
 
 {% if registration_closed and not brevet_started %}
 <div id="registration-closed">
-  <p>Pre-registration for this brevet is closed, but you can still
+  <p>Pre-registration for this event is closed, but you can still
   print out the <a
    href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
@@ -39,12 +45,13 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 {% if rider %}
 {% if not duplicate_registration %}
 <div id="confirmation">
-  <p>You have pre-registered for this brevet. Cool! Your name should be
+  <p>You have pre-registered for this event. Cool! Your name should be
   on the list below.</p>
 
   <p>A confirmation email has been sent to you at
-  <kbd>{{ rider_email }}</kbd>, and to the brevet organizer.</p>
+  <kbd>{{ rider_email }}</kbd>, and to the event organizer.</p>
 
+  {% ifnotequal brevet.route_name|lower 'n/a' %}
   <p>You can print out the
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
@@ -61,6 +68,7 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 
   <p>Have a great ride!</p>
   {% endif %}
+  {% endifnotequal %}
 </div> <!-- id="confirmation" -->
 {% endif %}
 
@@ -68,11 +76,11 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 <div id="duplicate_registration">
   <p>Hmm... Someone using the name <kbd>{{ rider.name }}</kbd> and the
   email address <kbd>{{ rider_email }}</kbd> has already pre-registered
-  for this brevet. Are you sure that you are registering for the
-  brevet you intended to?</p>
+  for this event. Are you sure that you are registering for the
+  event you intended to?</p>
 
   <p>If you are trying to change your email address, or club membership
-  status by re-registering, please contact the brevet organizer.</p>
+  status by re-registering, please contact the event organizer.</p>
 </div> <!-- id="duplicate_registration" -->
 {% endif %}
 {% endif %}
@@ -82,7 +90,10 @@ or {{ brevet.alt_start_time|time:"H:i" }}
   <thead>
     <tr>
       <th colspan=2>
-	    {{ rider_list|length }} Pre-registered Rider{{ rider_list|length|pluralize }}
+	    {{ rider_list|length }} Pre-registered
+        {% ifnotequal brevet.route_name|lower 'n/a' %}
+        Rider{{ rider_list|length|pluralize }}
+        {% endifnotequal %}
       </th>
     </tr>
   </thead>
@@ -98,14 +109,21 @@ or {{ brevet.alt_start_time|time:"H:i" }}
   </tbody>
 </table>
 {% else %}
-There are no pre-registered riders yet.
-<a href="{% url register.views.registration_form region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+Nobody has pre-registered.
+<a href="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
 Be the first!
 </a>
 {% endif %}
 
 {% if show_filler_photo %}
-<img class="filler_img" src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
-     alt="Sign-on" />
+{% ifnotequal brevet.route_name|lower 'n/a' %}
+<img class="filler_img"
+     src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
+     alt="Pre-registration list" />
+{% else %}
+<img class="filler_img_extra_margins"
+     src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
+     alt="Pre-registration list" />
+{% endifnotequal %}
 {% endif %}
 {% endblock %}

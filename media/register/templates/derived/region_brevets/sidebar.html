@@ -20,7 +20,7 @@
 {% block brevet-list %}
 {% for brevet in brevets %}
 <li>
-  <a href="{% url register.views.brevet region=brevet.region,distance=brevet.distance,date=brevet.date|date:"dMY" %}">
+  <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
     {{brevet}}
   </a>
 </li>
