@@ -19,6 +19,12 @@ h3.pad-heading {
     margin-bottom: 60px;
     margin-left: 23px;
 }
+.filler_img_superweek_margins {
+    width: 90%;
+    margin-top: 95px;
+    margin-bottom: 95px;
+    margin-left: 23px;
+}
 
 #confirmation, #duplicate_registration, #registration-closed {
     background-color: #ffff99;
