@@ -58,6 +58,8 @@ class TestRegionBrevetsView(django.test.TestCase):
     fixtures = ['brevets']
 
     def setUp(self):
+        """Ensure that test fixture brevet dates are in the future.
+        """
         for brevet in model.Brevet.objects.all():
             today = date.today()
             if brevet.date <= today:
@@ -68,7 +70,7 @@ class TestRegionBrevetsView(django.test.TestCase):
         """GET request for root page of register app works
         """
         response = self.client.get('/register/LM-brevets/')
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'RandoPony::Lower Mainland')
 
 
     def test_region_brevets_context(self):
@@ -84,7 +86,7 @@ class TestRegionBrevetsView(django.test.TestCase):
         """
         response = self.client.get('/register/LM-brevets/')
         for brevet in model.Brevet.objects.all():
-            self.assertTrue(unicode(brevet) in response.content)
+            self.assertContains(response, unicode(brevet))
 
 
     def test_region_brevets_past_events(self):
@@ -99,8 +101,8 @@ class TestRegionBrevetsView(django.test.TestCase):
         older_brevet.date = today - timedelta(days=10)
         older_brevet.save()
         response = self.client.get('/register/LM-brevets/')
-        self.assertTrue(unicode(recent_brevet) in response.content)
-        self.assertFalse(unicode(older_brevet) in response.content)
+        self.assertContains(response, unicode(recent_brevet))
+        self.assertNotContains(response, unicode(older_brevet))
 
 
 class TestBrevetView(django.test.TestCase):
@@ -118,7 +120,7 @@ class TestBrevetView(django.test.TestCase):
         """
         response = self.client.get(
             '/register/',
-            {'region': 'LM', 'distance': 300, 'date':'01May2010'})
+            {'region': 'LM', 'event': 300, 'date':'01May2010'})
         self.assertEqual(response.status_code, 200)
 
 
@@ -371,7 +373,7 @@ class TestRegistrationFunction(django.test.TestCase):
         # Register for the brevet
         brevet_date = datetime.strptime('01May2010', '%d%b%Y').date()
         brevet = model.Brevet.objects.get(
-            region='LM', distance=300, date=brevet_date)
+            region='LM', event=300, date=brevet_date)
         model.Rider(
             name='Doug Latornell',
             email='djl@example.com',
