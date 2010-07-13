@@ -23,7 +23,7 @@
     region: LM
     route_name: Manning Park
     start_location: New Westminister
-    start_time: '212:00'
+    start_time: '21:00'
     alt_start_time: null
 
 - model: register.brevet
