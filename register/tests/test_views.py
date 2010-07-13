@@ -22,7 +22,7 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'RandoPony::Registration')
 
 
     def test_home_context(self):
@@ -39,10 +39,10 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.assertTrue('Home' in response.content)
-        self.assertTrue('randonneurs.bc.ca' in response.content)
-        self.assertTrue('Info for Brevet Organizers' in response.content)
-        self.assertTrue("What's up with the pony?" in response.content)
+        self.assertContains(response, 'Home')
+        self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'Info for Brevet Organizers')
+        self.assertContains(response, "What's up with the pony?")
 
 
     def test_home_regions_list(self):
@@ -50,8 +50,8 @@ class TestHomeView(django.test.TestCase):
         """
         response = self.client.get(
             reverse('randopony.register.views.home'))
-        self.assertTrue('Lower Mainland' in response.content)
-        self.assertFalse('Vancouver Island' in response.content)
+        self.assertContains(response, 'Lower Mainland')
+        self.assertNotContains(response, 'Vancouver Island')
 
 
 class TestRegionBrevetsView(django.test.TestCase):
@@ -386,10 +386,9 @@ class TestRegistrationFunction(django.test.TestCase):
         # Confirm the redriect, and flash message content
         rider_query = model.Rider.objects.filter(
             name='Doug Latornell', email='djl@example.com', brevet=brevet)
-        rider_id = rider_query[0].id
         self.assertRedirects(
             response, '/register/LM300/01May2010/%(rider_id)d/duplicate/'
-            % vars())
+            % {'rider_id': rider_query[0].id})
         self.assertContains(
             response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
         self.assertContains(
