@@ -4,7 +4,7 @@
   pk: 1
   fields:
     date: 2010-05-01
-    distance: 300
+    event: 300
     organizer_email: pumpkinrider@example.com
     info_question: ''
     region: LM
@@ -17,7 +17,7 @@
   pk: 2
   fields:
     date: 2010-05-22
-    distance: 400
+    event: 400
     organizer_email: djl@douglatornell.ca
     info_question: Please give the location and date of your most recent 300 km brevet; e.g. LM300 1-May-2010
     region: LM
@@ -30,7 +30,7 @@
   pk: 3
   fields:
     date: 2010-04-17
-    distance: 200
+    event: 200
     organizer_email: manfred@example.com
     info_question: ''
     region: LM
@@ -43,7 +43,7 @@
   pk: 4
   fields:
     date: 2010-06-26
-    distance: 1000
+    event: 1000
     organizer_email: alex@example.com
     info_question: 'There are 2 start times for this brevet: 06:00 or 20:00. Please indicate which start you will use. (You can also propose an different start time, but you will have to "sell" it to the organizers and other riders.)'
     region: LM
