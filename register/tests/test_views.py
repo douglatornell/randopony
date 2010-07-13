@@ -109,29 +109,31 @@ class TestBrevetView(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
     def setUp(self):
+        """Ensure that test fixture brevet dates are in the future.
+        """
+        today = date.today()
+        self.next_year = today.year + 1
         for brevet in model.Brevet.objects.all():
-            today = date.today()
             if brevet.date <= today:
-                brevet.date = brevet.date.replace(year=today.year + 1)
+                brevet.date = brevet.date.replace(year=self.next_year)
             brevet.save()
 
     def test_brevet_get(self):
         """GET request for brevet page works
         """
-        response = self.client.get(
-            '/register/',
-            {'region': 'LM', 'event': 300, 'date':'01May2010'})
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/register/LM300/01May%d/' % self.next_year)
+        self.assertContains(
+            response, 'RandoPony::LM300 01-May-%d' % self.next_year)
 
 
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
-        response = self.client.get('/register/LM300/01May2010/')
-        self.assertTrue('LM300 01-May-2010' in response.content)
-        self.assertTrue('Register' in response.content)
-        self.assertTrue('Event Entry Form (PDF)' in response.content)
-        self.assertTrue('Club Membership Form (PDF)' in response.content)
+        response = self.client.get('/register/LM300/01May%d/' % self.next_year)
+        self.assertContains(response, 'LM300 01-May-%d' % self.next_year)
+        self.assertContains(response, 'Register')
+        self.assertContains(response, 'Event Entry Form (PDF)')
+        self.assertContains(response, 'Club Membership Form (PDF)')
 
 
     def test_past_brevet_page(self):
@@ -147,16 +149,16 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_no_riders(self):
         """brevet page has expected msg when no riders are registered
         """
-        response = self.client.get('/register/LM300/01May2010/')
+        response = self.client.get('/register/LM300/01May%d/' % self.next_year)
         self.assertContains(response, 'Be the first!')
 
 
     def test_brevet_page_1_rider(self):
         """brevet view renders correct page body with 1 registered rider
         """
-        response = self.client.get('/register/LM400/22May2010/')
+        response = self.client.get('/register/LM400/22May%d/' % self.next_year)
         self.assertContains(response, 'Manning Park')
-        self.assertContains(response, '1 Pre-registered Rider')
+        self.assertContains(response, '1 Pre-registered')
         self.assertContains(response, 'Doug Latornell')
         self.assertNotContains(response, 'registered for this brevet. Cool!')
         self.assertNotContains(response, 'Be the first!')
@@ -165,15 +167,16 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_2_riders(self):
         """brevet view renders correct page body with 2 registered riders
         """
-        response = self.client.get('/register/LM200/17Apr2010/')
-        self.assertContains(response, '2 Pre-registered Riders')
+        response = self.client.get('/register/LM200/17Apr%d/' % self.next_year)
+        self.assertContains(response, '2 Pre-registered')
 
 
     def test_brevet_page_confirmation(self):
         """brevet view renders correct sidebar
         """
-        response = self.client.get('/register/LM400/22May2010/1/')
-        self.assertTrue('for this brevet. Cool!' in response.content)
+        response = self.client.get(
+            '/register/LM400/22May%d/1/' % self.next_year)
+        self.assertTrue('for this event. Cool!' in response.content)
 
 
 class TestRegistrationFormView(django.test.TestCase):
