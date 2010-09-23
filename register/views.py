@@ -20,7 +20,8 @@ import randopony.register.models as model
 def home(request):
     """Display the welcome information and list of regions in the sidebar.
     """
-    brevet_list = model.Brevet.objects.all()
+    brevet_list = model.Brevet.objects.exclude(
+        date__lt=(datetime.today().date() - timedelta(days=7)))
     region_list = [
         dict(abbrev=region, long_name=model.REGIONS[region]) for region
         in sorted(list(set([brevet.region for brevet in brevet_list])))
