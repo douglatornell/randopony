@@ -10,7 +10,12 @@
 {% block page-subtitle %}{{ brevet }}{% endblock %}
 
 {% block content %}
-<h3>{{ region.long_name }} {{ brevet.event|capfirst }}</h3>
+<h3>
+  {% ifnotequal region.long_name "Club Events" %}
+  {{ region.long_name }}
+  {% endifnotequal %}
+  {{ brevet.event|capfirst }}
+</h3>
 
 {% ifnotequal brevet.route_name|lower 'n/a' %}
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
