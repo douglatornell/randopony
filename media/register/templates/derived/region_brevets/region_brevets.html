@@ -2,26 +2,40 @@
 
 {% block title %}RandoPony::{{ region.long_name }}{% endblock %}
 
-{% block page-subtitle %}{{ region.long_name }} Brevets{% endblock %}
+{% block page-subtitle %}
+{{ region.long_name }}
+{% ifnotequal region.long_name "Club Events" %}
+Brevets
+{% endifnotequal %}
+{% endblock %}
 
 {% block content %}
 <p>
-  Please click the tab on the right side of the page for the brevet
+  Please click the tab on the right side of the page for the event
   that you want to pre-register for.
 </p>
 
+{% ifequal region.abbrev "Club" %}
+<img class="filler_img"
+     src="http://www.randonneurs.bc.ca/Resources/2006/agm/rp_table.jpg"
+     alt="Harrison Hotspings Road" />
+{% endifequal %}
+
 {% ifequal region.abbrev "LM" %}
-<img class="filler_img" src="{{ MEDIA_URL }}register/images/LowerMainlandQuartet.jpg"
+<img class="filler_img"
+     src="{{ MEDIA_URL }}register/images/LowerMainlandQuartet.jpg"
      alt="Harrison Hotspings Road" />
 {% endifequal %}
 
 {% ifequal region.abbrev "VI" %}
-<img class="filler_img" src="{{ MEDIA_URL }}register/images/VanIsDuo.jpg"
+<img class="filler_img"
+     src="{{ MEDIA_URL }}register/images/VanIsDuo.jpg"
      alt="Van Is Duo" />
 {% endifequal %}
 
 {% ifequal region.abbrev "SI" %}
-<img class="filler_img" src="{{ MEDIA_URL }}register/images/SouthIntLivestock.jpg"
+<img class="filler_img"
+     src="{{ MEDIA_URL }}register/images/SouthIntLivestock.jpg"
      alt="Southern Interior Peloton" />
 {% endifequal %}
 

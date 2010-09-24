@@ -10,7 +10,7 @@ import randopony.register.models as model
 
 
 REGIONS = '(?i)%s' % '|'.join(model.REGIONS.keys())
-EVENTS = '[12]000|1200|[2346]00|dinner'
+EVENTS = '[12]000|1200|[2346]00|dinner|AGM'
 DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
 YEAR = '20\d\d'
@@ -18,7 +18,7 @@ YEAR = '20\d\d'
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
     # Region brevet pages
-    (r'^(?P<region>(%(REGIONS)s))-brevets/$' % vars(), 'region_brevets'),
+    (r'^(?P<region>(%(REGIONS)s))-events/$' % vars(), 'region_brevets'),
     # Brevet page with rider list
     (r'^(?P<region>(%(REGIONS)s))(?P<event>%(EVENTS)s)/'
       '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/$' % vars(),

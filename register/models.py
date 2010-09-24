@@ -10,6 +10,7 @@ from django.forms.util import ErrorList
 
 
 REGIONS = dict(
+    Club='Club Events',
     LM='Lower Mainland',
     PR='Peace Region',
     SI='Southern Interior',
@@ -31,6 +32,7 @@ class Brevet(models.Model):
         (1200, '1200 km'),
         (2000, '2000 km'),
         ('dinner', 'Dinner'),
+        ('AGM', 'AGM'),
     )
 
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
