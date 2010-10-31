@@ -41,7 +41,7 @@ pose a question on the registration form, and transmit the answer to
 the brevet organizer by email.
 
 Apart from providing a service to brevet organizers, the other design
-goal of the pony was that it should require a minimun of
+goal of the pony was that it should require a minimum of
 administrative attention. Adding a new brevet should take no more than
 a minute or 2, and after that everything should be automatic. I'm
 happy to spend time improving the pony (mainly in the fall and
@@ -103,8 +103,8 @@ Features Requested by Brevet Organizers
 
 .. _issue 7: https://bitbucket.org/douglatornell/randopony/issue/7
 
-* Add mechanism to provide list of rider's email addresses for an
-  event (see `issue 10`_ on bitbucket).
+* A mechanism will be added to provide list of rider's email addresses for an
+  event (see `issue 10`_ on bitbucket). 
 
 .. _issue 10: https://bitbucket.org/douglatornell/randopony/issue/10
 
@@ -171,7 +171,7 @@ event waivers.
 * The brevet organizer can view the spreadsheet at any time, and save
   a copy of it for their own manipulation and printing. The email they
   get when the  brevet is added to the pony, and perhaps the
-  spreadsheet itself, needs to emphasis that it will continue to
+  spreadsheet itself, needs to emphasize that it will continue to
   change until brevet pre-registration closes at noon on the day
   before the event starts.
 
@@ -226,7 +226,7 @@ remember?!):
 
 * Making online payment mandatory at time of pre-registration would be
   a disincentive to pre-registration for many riders who decide to
-  rider some events based on weather. We don't want to loose the
+  ride some events based on weather. We don't want to lose the
   benefits of pre-registration, so payment would have to be optional,
   so brevet organizers will still have to handle money at the
   start. Most brevets do not have so many riders that the difference
@@ -264,9 +264,11 @@ that:
   for non-members, $10 for under 19 years old)
 * There can be a factor of 10 (or greater) more riders than on a
   brevet.
-* The goal of the pre-registration is to reduce the ride-day work to
+* One goal of the pre-registration is to reduce the ride-day work to
   simply handing a route card to the rider, and perhaps checking their
   name off on a list.
+* The other goal of pre-registration is to entice riders to pay for
+  and ride on less than ideal weather days.
 
 In my mind there are 3 dimensions to such a system:
 
@@ -281,7 +283,7 @@ Event waiver acceptance is a legal issue. Anecdotally we know that
 this issue has apparently been solved by any number of sites that
 handle online event registration. We need to ensure that whatever
 click-through mechanism we implement is as legally binding on the
-rider, and is acceptable to our insurer as their written signature on
+rider, and is as acceptable to our insurer as their written signature on
 the present event waiver is so that we do not open the club, the
 executive members, or me to any liability that we do not currently
 have.
@@ -346,12 +348,12 @@ in other ways:
 * The combination of a pre-registration system and previous years
   event participation numbers should allow the organizers to order
   close to the correct number of pins.
-* Populaire pins are undated so left-overs from pervious years can be
+* Populaire pins are undated so left-overs from previous years can be
   used when the current year's run out. Most riders have no idea about
   the colour rotation scheme that is used.
 * As is already done, club members are not given pins at the finish if
   there is going to be a shortage because they can be given theirs
-  later from a 2nd order.
+  later from a 2nd order. We already have member's addresses.
 * If the pins do run out the late finishing riders can be asked to
   write their name and address on an envelop so that their pin can be
   mailed to them when available.
@@ -428,7 +430,7 @@ I have briefly investigated 3 credit card transaction services:
 .. _Google Checkout: https://checkout.google.com/sell/
 .. _Amazon Payments: https://payments.amazon.com/
 
-All have the same base tranactions fee: 2.9% + $0.30. For the PapPop
+All have the same base transactions fee: 2.9% + $0.30. For the PapPop
 fees structure that translates to:
 
 * $0.82 on the $18 non-member fee
@@ -486,11 +488,11 @@ Populaires App Components and Workflow
      * Phone number of mobile phone they are carrying on the ride
      * Whether rider is over or under 19 years of age
 
-   * RandoPony present a form that shows the event waiver and collects
+   * RandoPony presents a form that shows the event waiver and collects
      the rider's acceptance of it. Pre-registration process aborts if
      the rider does not accept the waiver.
 
-   * RandoPony stores The rider's pre-registration information is
+   * The rider's pre-registration information is
      stored in the database, pending payment confirmation.
 
    * RandoPony passes the rider to the credit card transaction service
@@ -533,7 +535,7 @@ The Google Docs spreadsheet for a populaire will contain 2 sheets:
   information so that it can be widely distributed by the organizer
   for use at the registration tables and controls.
 * The detailed riders list. This sheet contains the collected contact
-  information for the riders and is intended for the organizer use.
+  information for the riders and is intended for organizer use.
 
 Summary Riders List Columns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
