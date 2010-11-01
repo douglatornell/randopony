@@ -36,6 +36,7 @@ Location:</strong> {{ brevet.start_location }}</p>
 
 {% if registration_closed and not brevet_started %}
 <div id="registration-closed">
+  {% ifnotequal region.long_name "Club Events" %}
   <p>Pre-registration for this event is closed, but you can still
   print out the <a
    href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
@@ -44,6 +45,11 @@ Location:</strong> {{ brevet.start_location }}</p>
   start.</p>
 
   <p>See you on the road!</p>
+  {% else %}
+  <p>Pre-registration for this event is closed.</p>
+
+  <p>Sorry!</p>
+  {% endifnotequal %}
 </div>
 {% endif %}
 
