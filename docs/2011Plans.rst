@@ -267,8 +267,8 @@ that:
 * One goal of the pre-registration is to reduce the ride-day work to
   simply handing a route card to the rider, and perhaps checking their
   name off on a list.
-* The other goal of pre-registration is to entice riders to pay for
-  and ride on less than ideal weather days.
+* Another goal of pre-registration is to entice riders to pay for and
+  ride on less than ideal weather days.
 
 In my mind there are 3 dimensions to such a system:
 
