@@ -70,10 +70,9 @@ def brevet(request, region, event, date, rider_id=None):
     # Registration for brevets closes at noon on the day before the
     # event. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.
-    registration_closed = False
-    if (datetime.now() >= datetime.combine(brevet_date - timedelta(days=1),
-                                           time(14, 0))):
-        registration_closed = True
+    registration_closed = (
+        datetime.now() >= datetime.combine(brevet_date - timedelta(days=1),
+                                           time(14, 0)))
     # Get the brevet instance to render
     brevet = model.Brevet.objects.get(
         region=region, event=event, date=brevet_date)
