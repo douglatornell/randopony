@@ -58,9 +58,9 @@ Create the Website Entry
 Configure WebFaction to proxy requests to the Django app, and static media apps:
 
 #. Use the :guilabel:`Domains / websites > Websites` menu to create a
- site called :kbd: `randopony` connected to the
- :kbd:`randopony.sadahome.ca` subdomain, with the following site apps
- added to it:
+   site called :kbd: `randopony` connected to the
+   :kbd:`randopony.sadahome.ca` subdomain, with the following site
+   apps added to it:
 
    * :kbd:`randopony` mounted at :kbd:`/`
    * :kbd:`randopony_media` mounted at :kbd:`/media`
@@ -87,20 +87,20 @@ Create a Django Settings Module
 ===============================
 
 #. Copy :file:`randopony/settings.py` to
- :file:`randopony/webfaction-settings.py` and edit it make the
- settings appropriate for the deployment:
+   :file:`randopony/webfaction-settings.py` and edit it make the
+   settings appropriate for the deployment:
 
-  .. code-block:: python
+   .. code-block:: python
 
-     DEBUG = False
+      DEBUG = False
 
-     ADMINS = (
-         ('Your Name', 'you@example.com'),
-     )
+      ADMINS = (
+          ('Your Name', 'you@example.com'),
+      )
 
-     SECRET_KEY = 'a string of random characters, the longer the better'
+      SECRET_KEY = 'a string of random characters, the longer the better'
 
-     EMAIL_USER_PASSWORD = 'password for the randopony email sender account''
+      EMAIL_USER_PASSWORD = 'password for the randopony email sender account''
 
 Review the other settings and change any that you think you need to,
 :kbd:`TIME_ZONE`, for example.  Note that you can change the
