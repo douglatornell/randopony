@@ -20,32 +20,41 @@ import randopony.register.models as model
 def home(request):
     """Display the welcome information and list of regions in the sidebar.
     """
-    brevet_list = model.Brevet.objects.exclude(
-        date__lt=(datetime.today().date() - timedelta(days=7)))
-    region_list = [
-        dict(abbrev=region, long_name=model.REGIONS[region]) for region
-        in sorted(list(set([brevet.region for brevet in brevet_list])))
-    ]
-    admin_email = h.email2words(settings.ADMINS[0][1])
+    seven_days_ago = datetime.today().date() - timedelta(days=7)
+    brevet_list = model.Brevet.objects.exclude(date__lt=(seven_days_ago))
+    regions = sorted(list(set([brevet.region for brevet in brevet_list])))
+    region_list = [{
+        'abbrev': region,
+        'long_name': model.REGIONS[region]
+        } for region in regions]
+    context = {
+        'regions': region_list,
+        'admin_email': h.email2words(settings.ADMINS[0][1])
+    }
     return render_to_response(
         'derived/home/home.html',
-        {'regions': region_list, 'admin_email': admin_email},
-        context_instance=RequestContext(request))
+        context, context_instance=RequestContext(request))
 
 
 def region_brevets(request, region):
     """Display a region image and the list of brevets in the sidebar.
     """
+    seven_days_ago = datetime.today().date() - timedelta(days=7)
     brevet_list = model.Brevet.objects.filter(
             region=region
         ).exclude(
-            date__lt=(datetime.today().date() - timedelta(days=7))
+            date__lt=(seven_days_ago)
         )
+    context = {
+        'region': {
+            'abbrev': region,
+            'long_name': model.REGIONS[region]
+        },
+        'brevets': brevet_list
+    }
     return render_to_response(
         'derived/region_brevets/region_brevets.html',
-        {'region': dict(abbrev=region, long_name=model.REGIONS[region]),
-         'brevets': brevet_list},
-        context_instance=RequestContext(request))
+        context, context_instance=RequestContext(request))
 
 
 def brevet(request, region, event, date, rider_id=None):
