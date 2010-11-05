@@ -2,7 +2,7 @@
 
 Zhe should have received a confirmation email that appears to have come from your email address so that zhe can contact you directly, if necessary.
 
-{{rider.name}} has indicated that zhe is {% if not rider.club_member %} NOT {% endif %}a club member, but you should confirm that against a current club membership list. {% if not rider.club_member %} Zhe has been informed that zhe need to be a member to do the ride, and that zhe need to join beforehand, or at the start.{% endif %}
+{{rider.name}} has indicated that zhe is {% if not rider.club_member %}NOT {% endif %}a club member, but you should confirm that against a current club membership list. {% if not rider.club_member %} Zhe has been informed that zhe need to be a member to do the ride, and that zhe need to join beforehand, or at the start.{% endif %}
 
 {% if rider.info_answer %} In response to the brevet info question:
 
