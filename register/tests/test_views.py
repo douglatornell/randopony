@@ -219,18 +219,23 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_registration_form_get(self):
         """GET request for registration from page works
         """
-        response = self.client.get('/register/LM400/22May2010/form/')
+        brevet_date = adjust_date('22May2010')
+        response = self.client.get(
+            '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y'))
         self.assertEqual(response.status_code, 200)
 
 
     def test_brevet_registration_form_sidebar(self):
         """registration form view renders correct sidebar
         """
-        response = self.client.get('/register/LM400/22May2010/')
-        self.assertTrue('LM400 22-May-2010' in response.content)
-        self.assertTrue('Register' in response.content)
-        self.assertTrue('Event Entry Form (PDF)' in response.content)
-        self.assertTrue('Club Membership Form (PDF)' in response.content)
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.get(url)
+        self.assertContains(
+            response, 'LM400 %s' % brevet_date.strftime('%d-%b-%Y'))
+        self.assertContains(response, 'Register')
+        self.assertContains(response, 'Event Entry Form (PDF)')
+        self.assertContains(response, 'Club Membership Form (PDF)')
 
 
     def test_brevet_registration_form_body_with_qual_info(self):
@@ -239,27 +244,30 @@ class TestRegistrationFormView(django.test.TestCase):
         brevet_date = adjust_date('22May2010')
         response = self.client.get(
             '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y'))
-        self.assertTrue('Manning Park' in response.content)
-        self.assertTrue('Name:' in response.content)
-        self.assertTrue('Email:' in response.content)
-        self.assertTrue('Club member?' in response.content)
-        self.assertTrue(
-            'recent 300 km brevet; e.g. LM300 1-May-' in response.content)
-        self.assertTrue('Brevet info:' in response.content)
+        self.assertContains(response, 'Manning Park')
+        self.assertContains(response, 'Name:')
+        self.assertContains(response, 'Email:')
+        self.assertContains(response, 'Club member?')
+        self.assertContains(
+            response, 'recent 300 km brevet; e.g. LM300 1-May-')
+        self.assertContains(response, 'Brevet info:')
 
 
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
-        response = self.client.get('/register/LM300/01May2010/form/')
-        self.assertFalse('Qualifying info:' in response.content)
+        brevet_date = adjust_date('01May2010')
+        response = self.client.get(
+            '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y'))
+        self.assertNotContains(response, 'Qualifying info:')
 
 
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
         """
+        brevet_date = adjust_date('01May2010')
         response = self.client.get(
-            '/register/LM300/01May2010/form/')
+            '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y'))
         self.assertContains(
             response, 'Are you a human? Are you a randonneur? Please prove it.')
         self.assertContains(
@@ -270,20 +278,30 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
+    def setUp(self):
+        """Ensure that test fixture brevet dates are in the future.
+        """
+        for brevet in model.Brevet.objects.all():
+            brevet.date = adjust_date(brevet.date)
+            brevet.save()
+
     def test_registration_form_clean_submit(self):
         """registration from submit w/ valid data redirects to brevet pg w/ msg
         """
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                    {'name': 'Doug Latornell',
-                                     'email': 'djl@example.com',
-                                     'club_member': True,
-                                     'captcha': 400},
-                                    follow=True)
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = '/register/LM300/%s/form/' % brevet_date
+        response = self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400},
+            follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
         self.assertRedirects(
-            response, '/register/LM300/01May2010/%(rider_id)d/' % vars())
+            response, '/register/LM300/%(brevet_date)s/%(rider_id)d/' % vars())
         self.assertContains(
-            response, 'You have pre-registered for this brevet. Cool!')
+            response, 'You have pre-registered for this event. Cool!')
         self.assertContains(
             response, 'djl at example dot com')
         self.assertNotContains(
@@ -293,17 +311,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_clean_submit_non_member(self):
         """registration from submit redirects to brevet pg w/ non-member msg
         """
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                    {'name': 'Fibber McGee',
-                                     'email': 'fibber@example.com',
-                                     'club_member': False,
-                                     'captcha': 400},
-                                    follow=True)
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = '/register/LM300/%s/form/' % brevet_date
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'captcha': 400},
+            follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
         self.assertRedirects(
-            response, '/register/LM300/01May2010/%(rider_id)d/' % vars())
+            response, '/register/LM300/%(brevet_date)s/%(rider_id)d/' % vars())
         self.assertContains(
-            response, 'You have pre-registered for this brevet. Cool!')
+            response, 'You have pre-registered for this event. Cool!')
         self.assertContains(
             response, 'fibber at example dot com')
         self.assertContains(
@@ -313,10 +334,13 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_name_required(self):
         """registration form name field must not be empty
         """
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                     {'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'captcha': 400})
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = '/register/LM300/%s/form/' % brevet_date
+        response = self.client.post(
+            url,
+            {'email': 'fibber@example.com',
+             'club_member': False,
+             'captcha': 400})
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
@@ -324,10 +348,13 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_required(self):
         """registration form email field must not be empty
         """
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'club_member': False,
-                                      'captcha': 400})
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = '/register/LM300/%s/form/' % brevet_date
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'club_member': False,
+             'captcha': 400})
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
@@ -335,11 +362,14 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_valid(self):
         """registration form email field must be valid
         """
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber',
-                                      'club_member': False,
-                                      'captcha': 400})
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = '/register/LM300/%s/form/' % brevet_date
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber',
+             'club_member': False,
+             'captcha': 400})
         self.assertContains(response, 'Enter a valid e-mail address.')
         self.assertNotContains(response, 'Hint')
 
@@ -347,23 +377,29 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_qual_info_required(self):
         """registration form qualifying info field must not be empty
         """
-        response = self.client.post('/register/LM400/22May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'captcha': 400})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'captcha': 400})
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
 
-    def test_registration_form_captcah_answer_required(self):
+    def test_registration_form_captcha_answer_required(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        response = self.client.post('/register/LM400/22May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'qual_info': 'LM300'})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'qual_info': 'LM300'})
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Hint')
 
@@ -371,12 +407,15 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_is_int(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        response = self.client.post('/register/LM400/22May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'qual_info': 'LM300',
-                                      'captcha': 'afdga'})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'qual_info': 'LM300',
+             'captcha': 'afdga'})
         self.assertContains(response, 'Enter a whole number.')
         self.assertContains(response, 'Hint')
 
@@ -384,12 +423,15 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        response = self.client.post('/register/LM400/22May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'qual_info': 'LM300',
-                                      'captcha': 'afdga'})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'qual_info': 'LM300',
+             'captcha': 'afdga'})
         self.assertContains(response, 'Enter a whole number.')
         self.assertContains(response, 'Hint')
 
@@ -397,12 +439,15 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_wrong(self):
         """registration form CAPTCHA wrong answer
         """
-        response = self.client.post('/register/LM400/22May2010/form/',
-                                     {'name': 'Fibber McGee',
-                                      'email': 'fibber@example.com',
-                                      'club_member': False,
-                                      'qual_info': 'LM300',
-                                      'captcha': 200})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'qual_info': 'LM300',
+             'captcha': 200})
         self.assertContains(response, 'Wrong! See hint.')
         self.assertContains(response, 'Hint')
 
@@ -411,7 +456,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration form rejects duplicate entry w/ msg on brevet page
         """
         # Register for the brevet
-        brevet_date = datetime.strptime('01May2010', '%d%b%Y').date()
+        brevet_date = adjust_date('01May2010')
         brevet = model.Brevet.objects.get(
             region='LM', event=300, date=brevet_date)
         model.Rider(
@@ -419,18 +464,21 @@ class TestRegistrationFunction(django.test.TestCase):
             email='djl@example.com',
             brevet=brevet).save()
         # Try to register again
-        response = self.client.post('/register/LM300/01May2010/form/',
-                                    {'name': 'Doug Latornell',
-                                     'email': 'djl@example.com',
-                                     'club_member': True,
-                                     'captcha': 400},
-                                    follow=True)
+        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        response = self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400},
+            follow=True)
         # Confirm the redriect, and flash message content
         rider_query = model.Rider.objects.filter(
             name='Doug Latornell', email='djl@example.com', brevet=brevet)
-        self.assertRedirects(
-            response, '/register/LM300/01May2010/%(rider_id)d/duplicate/'
-            % {'rider_id': rider_query[0].id})
+        url = ('/register/LM300/%(brevet_date)s/%(rider_id)d/duplicate/'
+               % {'brevet_date': brevet_date.strftime('%d%b%Y'),
+                  'rider_id': rider_query[0].id})
+        self.assertRedirects(response, url)
         self.assertContains(
             response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
         self.assertContains(
@@ -442,24 +490,30 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_to_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
-        self.client.post('/register/LM300/01May2010/form/',
-                         {'name': 'Doug Latornell',
-                          'email': 'djl@example.com',
-                          'club_member': True,
-                          'captcha': 400})
+        brevet_date = adjust_date('01May2010')
+        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM300 01-May-2010 Brevet')
+            'Pre-registration Confirmation for '
+            'LM300 %s Brevet' % brevet_date.strftime('%d-%b-%Y'))
         self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
         self.assertTrue(
-            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
+            'pre-registered for the BC Randonneurs '
+            'LM300 %s brevet' % brevet_date.strftime('%d-%b-%Y')
             in mail.outbox[0].body)
         self.assertTrue(
-            'http://testserver/register/LM300/01May2010/'
+            'http://testserver/register/LM300/%s/'
+            % brevet_date.strftime('%d%b%Y')
             in mail.outbox[0].body)
         self.assertTrue(
             'print out the event waiver form' in mail.outbox[0].body)
@@ -470,12 +524,14 @@ class TestRegistrationFunction(django.test.TestCase):
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Doug Latornell has Pre-registered for the LM300 01-May-2010')
+            'Doug Latornell has Pre-registered for the '
+            'LM300 %s' % brevet_date.strftime('%d-%b-%Y'))
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
             mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
         self.assertTrue(
-            'Doug Latornell has pre-registered for the LM300 01-May-2010 brevet'
+            'Doug Latornell has pre-registered for the '
+            'LM300 %s brevet' % brevet_date.strftime('%d-%b-%Y')
             in mail.outbox[1].body)
         self.assertTrue(
             'has indicated that zhe is a club member' in mail.outbox[1].body)
@@ -487,11 +543,14 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_to_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
-        self.client.post('/register/LM300/01May2010/form/',
-                         {'name': 'Fibber McGee',
-                          'email': 'fibber@example.com',
-                          'club_member': False,
-                          'captcha': 400})
+        brevet_date = adjust_date('01May2010')
+        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(mail.outbox[0].to, ['fibber@example.com'])
@@ -508,26 +567,32 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
         """
-        self.client.post('/register/LM400/22May2010/form/',
-                         {'name': 'Fibber McGee',
-                          'email': 'fibber@example.com',
-                          'club_member': False,
-                          'qual_info': 'LM300',
-                          'captcha': 400})
+        brevet_date = adjust_date('22May2010')
+        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Fibber McGee',
+             'email': 'fibber@example.com',
+             'club_member': False,
+             'info_answer': 'LM300',
+             'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM400 22-May-2010 Brevet')
+            'Pre-registration Confirmation for LM400 %s Brevet'
+             % brevet_date.strftime('%d-%b-%Y'))
         self.assertTrue(
-            'http://testserver/register/LM400/22May2010/'
+            'http://testserver/register/LM400/%s/'
+            % brevet_date.strftime('%d%b%Y')
             in mail.outbox[0].body)
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Fibber McGee has Pre-registered for the LM400 22-May-2010')
+            'Fibber McGee has Pre-registered for the LM400 %s'
+            % brevet_date.strftime('%d-%b-%Y'))
         self.assertTrue(
-            'listed LM300 as their qualification' in mail.outbox[1].body)
+            'Fibber McGee has answered LM300.' in mail.outbox[1].body)
 
 
 class TestAboutPonyView(django.test.TestCase):
