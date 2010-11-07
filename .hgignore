@@ -1,5 +1,6 @@
 syntax: glob
-randopony.db
+randopony*.db
 .email_host_password
-.secret_key
-.webfaction_secret_key
+.*secret_key
+.coverage
+htmlcov
