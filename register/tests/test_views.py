@@ -487,7 +487,7 @@ class TestRegistrationFunction(django.test.TestCase):
             response, 'You must be a member of the club to ride')
 
 
-    def test_registration_form_sends_email_to_club_member(self):
+    def test_registration_form_sends_email_for_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
         brevet_date = adjust_date('01May2010')
@@ -530,7 +530,7 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(
             mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
         self.assertTrue(
-            'Doug Latornell has pre-registered for the '
+            'Doug Latornell (djl@example.com) has pre-registered for the '
             'LM300 %s brevet' % brevet_date.strftime('%d-%b-%Y')
             in mail.outbox[1].body)
         self.assertTrue(
@@ -540,7 +540,7 @@ class TestRegistrationFunction(django.test.TestCase):
             in mail.outbox[1].body)
 
 
-    def test_registration_form_sends_email_to_non_member(self):
+    def test_registration_form_sends_email_for_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
         brevet_date = adjust_date('01May2010')
@@ -593,6 +593,21 @@ class TestRegistrationFunction(django.test.TestCase):
             % brevet_date.strftime('%d-%b-%Y'))
         self.assertTrue(
             'Fibber McGee has answered LM300.' in mail.outbox[1].body)
+
+
+    def test_registration_form_email_has_rider_address(self):
+        """registration email to organizer contains rider email address
+        """
+        brevet_date = adjust_date('01May2010')
+        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertTrue('djl@example.com' in mail.outbox[1].body)
 
 
 class TestAboutPonyView(django.test.TestCase):
