@@ -63,6 +63,11 @@ def brevet(request, region, event, date, rider_id=None):
     flash message.
     """
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
+    try:
+        brevet = model.Brevet.objects.get(
+            region=region, event=event, date=brevet_date)
+    except model.Brevet.DoesNotExist:
+        raise Http404
     # Display a page with a link to the year's results on the club
     # site for brevets more than 7 days in the past
     if brevet_date < datetime.today().date() - timedelta(days=7):
@@ -82,9 +87,6 @@ def brevet(request, region, event, date, rider_id=None):
     registration_closed = (
         datetime.now() >= datetime.combine(brevet_date - timedelta(days=1),
                                            time(14, 0)))
-    # Get the brevet instance to render
-    brevet = model.Brevet.objects.get(
-        region=region, event=event, date=brevet_date)
     # Suppress the registration closed message 1 hour after the brevet
     # starts. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.

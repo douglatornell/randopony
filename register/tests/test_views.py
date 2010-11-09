@@ -143,6 +143,20 @@ class TestBrevetView(django.test.TestCase):
             response, 'RandoPony::LM300 01-May-%s' % brevet_date.strftime('%Y'))
 
 
+    def test_brevet_get_nonexistent_brevet_past(self):
+        """GET request for nonexistent brevet in past fails with 404
+        """
+        response = self.client.get('/register/LM200/13Mar1961/')
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_brevet_get_nonexistent_brevet_future(self):
+        """GET request for nonexistent brevet in future fails with 404
+        """
+        response = self.client.get('/register/LM2000/25Dec2061/')
+        self.assertEqual(response.status_code, 404)
+
+
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
@@ -159,11 +173,21 @@ class TestBrevetView(django.test.TestCase):
     def test_past_brevet_page(self):
         """page for brevet >7 days ago is pointer to club site
         """
-        response = self.client.get('/register/LM400/05May2009/')
+        brevet_date = adjust_date('01May2010')
+        brevet = model.Brevet.objects.get(
+            region='LM', event=300, date=brevet_date)
+        last_year = date.today().year - 1
+        brevet.date = brevet.date.replace(year=last_year)
+        brevet.save()
+        response = self.client.get(
+            '/register/LM300/{0}/'
+            .format(brevet_date.replace(year=last_year).strftime('%d%b%Y')))
         self.assertContains(
             response, 'brevet is over, and the RandoPony has moved on!')
         self.assertContains(
-            response, 'http://randonneurs.bc.ca/results/09_times/09_times.html')
+            response,
+            'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
+            .format( brevet.date.replace(year=last_year).strftime('%y')))
 
 
     def test_brevet_page_no_riders(self):
