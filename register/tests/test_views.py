@@ -127,11 +127,30 @@ class TestBrevetView(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
     def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
+        """Tweak the test fixture brevets to provide the necessary
+        test context.
         """
+        # Ensure that test fixture brevet dates are in the future.
         for brevet in model.Brevet.objects.all():
             brevet.date = adjust_date(brevet.date)
             brevet.save()
+        # Add a brevet in the past
+        brevet_date = adjust_date('01May2010')
+        brevet = model.Brevet.objects.get(
+            region='LM', event=300, date=brevet_date)
+        last_year = date.today().year - 1
+        brevet.date = brevet.date.replace(year=last_year)
+        brevet.pk = None
+        brevet.save()
+        # Add a brevet that started 3.5 hours ago
+        brevet_date = adjust_date('01May2010')
+        brevet = model.Brevet.objects.get(
+            region='LM', event=300, date=brevet_date)
+        brevet.date = date.today()
+        brevet.start_time = (datetime.now() - timedelta(hours=3.5)).time()
+        brevet.pk = None
+        brevet.save()
+        
 
     def test_brevet_get(self):
         """GET request for brevet page works
@@ -174,11 +193,7 @@ class TestBrevetView(django.test.TestCase):
         """page for brevet >7 days ago is pointer to club site
         """
         brevet_date = adjust_date('01May2010')
-        brevet = model.Brevet.objects.get(
-            region='LM', event=300, date=brevet_date)
         last_year = date.today().year - 1
-        brevet.date = brevet.date.replace(year=last_year)
-        brevet.save()
         response = self.client.get(
             '/register/LM300/{0}/'
             .format(brevet_date.replace(year=last_year).strftime('%d%b%Y')))
@@ -187,7 +202,17 @@ class TestBrevetView(django.test.TestCase):
         self.assertContains(
             response,
             'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
-            .format( brevet.date.replace(year=last_year).strftime('%y')))
+            .format(brevet_date.replace(year=last_year).strftime('%y')))
+
+
+    def test_brevet_started_page(self):
+        """registration closed message suppressed 1 hour after brevet s
+        """
+        response = self.client.get(
+            '/register/LM300/{0}/'
+            .format(datetime.now().date().strftime('%d%b%Y')))
+        self.assertNotContains(
+            response, 'Pre-registration for this event is closed')
 
 
     def test_brevet_page_no_riders(self):
