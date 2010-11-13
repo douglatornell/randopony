@@ -24,13 +24,11 @@ class Brevet(models.Model):
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
     EVENT_CHOICES = (
-        (200, '200 km'),
-        (300, '300 km'),
-        (400, '400 km'),
-        (600, '600 km'),
-        (1000, '1000 km'),
-        (1200, '1200 km'),
-        (2000, '2000 km'),
+        ('200', '200 km'),
+        ('300', '300 km'),
+        ('400', '400 km'),
+        ('600', '600 km'),
+        ('1000', '1000 km'),
         ('dinner', 'Dinner'),
         ('AGM', 'AGM'),
     )
@@ -41,7 +39,8 @@ class Brevet(models.Model):
     route_name = models.CharField(max_length=100)
     start_location = models.CharField(max_length=100)
     start_time = models.TimeField()
-    alt_start_time = models.TimeField('alternate start time', blank=True, null=True)
+    alt_start_time = models.TimeField(
+        'alternate start time', blank=True, null=True)
     organizer_email = models.EmailField()
     info_question = models.TextField(
         "brevet info question", blank=True,
