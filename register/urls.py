@@ -18,23 +18,31 @@ YEAR = '20\d\d'
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
     # Region brevet pages
-    (r'^(?P<region>(%(REGIONS)s))-events/$' % vars(), 'region_brevets'),
+    (r'^(?P<region>({0}))-events/$'.format(REGIONS), 'region_brevets'),
     # Brevet page with rider list
-    (r'^(?P<region>(%(REGIONS)s))(?P<event>%(EVENTS)s)/'
-      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/$' % vars(),
+    (r'^(?P<region>({regions}))(?P<event>{events})/'
+      '(?P<date>({days})({months})({year}))/$'
+      .format(regions=REGIONS, events=EVENTS,
+              days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
     # Brevet page with rider pre-registration confirmation message
-    (r'^(?P<region>(%(REGIONS)s))(?P<event>%(EVENTS)s)/'
-      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/(?P<rider_id>\d+)/$' % vars(),
+    (r'^(?P<region>({regions}))(?P<event>{events})/'
+      '(?P<date>({days})({months})({year}))/(?P<rider_id>\d+)/$'
+      .format(regions=REGIONS, events=EVENTS,
+              days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
     # Brevet page with rider pre-registration duplication message
-    (r'^(?P<region>(%(REGIONS)s))(?P<event>%(EVENTS)s)/'
-      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/'
-      '(?P<rider_id>\d+)/duplicate/$' % vars(),
+    (r'^(?P<region>({regions}))(?P<event>{events})/'
+      '(?P<date>({days})({months})({year}))/'
+      '(?P<rider_id>\d+)/duplicate/$'
+      .format(regions=REGIONS, events=EVENTS,
+              days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
     # Rider pre-registration form page
-    (r'^(?P<region>(%(REGIONS)s))(?P<event>%(EVENTS)s)/'
-      '(?P<date>(%(DAYS)s)(%(MONTHS)s)(%(YEAR)s))/form/$' % vars(),
+    (r'^(?P<region>({regions}))(?P<event>{events})/'
+      '(?P<date>({days})({months})({year}))/form/$'
+      .format(regions=REGIONS, events=EVENTS,
+              days=DAYS, months=MONTHS, year=YEAR),
       'registration_form'),
     (r'^organizer_info/$', 'organizer_info'),
     (r'^about_pony/$', 'about_pony'),
