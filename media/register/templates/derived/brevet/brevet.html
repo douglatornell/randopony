@@ -121,9 +121,11 @@ Location:</strong> {{ brevet.start_location }}</p>
 </table>
 {% else %}
 Nobody has pre-registered.
+{% if not registration_closed %}
 <a href="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
 Be the first!
 </a>
+{% endif %}
 {% endif %}
 
 {% if show_filler_photo %}
