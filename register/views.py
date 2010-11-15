@@ -55,17 +55,46 @@ def region_brevets(request, region):
         context, context_instance=RequestContext(request))
 
 
-def _registration_closed(brevet_date):
+def _registration_closed(brevet):
     """ Registration for brevets closes at noon on the day before the
-    event. Note that the webfaction server hosting randopony is 2
-    hours ahead of Pacific time.
+    event.
+
+    Note that the webfaction server hosting randopony is 2 hours ahead
+    of Pacific time.
     """
     one_day = timedelta(days=1)
     server_tz_offset = 2
     noon = time(12 + server_tz_offset, 0)
     registration_closed = (
-        datetime.now() >= datetime.combine(brevet_date - one_day, noon))
+        datetime.now() >= datetime.combine(brevet.date - one_day, noon))
     return registration_closed
+
+
+def _brevet_started(brevet):
+    """Start window for brevet closes 1 hour after brevet start time.
+
+    Note that the webfaction server hosting randopony is 2 hours ahead
+    of Pacific time.
+    """
+    brevet_date_time = datetime.combine(brevet.date, brevet.start_time)
+    server_tz_offset = 2
+    one_hour = timedelta(hours=1 + server_tz_offset)
+    brevet_started = datetime.now() >= brevet_date_time + one_hour
+    return brevet_started
+
+
+def _brevet_in_past(brevet, request):
+    """Render a page with a link to the year's results on the club
+    site for brevets more than 7 days in the past.
+    """
+    results_url = None
+    today = datetime.today().date()
+    seven_days = timedelta(days=7)
+    if brevet.date < today - seven_days:
+        results_url = (
+            'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
+            .format(str(brevet.date.year)[-2:]))
+    return results_url
 
 
 def brevet(request, region, event, date, rider_id=None):
@@ -73,68 +102,54 @@ def brevet(request, region, event, date, rider_id=None):
     sometimes the registration confirmation, or duplicate registration
     flash message.
     """
-    brevet_date = datetime.strptime(date, '%d%b%Y').date()
     try:
         brevet = model.Brevet.objects.get(
-            region=region, event=event, date=brevet_date)
+            region=region, event=event,
+            date=datetime.strptime(date, '%d%b%Y').date())
     except model.Brevet.DoesNotExist:
         raise Http404
-    # Display a page with a link to the year's results on the club
-    # site for brevets more than 7 days in the past
-    if brevet_date < datetime.today().date() - timedelta(days=7):
-        date = '%s-%s-%s' % (date[:2], date[2:5], date[-4:])
-        year_digits = date[-2:]
-        results_url = (
-            'http://randonneurs.bc.ca/results/%(year_digits)s_times/'
-            '%(year_digits)s_times.html' % vars())
-        return render_to_response(
-            'derived/home/past_brevet.html',
-            {'brevet': '%(region)s%(event)s %(date)s' % vars(),
-             'results_url': results_url},
-            context_instance=RequestContext(request))
-    # Suppress the registration closed message 1 hour after the brevet
-    # starts. Note that the webfaction server hosting randopony is 2
-    # hours ahead of Pacific time.
-    brevet_started = False
-    if (datetime.now() >= datetime.combine(
-            brevet_date, brevet.start_time) + timedelta(hours=3)):
-        brevet_started = True
-    # Get the rider instance to use for the confirmation message, if
-    # applicable
-    if rider_id is not None:
-        rider = model.Rider.objects.get(pk=int(rider_id))
+    results_url = _brevet_in_past(brevet, request)
+    if results_url:
+        template = 'derived/home/past_brevet.html'
+        context = {
+            'brevet': str(brevet),
+            'results_url': results_url
+        }
     else:
-        rider = None
-    rider_email = None if not rider else h.email2words(rider.email)
-    duplicate_registration = (True if request.path.endswith('duplicate/')
-                              else False)
-    # Get the list of pre-registered riders
-    rider_list = model.Rider.objects.filter(
-        brevet__region=region, brevet__event=event,
-        brevet__date=brevet_date)
-    show_filler_photo = True if len(rider_list) < 15 else False
+        rider_list = model.Rider.objects.filter(
+            brevet__region=region, brevet__event=event,
+            brevet__date=brevet.date)
+        try:
+            rider = model.Rider.objects.get(pk=int(rider_id))
+            rider_email = h.email2words(rider.email)
+        except (TypeError, model.Rider.DoesNotExist, AttributeError):
+            rider = rider_email = None
+        template = 'derived/brevet/brevet.html'
+        context = {
+            'brevet': brevet,
+            'region': dict(abbrev=region, long_name=model.REGIONS[region]),
+            'registration_closed': _registration_closed(brevet),
+            'brevet_started': _brevet_started(brevet),
+            'show_filler_photo': len(rider_list) < 15,
+            'rider_list': rider_list,
+            'rider': rider,
+            'rider_email': rider_email,
+            'duplicate_registration': request.path.endswith('duplicate/'),
+        }
     return render_to_response(
-        'derived/brevet/brevet.html',
-        {'brevet': brevet, 'rider': rider, 'rider_list': rider_list,
-         'region': dict(abbrev=region, long_name=model.REGIONS[region]),
-         'rider_email': rider_email,
-         'show_filler_photo': show_filler_photo,
-         'duplicate_registration': duplicate_registration,
-         'registration_closed': _registration_closed(brevet_date),
-         'brevet_started': brevet_started},
-        context_instance=RequestContext(request))
+        template, context, context_instance=RequestContext(request))
 
 
 def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
-    brevet_date = datetime.strptime(date, '%d%b%Y').date()
-    if _registration_closed(brevet_date):
-        raise Http404
     try:
         brevet = model.Brevet.objects.get(
-            region=region, event=event, date=brevet_date)
+            region=region, event=event,
+            date=datetime.strptime(date, '%d%b%Y').date())
     except model.Brevet.DoesNotExist:
+        raise Http404
+    if _registration_closed(brevet):
         raise Http404
     form_class = (model.RiderForm if brevet.info_question
                   else model.RiderFormWithoutQualification)
@@ -160,10 +175,9 @@ def registration_form(request, region, event, date):
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     }
-    response = render_to_response(
+    return render_to_response(
         'derived/register/registration_form.html',
         context, context_instance=RequestContext(request))
-    return response
 
 
 def _process_registration(brevet, rider, request):
