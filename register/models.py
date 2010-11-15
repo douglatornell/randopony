@@ -1,7 +1,5 @@
 """Model classes for RandoPony site register app
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-05
 """
 from django import forms
 from django.conf import settings
@@ -20,6 +18,7 @@ REGIONS = dict(
 
 
 class Brevet(models.Model):
+
     REGION_CHOICES = [
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
@@ -32,6 +31,9 @@ class Brevet(models.Model):
         ('dinner', 'Dinner'),
         ('AGM', 'AGM'),
     )
+    
+    class Meta():
+        ordering = ['date']
 
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
     event = models.CharField(max_length=30, choices=EVENT_CHOICES)
@@ -41,21 +43,21 @@ class Brevet(models.Model):
     start_time = models.TimeField()
     alt_start_time = models.TimeField(
         'alternate start time', blank=True, null=True)
-    organizer_email = models.EmailField()
+    organizer_email = models.CharField(
+        max_length=100,
+        help_text='Use commas to separate multiple email addresses')
     info_question = models.TextField(
         "brevet info question", blank=True,
         help_text='Optional question that will appear on the '
                   'pre-registration form')
+
 
     def __unicode__(self):
         return ('%(region)s%(event)s %(date)s'
                 % dict(region=self.region,
                        event=self.event,
                        date=self.date.strftime('%d-%b-%Y')))
-
-    class Meta():
-        ordering = ['date']
-
+        
 
 class Rider(models.Model):
     name = models.CharField(max_length=30)
