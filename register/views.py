@@ -1,7 +1,5 @@
 """View functions for RandoPony site register app.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-05
 """
 # Standard library:
 from datetime import datetime, time, timedelta
@@ -57,6 +55,19 @@ def region_brevets(request, region):
         context, context_instance=RequestContext(request))
 
 
+def _registration_closed(brevet_date):
+    """ Registration for brevets closes at noon on the day before the
+    event. Note that the webfaction server hosting randopony is 2
+    hours ahead of Pacific time.
+    """
+    one_day = timedelta(days=1)
+    server_tz_offset = 2
+    noon = time(12 + server_tz_offset, 0)
+    registration_closed = (
+        datetime.now() >= datetime.combine(brevet_date - one_day, noon))
+    return registration_closed
+
+
 def brevet(request, region, event, date, rider_id=None):
     """Display the brevet information, pre-registered riders list, and
     sometimes the registration confirmation, or duplicate registration
@@ -81,12 +92,6 @@ def brevet(request, region, event, date, rider_id=None):
             {'brevet': '%(region)s%(event)s %(date)s' % vars(),
              'results_url': results_url},
             context_instance=RequestContext(request))
-    # Registration for brevets closes at noon on the day before the
-    # event. Note that the webfaction server hosting randopony is 2
-    # hours ahead of Pacific time.
-    registration_closed = (
-        datetime.now() >= datetime.combine(brevet_date - timedelta(days=1),
-                                           time(14, 0)))
     # Suppress the registration closed message 1 hour after the brevet
     # starts. Note that the webfaction server hosting randopony is 2
     # hours ahead of Pacific time.
@@ -115,7 +120,7 @@ def brevet(request, region, event, date, rider_id=None):
          'rider_email': rider_email,
          'show_filler_photo': show_filler_photo,
          'duplicate_registration': duplicate_registration,
-         'registration_closed': registration_closed,
+         'registration_closed': _registration_closed(brevet_date),
          'brevet_started': brevet_started},
         context_instance=RequestContext(request))
 
@@ -124,19 +129,13 @@ def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
-    # Registration for brevets closes at noon on the day before the
-    # event. Note that the webfaction server hosting randopony is 2
-    # hours ahead of Pacific time.
-    if (brevet_date - datetime.today().date() < timedelta(days=2)
-        and datetime.now().hour >= 14):
+    if _registration_closed(brevet_date):
         raise Http404
     brevet = model.Brevet.objects.get(
         region=region, event=event, date=brevet_date)
     brevet_page = 'register/{0}{1}/{2}'.format(region, event, date)
-    if brevet.info_question:
-        form_class = model.RiderForm
-    else:
-        form_class = model.RiderFormWithoutQualification
+    form_class = (model.RiderForm if brevet.info_question
+                  else model.RiderFormWithoutQualification)
     if request.method == 'POST':
         # Process submitted form data
         rider = form_class(
