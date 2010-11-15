@@ -131,9 +131,11 @@ def registration_form(request, region, event, date):
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
     if _registration_closed(brevet_date):
         raise Http404
-    brevet = model.Brevet.objects.get(
-        region=region, event=event, date=brevet_date)
-    brevet_page = 'register/{0}{1}/{2}'.format(region, event, date)
+    try:
+        brevet = model.Brevet.objects.get(
+            region=region, event=event, date=brevet_date)
+    except model.Brevet.DoesNotExist:
+        raise Http404
     form_class = (model.RiderForm if brevet.info_question
                   else model.RiderFormWithoutQualification)
     if request.method == 'POST':
@@ -147,36 +149,45 @@ def registration_form(request, region, event, date):
             # and error messages
             form = rider
         else:
-            # Check for duplicate registration
-            try:
-                check_rider = model.Rider.objects.get(
-                    name=new_rider.name, email=new_rider.email, brevet=brevet)
-                # Redirect to brevet page with duplicate flag to
-                # trigger appropriate flash message
-                return redirect(
-                    '/{0}/{1:d}/duplicate/'.format(brevet_page, check_rider.id))
-            except model.Rider.DoesNotExist:
-                # Save new rider pre-registration and send emails to
-                # rider and brevet organizer
-                new_rider.save()
-                host = request.get_host()
-                _email_to_rider(brevet, new_rider, host)
-                _email_to_organizer(brevet, new_rider, host)
-                # Redirect to brevet page with rider record id to
-                # trigger registartion confirmation flash message
-                return redirect(
-                    '/{0}/{1:d}/'.format(brevet_page, new_rider.id))
+            url = _process_registration(brevet, new_rider, request)
+            return redirect(url)
     else:
         # Unbound form to render entry form
         form = form_class()
-    captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
-    return render_to_response(
+    context = {
+        'brevet': brevet,
+        'region_name': model.REGIONS[region],
+        'form': form,
+        'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
+    }
+    response = render_to_response(
         'derived/register/registration_form.html',
-        {'brevet': brevet,
-         'region_name': model.REGIONS[region],
-         'form': form,
-         'captcha_question': captcha_question},
-        context_instance=RequestContext(request))
+        context, context_instance=RequestContext(request))
+    return response
+
+
+def _process_registration(brevet, rider, request):
+    """Process rider pre-registration for brevet.
+    """
+    brevet_page = 'register/{0.region}{0.event}/{1}'.format(
+        brevet, brevet.date.strftime('%d%b%Y'))
+    # Check for duplicate registration
+    try:
+        check_rider = model.Rider.objects.get(
+            name=rider.name, email=rider.email, brevet=brevet)
+        # Redirect to brevet page with duplicate flag to
+        # trigger appropriate flash message
+        return '/{0}/{1:d}/duplicate/'.format(brevet_page, check_rider.id)
+    except model.Rider.DoesNotExist:
+        # Save new rider pre-registration and send emails to
+        # rider and brevet organizer
+        rider.save()
+        host = request.get_host()
+        _email_to_rider(brevet, rider, host)
+        _email_to_organizer(brevet, rider, host)
+        # Redirect to brevet page with rider record id to
+        # trigger registration confirmation flash message
+        return '/{0}/{1:d}/'.format(brevet_page, rider.id)
 
 
 def _email_to_rider(brevet, rider, host):
