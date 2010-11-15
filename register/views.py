@@ -130,12 +130,9 @@ def registration_form(request, region, event, date):
     if (brevet_date - datetime.today().date() < timedelta(days=2)
         and datetime.now().hour >= 14):
         raise Http404
-    # Get the brevet instance that the rider is registering for
     brevet = model.Brevet.objects.get(
         region=region, event=event, date=brevet_date)
-    # Get the CAPTCHA question from the settings
-    captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
-    # Choose the appropriate registration form class
+    brevet_page = 'register/{0}{1}/{2}'.format(region, event, date)
     if brevet.info_question:
         form_class = model.RiderForm
     else:
@@ -153,56 +150,18 @@ def registration_form(request, region, event, date):
                 # Redirect to brevet page with duplicate flag to
                 # trigger appropriate flash message
                 return redirect(
-                    '/register/%(region)s%(event)s/%(date)s/'
-                    '%(rider_id)d/duplicate/'
-                    % {'region': region, 'event': event, 'date': date,
-                       'rider_id': check_rider.id})
+                    '/{0}/{1:d}/duplicate/'.format(brevet_page, check_rider.id))
             except model.Rider.DoesNotExist:
                 # Save new rider pre-registration and send emails to
                 # rider and brevet organizer
                 new_rider.save()
-                try:
-                    host = request.META['HTTP_HOST']
-                except KeyError:
-                    # Workaround for tests where there is no HTTP_HOST
-                    # in the request header
-                    host = 'testserver'
-                brevet_page_uri = '/'.join(
-                    ('http:/', host,
-                     'register/%(region)s%(event)s/%(date)s/' % vars()))
-                email = mail.EmailMessage(
-                    subject='Pre-registration Confirmation for {0} Brevet'
-                            .format(brevet),
-                    body=render_to_string(
-                        'email/to_rider.txt',
-                        {'brevet': brevet,
-                         'rider': new_rider,
-                         'brevet_page_uri': brevet_page_uri}),
-                    from_email=brevet.organizer_email,
-                    to=[new_rider.email],
-                    headers={
-                        'Sender': settings.REGISTRATION_EMAIL_FROM,
-                        'Reply-To': brevet.organizer_email})
-                email.send()
-                email = mail.EmailMessage(
-                    subject='{0} has Pre-registered for the {1}'
-                            .format(new_rider.name, brevet),
-                    body=render_to_string(
-                        'email/to_organizer.txt',
-                        {'brevet': brevet,
-                         'rider': new_rider,
-                         'brevet_page_uri': brevet_page_uri,
-                         'admin_email': settings.ADMINS[0][1]}),
-                    from_email=settings.REGISTRATION_EMAIL_FROM,
-                    to=[addr.strip() for addr
-                        in brevet.organizer_email.split(',')])
-                email.send()
+                host = request.get_host()
+                _email_to_rider(brevet, new_rider, host)
+                _email_to_organizer(brevet, new_rider, host)
                 # Redirect to brevet page with rider record id to
                 # trigger registartion confirmation flash message
                 return redirect(
-                    '/register/%(region)s%(event)s/%(date)s/%(rider_id)d/'
-                    % {'region': region, 'event': event, 'date': date,
-                       'rider_id': new_rider.id})
+                    '/{0}/{1:d}/'.format(brevet_page, new_rider.id))
         except ValueError:
             # Validation error, so re-render form with rider inputs
             # and error messages
@@ -210,6 +169,7 @@ def registration_form(request, region, event, date):
     else:
         # Unbound form to render entry form
         form = form_class()
+    captcha_question = settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     return render_to_response(
         'derived/register/registration_form.html',
         {'brevet': brevet,
@@ -217,6 +177,49 @@ def registration_form(request, region, event, date):
          'form': form,
          'captcha_question': captcha_question},
         context_instance=RequestContext(request))
+
+
+def _email_to_rider(brevet, rider, host):
+    """Send pre-registration confirmation email to rider.
+    """
+    brevet_page = 'register/{0.region}{0.event}/{1}'.format(
+        brevet, brevet.date.strftime('%d%b%Y'))
+    brevet_page_uri = 'http://{0}/{1}/'.format(host, brevet_page)
+    email = mail.EmailMessage(
+        subject='Pre-registration Confirmation for {0} Brevet'
+                .format(brevet),
+        body=render_to_string(
+            'email/to_rider.txt',
+            {'brevet': brevet,
+             'rider': rider,
+             'brevet_page_uri': brevet_page_uri}),
+        from_email=brevet.organizer_email,
+        to=[rider.email],
+        headers={
+            'Sender': settings.REGISTRATION_EMAIL_FROM,
+            'Reply-To': brevet.organizer_email})
+    email.send()
+
+
+def _email_to_organizer(brevet, rider, host):
+    """Send rider pre-registration notification email to event organizer(s).
+    """
+    brevet_page = 'register/{0.region}{0.event}/{1}'.format(
+        brevet, brevet.date.strftime('%d%b%Y'))
+    brevet_page_uri = 'http://{0}/{1}/'.format(host, brevet_page)
+    email = mail.EmailMessage(
+    subject='{0} has Pre-registered for the {1}'
+            .format(rider.name, brevet),
+    body=render_to_string(
+        'email/to_organizer.txt',
+        {'brevet': brevet,
+         'rider': rider,
+         'brevet_page_uri': brevet_page_uri,
+         'admin_email': settings.ADMINS[0][1]}),
+    from_email=settings.REGISTRATION_EMAIL_FROM,
+    to=[addr.strip() for addr in brevet.organizer_email.split(',')])
+    email.send()
+
 
 
 def about_pony(request):
