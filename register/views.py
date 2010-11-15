@@ -139,10 +139,15 @@ def registration_form(request, region, event, date):
         form_class = model.RiderFormWithoutQualification
     if request.method == 'POST':
         # Process submitted form data
+        rider = form_class(
+            request.POST, instance=model.Rider(brevet=brevet))
         try:
-            rider = model.Rider(brevet=brevet)
-            rider = form_class(request.POST, instance=rider)
             new_rider = rider.save(commit=False)
+        except ValueError:
+            # Validation error, so re-render form with rider inputs
+            # and error messages
+            form = rider
+        else:
             # Check for duplicate registration
             try:
                 check_rider = model.Rider.objects.get(
@@ -162,10 +167,6 @@ def registration_form(request, region, event, date):
                 # trigger registartion confirmation flash message
                 return redirect(
                     '/{0}/{1:d}/'.format(brevet_page, new_rider.id))
-        except ValueError:
-            # Validation error, so re-render form with rider inputs
-            # and error messages
-            form = rider
     else:
         # Unbound form to render entry form
         form = form_class()
@@ -219,7 +220,6 @@ def _email_to_organizer(brevet, rider, host):
     from_email=settings.REGISTRATION_EMAIL_FROM,
     to=[addr.strip() for addr in brevet.organizer_email.split(',')])
     email.send()
-
 
 
 def about_pony(request):
