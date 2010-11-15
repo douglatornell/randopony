@@ -170,25 +170,33 @@ def registration_form(request, region, event, date):
                 brevet_page_uri = '/'.join(
                     ('http:/', host,
                      'register/%(region)s%(event)s/%(date)s/' % vars()))
-                mail.send_mail(
-                    'Pre-registration Confirmation for %(brevet)s Brevet'
-                    % vars(),
-                    render_to_string(
+                email = mail.EmailMessage(
+                    subject='Pre-registration Confirmation for {0} Brevet'
+                            .format(brevet),
+                    body=render_to_string(
                         'email/to_rider.txt',
-                        {'brevet': brevet, 'rider': new_rider,
+                        {'brevet': brevet,
+                         'rider': new_rider,
                          'brevet_page_uri': brevet_page_uri}),
-                    brevet.organizer_email,
-                    [new_rider.email])
-                mail.send_mail(
-                    '%(name)s has Pre-registered for the %(brevet)s'
-                    % dict(name=new_rider.name, brevet=brevet),
-                    render_to_string(
+                    from_email=brevet.organizer_email,
+                    to=[new_rider.email],
+                    headers={
+                        'Sender': settings.REGISTRATION_EMAIL_FROM,
+                        'Reply-To': brevet.organizer_email})
+                email.send()
+                email = mail.EmailMessage(
+                    subject='{0} has Pre-registered for the {1}'
+                            .format(new_rider.name, brevet),
+                    body=render_to_string(
                         'email/to_organizer.txt',
-                        {'brevet': brevet, 'rider': new_rider,
+                        {'brevet': brevet,
+                         'rider': new_rider,
                          'brevet_page_uri': brevet_page_uri,
                          'admin_email': settings.ADMINS[0][1]}),
-                    settings.REGISTRATION_EMAIL_FROM,
-                    [brevet.organizer_email])
+                    from_email=settings.REGISTRATION_EMAIL_FROM,
+                    to=[addr.strip() for addr
+                        in brevet.organizer_email.split(',')])
+                email.send()
                 # Redirect to brevet page with rider record id to
                 # trigger registartion confirmation flash message
                 return redirect(

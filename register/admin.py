@@ -4,15 +4,33 @@
 :Created: 2009-12-05
 """
 # Django:
+from django import forms
 from django.contrib import admin
+from django.core.validators import validate_email
 # Application:
 from randopony.register.models import Brevet, Rider
+
+
+class CustomBrevetAdminForm(forms.ModelForm):
+    """Custom admin form to validate organizer email address(es).
+
+    Facilitates multiple organizer addresses as a comma separated list.
+    """
+    class Meta:
+        model = Brevet
+
+    def clean_organizer_email(self):
+        data = self.cleaned_data['organizer_email']
+        for email in (email.strip() for email in data.split(',')):
+            validate_email(email)
+        return data
 
 
 class BrevetAdmin(admin.ModelAdmin):
     """Customize presentation of Brevet instance in admin.
     """
-    # Set the grouping and order of the fields in the edit form
+    form = CustomBrevetAdminForm
+    # Set the order of the fields in the edit form
     fieldsets = [
         (None, {'fields': ['region', 'event', 'date', 'route_name',
                            'start_location', 'start_time',  'alt_start_time',
@@ -21,6 +39,7 @@ class BrevetAdmin(admin.ModelAdmin):
     # Display the brevets distance choices as radio buttons instead of
     # a select list
     radio_fields = {'event': admin.HORIZONTAL}
+        
 
 
 class RiderAdmin(admin.ModelAdmin):

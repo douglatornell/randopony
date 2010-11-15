@@ -51,3 +51,16 @@
     start_location: Broadway & Alma St, Vancouver
     start_time: '06:00'
     alt_start_time: '20:00'
+
+- model: register.brevet
+  pk: 5
+  fields:
+    date: 2010-08-07
+    event: 600
+    organizer_email: mcroy@example.com, dug.andrusiek@example.com
+    info_question: ''
+    region: VI
+    route_name: Next Chance
+    start_location: Tim Horton's, Saanich Plaza, 3501 Ravine Way, Victoria
+    start_time: '05:00'
+    alt_start_time: null

@@ -1,7 +1,5 @@
 """View tests for RandoPony register app.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-06
 """
 # Standard library:
 from datetime import date, datetime, timedelta
@@ -71,7 +69,11 @@ class TestHomeView(django.test.TestCase):
         response = self.client.get(
             reverse('randopony.register.views.home'))
         self.assertContains(response, 'Lower Mainland')
-        self.assertNotContains(response, 'Vancouver Island')
+        self.assertContains(response, 'Vancouver Island')
+        self.assertNotContains(response, 'Southern Interior')
+        self.assertNotContains(response, 'Peace Region')
+        self.assertNotContains(response, 'Club Events')
+        self.assertNotContains(response, 'Super Week')
 
 
 class TestRegionBrevetsView(django.test.TestCase):
@@ -103,7 +105,7 @@ class TestRegionBrevetsView(django.test.TestCase):
         """region_brevets view renders brevets list
         """
         response = self.client.get('/register/LM-events/')
-        for brevet in model.Brevet.objects.all():
+        for brevet in model.Brevet.objects.filter(region='LM'):
             self.assertContains(response, unicode(brevet))
 
 
@@ -266,7 +268,7 @@ class TestRegistrationFormView(django.test.TestCase):
             brevet.save()
 
     def test_registration_form_get(self):
-        """GET request for registration from page works
+        """GET request for registration form page works
         """
         brevet_date = adjust_date('22May2010')
         response = self.client.get(
@@ -338,7 +340,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration from submit w/ valid data redirects to brevet pg w/ msg
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/%s/form/' % brevet_date
+        url = '/register/LM300/{0}/form/'.format(brevet_date)
         response = self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -348,7 +350,7 @@ class TestRegistrationFunction(django.test.TestCase):
             follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
         self.assertRedirects(
-            response, '/register/LM300/%(brevet_date)s/%(rider_id)d/' % vars())
+            response, '/register/LM300/{0}/{1}/'.format(brevet_date, rider_id))
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
         self.assertContains(
@@ -657,6 +659,46 @@ class TestRegistrationFunction(django.test.TestCase):
              'captcha': 400})
         self.assertEqual(len(mail.outbox), 2)
         self.assertTrue('djl@example.com' in mail.outbox[1].body)
+
+
+    def test_registration_form_email_to_2_organizers(self):
+        """registration email goes to multiple organizers
+        """
+        brevet_date = adjust_date('07Aug2010')
+        url = '/register/VI600/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(
+            set(mail.outbox[1].to),
+            set('mcroy@example.com dug.andrusiek@example.com'.split()))
+
+
+    def test_registration_form_email_replyto_2_organizers(self):
+        """registration email to rider has 2 organizers in reply-to header
+        """
+        brevet_date = adjust_date('07Aug2010')
+        url = '/register/VI600/%s/form/' % brevet_date.strftime('%d%b%Y')
+        self.client.post(
+            url,
+            {'name': 'Doug Latornell',
+             'email': 'djl@example.com',
+             'club_member': True,
+             'captcha': 400})
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(
+            mail.outbox[0].from_email,
+            'mcroy@example.com, dug.andrusiek@example.com')
+        self.assertEqual(
+            mail.outbox[0].extra_headers['Reply-To'],
+            'mcroy@example.com, dug.andrusiek@example.com')
+        self.assertEqual(
+            mail.outbox[0].extra_headers['Sender'],
+            settings.REGISTRATION_EMAIL_FROM)
 
 
 class TestAboutPonyView(django.test.TestCase):
