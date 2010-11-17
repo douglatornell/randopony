@@ -25,13 +25,12 @@ def home(request):
         'abbrev': region,
         'long_name': model.REGIONS[region]
         } for region in regions]
-    context = {
+    context = RequestContext(request, {
         'regions': region_list,
         'admin_email': h.email2words(settings.ADMINS[0][1])
-    }
-    return render_to_response(
-        'derived/home/home.html',
-        context, context_instance=RequestContext(request))
+    })
+    response = render_to_response('derived/home/home.html', context)
+    return response
 
 
 def region_brevets(request, region):
@@ -43,16 +42,15 @@ def region_brevets(request, region):
         ).exclude(
             date__lt=(seven_days_ago)
         )
-    context = {
+    context = RequestContext(request, {
         'region': {
             'abbrev': region,
-            'long_name': model.REGIONS[region]
-        },
+            'long_name': model.REGIONS[region]},
         'brevets': brevet_list
-    }
-    return render_to_response(
-        'derived/region_brevets/region_brevets.html',
-        context, context_instance=RequestContext(request))
+    })
+    response = render_to_response(
+        'derived/region_brevets/region_brevets.html', context)
+    return response
 
 
 def _registration_closed(brevet):
@@ -111,10 +109,10 @@ def brevet(request, region, event, date, rider_id=None):
     results_url = _brevet_in_past(brevet, request)
     if results_url:
         template = 'derived/home/past_brevet.html'
-        context = {
+        context = RequestContext(request, {
             'brevet': str(brevet),
             'results_url': results_url
-        }
+        })
     else:
         rider_list = model.Rider.objects.filter(
             brevet__region=region, brevet__event=event,
@@ -125,7 +123,7 @@ def brevet(request, region, event, date, rider_id=None):
         except (TypeError, model.Rider.DoesNotExist, AttributeError):
             rider = rider_email = None
         template = 'derived/brevet/brevet.html'
-        context = {
+        context = RequestContext(request, {
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
             'registration_closed': _registration_closed(brevet),
@@ -135,9 +133,9 @@ def brevet(request, region, event, date, rider_id=None):
             'rider': rider,
             'rider_email': rider_email,
             'duplicate_registration': request.path.endswith('duplicate/'),
-        }
-    return render_to_response(
-        template, context, context_instance=RequestContext(request))
+        })
+    response = render_to_response(template, context)
+    return response
 
 
 def registration_form(request, region, event, date):
@@ -169,15 +167,15 @@ def registration_form(request, region, event, date):
     else:
         # Unbound form to render entry form
         form = form_class()
-    context = {
+    context = RequestContext(request, {
         'brevet': brevet,
         'region_name': model.REGIONS[region],
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
-    }
-    return render_to_response(
-        'derived/register/registration_form.html',
-        context, context_instance=RequestContext(request))
+    })
+    response = render_to_response(
+        'derived/register/registration_form.html', context)
+    return response
 
 
 def _process_registration(brevet, rider, request):
@@ -249,9 +247,9 @@ def _email_to_organizer(brevet, rider, host):
 def about_pony(request):
     """About the randopony page.
     """
-    return render_to_response(
-        'derived/about/about-pony.html',
-        context_instance=RequestContext(request))
+    context = RequestContext(request, {})
+    response = render_to_response('derived/about/about-pony.html', context)
+    return response
 
 
 def organizer_info(request):
@@ -259,7 +257,9 @@ def organizer_info(request):
     listed on the randopony site.
     """
     admin_email = h.email2words(settings.ADMINS[0][1])
-    return render_to_response(
-        'derived/organizer-info/organizer-info.html',
-        {'admin_email': admin_email},
-        context_instance=RequestContext(request))
+    context = RequestContext(request, {
+        'admin_email': admin_email
+    })
+    response = render_to_response(
+        'derived/organizer-info/organizer-info.html', context)
+    return response
