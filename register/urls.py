@@ -17,6 +17,8 @@ YEAR = '20\d\d'
 
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
+    (r'^organizer_info/$', 'organizer_info'),
+                       
     # Region brevet pages
     (r'^(?P<region>({0}))-events/$'.format(REGIONS), 'region_brevets'),
     # Brevet page with rider list
@@ -25,12 +27,14 @@ urlpatterns = patterns('randopony.register.views',
       .format(regions=REGIONS, events=EVENTS,
               days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
+                       
     # Brevet page with rider pre-registration confirmation message
     (r'^(?P<region>({regions}))(?P<event>{events})/'
       '(?P<date>({days})({months})({year}))/(?P<rider_id>\d+)/$'
       .format(regions=REGIONS, events=EVENTS,
               days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
+                       
     # Brevet page with rider pre-registration duplication message
     (r'^(?P<region>({regions}))(?P<event>{events})/'
       '(?P<date>({days})({months})({year}))/'
@@ -38,12 +42,17 @@ urlpatterns = patterns('randopony.register.views',
       .format(regions=REGIONS, events=EVENTS,
               days=DAYS, months=MONTHS, year=YEAR),
       'brevet'),
+                       
     # Rider pre-registration form page
     (r'^(?P<region>({regions}))(?P<event>{events})/'
       '(?P<date>({days})({months})({year}))/form/$'
       .format(regions=REGIONS, events=EVENTS,
               days=DAYS, months=MONTHS, year=YEAR),
       'registration_form'),
-    (r'^organizer_info/$', 'organizer_info'),
-    (r'^about_pony/$', 'about_pony'),
+)
+
+urlpatterns += patterns('django.views.generic.simple',
+    (r'^about_pony/$', 'direct_to_template',
+     {'template': 'derived/about/about-pony.html'},
+     'about_pony')
 )
