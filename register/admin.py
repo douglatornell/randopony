@@ -1,7 +1,5 @@
 """Admin configuration for RandoPony site register app.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-05
 """
 # Django:
 from django import forms

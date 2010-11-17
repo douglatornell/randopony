@@ -1,7 +1,5 @@
 """Django settings for development instance of RandoPony site.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-05
 """
 from os import path
 

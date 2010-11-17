@@ -1,7 +1,5 @@
 """Django settings for WebFaction deployment of RandoPony site.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-27
 """
 from os import path
 

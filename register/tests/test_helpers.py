@@ -1,7 +1,5 @@
 """Unit tests for helpers module.
 
-:Author: Doug Latornell <djl@douglatornell.ca>
-:Created: 2009-12-25
 """
 # Python 2.6 with future features:
 from __future__ import absolute_import
