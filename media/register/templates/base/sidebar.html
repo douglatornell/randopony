@@ -4,11 +4,7 @@
 <div id="sidebar">
   <ul>
     {% block home-link %}
-    <li>
-      <a href="{% url register.views.home %}" class="selected">
-	Home
-      </a>
-    </li>
+    <li><a href="{% url register.views.home %}" class="selected">Home</a></li>
     {% endblock %}
     
     {% block region-link %}{% endblock %}
@@ -18,23 +14,17 @@
     {% block brevet-list %}{% endblock %}
     
     {% block info-links %}{% endblock %}
-    
+
+    {% block rando-site-link %}
     <li><a href="http://randonneurs.bc.ca">randonneurs.bc.ca</a></li>
+    {% endblock %}
     
     {% block organizer-info-link %}
-    <li>
-      <a href="{% url organizer_info %}">
-	Info for Brevet Organizers
-      </a>
-    </li>
+    <li><a href="{% url organizer_info %}">Info for Brevet Organizers</a></li>
     {% endblock %}
     
     {% block pony-info-link %}
-    <li>
-      <a href="{% url about_pony %}">
-	What's up with the pony?
-      </a>
-    </li>
+    <li><a href="{% url about_pony %}">What's up with the pony?</a></li>
     {% endblock %}
  </ul>
 </div>
