@@ -4,8 +4,10 @@
 :Created: 2009-12-05
 """
 # Django:
+from django.conf import settings
 from django.conf.urls.defaults import patterns
 # Application:
+import randopony.register.helpers as h
 import randopony.register.models as model
 
 
@@ -17,7 +19,6 @@ YEAR = '20\d\d'
 
 urlpatterns = patterns('randopony.register.views',
     (r'^$', 'home'),
-    (r'^organizer_info/$', 'organizer_info'),
                        
     # Region brevet pages
     (r'^(?P<region>({0}))-events/$'.format(REGIONS), 'region_brevets'),
@@ -52,7 +53,20 @@ urlpatterns = patterns('randopony.register.views',
 )
 
 urlpatterns += patterns('django.views.generic.simple',
+    # What's up with the pony page
     (r'^about_pony/$', 'direct_to_template',
-     {'template': 'derived/about/about-pony.html'},
-     'about_pony')
+     {
+         'template': 'derived/about/about-pony.html'
+     },
+     'about_pony'),
+
+    # Info for brevet organizers page
+    (r'^organizer_info/$', 'direct_to_template',
+     {
+         'template': 'derived/about/about-pony.html',
+         'extra_context': {
+             'admin_email': h.email2words(settings.ADMINS[0][1])
+         }
+     },
+     'organizer_info'),
 )

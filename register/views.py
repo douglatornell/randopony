@@ -242,16 +242,3 @@ def _email_to_organizer(brevet, rider, host):
     from_email=settings.REGISTRATION_EMAIL_FROM,
     to=[addr.strip() for addr in brevet.organizer_email.split(',')])
     email.send()
-
-
-def organizer_info(request):
-    """Info page for brevet organizers about how to get their brevet
-    listed on the randopony site.
-    """
-    admin_email = h.email2words(settings.ADMINS[0][1])
-    context = RequestContext(request, {
-        'admin_email': admin_email
-    })
-    response = render_to_response(
-        'derived/organizer-info/organizer-info.html', context)
-    return response
