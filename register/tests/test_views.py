@@ -705,16 +705,14 @@ class TestAboutPonyView(django.test.TestCase):
     def test_about_pony_get(self):
         """GET request for about RandoPony page works
         """
-        response = self.client.get(
-            reverse('randopony.register.views.about_pony'))
+        response = self.client.get(reverse('about_pony'))
         self.assertEqual(response.status_code, 200)
 
 
     def test_about_pony_sidebar(self):
         """organizer_info view renders expected sidebar
         """
-        response = self.client.get(
-            reverse('randopony.register.views.about_pony'))
+        response = self.client.get(reverse('about_pony'))
         self.assertTrue('Home' in response.content)
         self.assertTrue('randonneurs.bc.ca' in response.content)
         self.assertTrue('Info for Brevet Organizers' in response.content)

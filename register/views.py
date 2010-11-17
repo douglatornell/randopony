@@ -244,14 +244,6 @@ def _email_to_organizer(brevet, rider, host):
     email.send()
 
 
-def about_pony(request):
-    """About the randopony page.
-    """
-    context = RequestContext(request, {})
-    response = render_to_response('derived/about/about-pony.html', context)
-    return response
-
-
 def organizer_info(request):
     """Info page for brevet organizers about how to get their brevet
     listed on the randopony site.
