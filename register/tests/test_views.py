@@ -723,16 +723,14 @@ class TestOrganizerInfoView(django.test.TestCase):
     def test_organizer_info_get(self):
         """GET request for orgainzers info page works
         """
-        response = self.client.get(
-            reverse('randopony.register.views.organizer_info'))
+        response = self.client.get(reverse('organizer_info'))
         self.assertEqual(response.status_code, 200)
 
 
     def test_organizer_info_sidebar(self):
         """organizer_info view renders expected sidebar
         """
-        response = self.client.get(
-            reverse('randopony.register.views.organizer_info'))
+        response = self.client.get(reverse('organizer_info'))
         self.assertTrue('Home' in response.content)
         self.assertTrue('randonneurs.bc.ca' in response.content)
         self.assertTrue('Info for Brevet Organizers' in response.content)
