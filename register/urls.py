@@ -17,6 +17,13 @@ DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
 YEAR = '20\d\d'
 
+event_pattern = (
+    r'^(?P<region>({regions}))(?P<event>{events})/'
+      '(?P<date>({days})({months})({year}))'
+      .format(regions=REGIONS, events=EVENTS,
+              days=DAYS, months=MONTHS, year=YEAR)
+)
+
 urlpatterns = patterns('',
     # Register app home page
     url(r'^$', views.home, name='home'),
@@ -25,36 +32,18 @@ urlpatterns = patterns('',
     (r'^(?P<region>({0}))-events/$'.format(REGIONS), views.region_brevets),
                        
     # Brevet page with rider list
-    (r'^(?P<region>({regions}))(?P<event>{events})/'
-      '(?P<date>({days})({months})({year}))/$'
-      .format(regions=REGIONS, events=EVENTS,
-              days=DAYS, months=MONTHS, year=YEAR),
-      views.brevet),
+    ('{0}/$'.format(event_pattern), views.brevet),
                        
     # Brevet page with rider pre-registration confirmation message
-    (r'^(?P<region>({regions}))(?P<event>{events})/'
-      '(?P<date>({days})({months})({year}))/(?P<rider_id>\d+)/$'
-      .format(regions=REGIONS, events=EVENTS,
-              days=DAYS, months=MONTHS, year=YEAR),
-      views.brevet),
+    ('{0}/(?P<rider_id>\d+)/$'.format(event_pattern), views.brevet),
                        
     # Brevet page with rider pre-registration duplication message
-    (r'^(?P<region>({regions}))(?P<event>{events})/'
-      '(?P<date>({days})({months})({year}))/'
-      '(?P<rider_id>\d+)/duplicate/$'
-      .format(regions=REGIONS, events=EVENTS,
-              days=DAYS, months=MONTHS, year=YEAR),
+    ('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
       views.brevet),
                        
     # Rider pre-registration form page
-    (r'^(?P<region>({regions}))(?P<event>{events})/'
-      '(?P<date>({days})({months})({year}))/form/$'
-      .format(regions=REGIONS, events=EVENTS,
-              days=DAYS, months=MONTHS, year=YEAR),
-      views.registration_form),
-)
-
-urlpatterns += patterns('',
+    ('{0}/form/$'.format(event_pattern), views.registration_form),
+                       
     # What's up with the pony page
     (r'^about_pony/$', direct_to_template,
      {
