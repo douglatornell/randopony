@@ -3,7 +3,7 @@
 """
 # Django:
 from django.conf import settings
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import patterns, url
 # Application:
 import randopony.register.helpers as h
 import randopony.register.models as model
@@ -16,7 +16,8 @@ MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
 YEAR = '20\d\d'
 
 urlpatterns = patterns('randopony.register.views',
-    (r'^$', 'home'),
+    # Register app home page
+    url(r'^$', 'home', name='home'),
                        
     # Region brevet pages
     (r'^(?P<region>({0}))-events/$'.format(REGIONS), 'region_brevets'),

@@ -1,11 +1,7 @@
 {% extends "base/sidebar.html" %}
 
 {% block home-link %}
-<li>
-  <a href="{% url register.views.home %}">
-    Home
-  </a>
-</li>
+<li><a href="{% url register:home %}">Home</a></li>
 {% endblock %}
 
 {% block info-links %}

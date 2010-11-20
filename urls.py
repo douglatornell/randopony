@@ -1,7 +1,10 @@
 """URL map for RandoPony site.
 
 """
-from django.conf.urls.defaults import *
+from django.conf.urls.defaults import include
+from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import handler500
+from django.conf.urls.defaults import handler404
 from django.contrib import admin
 
 
@@ -11,7 +14,7 @@ urlpatterns = patterns('',
     # Resolve '/' to the register app until there are more apps
     (r'', include('randopony.register.urls')),
     # Brevet pre-registration
-    (r'^register/', include('randopony.register.urls')),
+    (r'^register/', include('randopony.register.urls', namespace='register')),
     # Django auto-generated site admin
     (r'^admin/', include(admin.site.urls)),
 )
