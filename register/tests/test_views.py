@@ -38,16 +38,14 @@ class TestHomeView(django.test.TestCase):
     def test_home_get(self):
         """GET request for root page of register app works
         """
-        response = self.client.get(
-            reverse('randopony.register.views.home'))
+        response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'RandoPony::Registration')
 
 
     def test_home_context(self):
         """home view has correct context
         """
-        response = self.client.get(
-            reverse('randopony.register.views.home'))
+        response = self.client.get(reverse('register:home'))
         self.assertTrue(response.context['regions'])
         self.assertTrue(response.context['admin_email'])
 
@@ -55,8 +53,7 @@ class TestHomeView(django.test.TestCase):
     def test_home_base_sidebar(self):
         """home view renders brevets list
         """
-        response = self.client.get(
-            reverse('randopony.register.views.home'))
+        response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Home')
         self.assertContains(response, 'randonneurs.bc.ca')
         self.assertContains(response, 'Info for Brevet Organizers')
@@ -66,8 +63,7 @@ class TestHomeView(django.test.TestCase):
     def test_home_regions_list(self):
         """home view renders regions list
         """
-        response = self.client.get(
-            reverse('randopony.register.views.home'))
+        response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Lower Mainland')
         self.assertContains(response, 'Vancouver Island')
         self.assertNotContains(response, 'Southern Interior')
