@@ -7,7 +7,7 @@ from datetime import datetime, time, timedelta
 from django.conf import settings
 from django.core import mail
 from django.http import Http404
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 # Application:
@@ -100,12 +100,9 @@ def brevet(request, region, event, date, rider_id=None):
     sometimes the registration confirmation, or duplicate registration
     flash message.
     """
-    try:
-        brevet = model.Brevet.objects.get(
-            region=region, event=event,
-            date=datetime.strptime(date, '%d%b%Y').date())
-    except model.Brevet.DoesNotExist:
-        raise Http404
+    brevet = get_object_or_404(
+        model.Brevet, region=region, event=event,
+        date=datetime.strptime(date, '%d%b%Y').date())
     results_url = _brevet_in_past(brevet, request)
     if results_url:
         template = 'derived/home/past_brevet.html'
@@ -141,12 +138,9 @@ def brevet(request, region, event, date, rider_id=None):
 def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
-    try:
-        brevet = model.Brevet.objects.get(
-            region=region, event=event,
-            date=datetime.strptime(date, '%d%b%Y').date())
-    except model.Brevet.DoesNotExist:
-        raise Http404
+    brevet = get_object_or_404(
+        model.Brevet, region=region, event=event,
+        date=datetime.strptime(date, '%d%b%Y').date())
     if _registration_closed(brevet):
         raise Http404
     form_class = (model.RiderForm if brevet.info_question
