@@ -22,10 +22,10 @@ clean-docs:
 	rm -rf docs/_build
 
 rsync-docs: docs
-	rsync -ahvz --dry-run docs/_build/html $(WF_PONY)/randopony/docs/_build/
+	rsync -ahvz docs/_build/html $(WF_PONY)/randopony/docs/_build/
 
 rsync-proj:
-	rsync -ahvz --dry-run \
+	rsync -ahvz \
     --exclude=.hg* --exclude=*.pyc --exclude=*.db --exclude=.DS_Store \
     --exclude=settings.py --exclude=.secret_key --exclude=docs \
     --exclude=*.aside --exclude=*.backup \
