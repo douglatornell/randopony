@@ -259,8 +259,10 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct sidebar
         """
         brevet_date = adjust_date('22May2010')
-        response = self.client.get(
-            '/register/LM400/%s/1/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:prereg-confirm',
+            args=('LM', 400, brevet_date.strftime('%d%b%Y'), 1))
+        response = self.client.get(url)
         self.assertContains(response, 'for this event. Cool!')
 
 
