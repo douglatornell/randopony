@@ -255,8 +255,8 @@ class TestBrevetView(django.test.TestCase):
         self.assertContains(response, '2 Pre-registered')
 
 
-    def test_brevet_page_confirmation(self):
-        """brevet view renders correct sidebar
+    def test_brevet_page_prereg_confirmation(self):
+        """brevet view w/ rider id includes pre-registration confirmation msg
         """
         brevet_date = adjust_date('22May2010')
         url = reverse(
@@ -264,6 +264,17 @@ class TestBrevetView(django.test.TestCase):
             args=('LM', 400, brevet_date.strftime('%d%b%Y'), 1))
         response = self.client.get(url)
         self.assertContains(response, 'for this event. Cool!')
+
+
+    def test_brevet_page_duplicate_prereg(self):
+        """brevet view includes duplicate pre-registration msg when appropos
+        """
+        brevet_date = adjust_date('22May2010')
+        url = reverse(
+            'register:prereg-duplicate',
+            args=('LM', 400, brevet_date.strftime('%d%b%Y'), 1))
+        response = self.client.get(url)
+        self.assertContains(response, 'Hmm... Someone using the name')
 
 
 class TestRegistrationFormView(django.test.TestCase):
@@ -535,9 +546,9 @@ class TestRegistrationFunction(django.test.TestCase):
         # Confirm the redriect, and flash message content
         rider_query = model.Rider.objects.filter(
             name='Doug Latornell', email='djl@example.com', brevet=brevet)
-        url = ('/register/LM300/%(brevet_date)s/%(rider_id)d/duplicate/'
-               % {'brevet_date': brevet_date.strftime('%d%b%Y'),
-                  'rider_id': rider_query[0].id})
+        url = reverse(
+            'register:prereg-duplicate',
+            args=('LM', 300, brevet_date.strftime('%d%b%Y'), rider_query[0].id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')

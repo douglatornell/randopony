@@ -40,8 +40,9 @@ urlpatterns = patterns('',
         name='prereg-confirm'),
                        
     # Brevet page with rider pre-registration duplication message
-    ('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
-      views.brevet),
+    url('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
+        views.brevet,
+        name='prereg-duplicate'),
                        
     # Rider pre-registration form page
     ('{0}/form/$'.format(event_pattern), views.registration_form),
