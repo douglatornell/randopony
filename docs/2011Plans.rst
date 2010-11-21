@@ -332,18 +332,19 @@ riders is:
 
 * First name
 * Last name
+* Email address
 * Whether rider is a member of BC Randonneurs
 * Emergency contact phone number
 * Phone number of mobile phone they are carrying on the ride
 * Acceptance of event waiver
 * Whether rider is over or under 19 years of age
 
-The justification I have heard for collecting the rider's address is
-that it may be needed to send them their pin if we run out. However,
-it is unreasonable to collect, store and transmit electronically
-hundreds of addresses on the small possibility that a few will be
-needed for that purpose. The running out of pins issue can be managed
-in other ways:
+The justification I have heard for collecting the rider's postal
+address is that it may be needed to send them their pin if we run
+out. However, it is unreasonable to collect, store and transmit
+electronically hundreds of postal addresses on the small possibility
+that a few will be needed for that purpose. The running out of pins
+issue can be managed in other ways:
 
 * The combination of a pre-registration system and previous years
   event participation numbers should allow the organizers to order
@@ -353,21 +354,21 @@ in other ways:
   the colour rotation scheme that is used.
 * As is already done, club members are not given pins at the finish if
   there is going to be a shortage because they can be given theirs
-  later from a 2nd order. We already have member's addresses.
+  later from a 2nd order. We already have member's postal addresses.
 * If the pins do run out the late finishing riders can be asked to
-  write their name and address on an envelop so that their pin can be
-  mailed to them when available.
+  write their name and postal address on an envelop so that their pin
+  can be mailed to them when available.
 
 If there are other compelling use cases for collection of populaire
-rider addresses and home phone numbers, I would appreciate if they
-could be written up for discussion.
+rider postal addresses and home phone numbers, I would appreciate if
+they could be written up for discussion.
 
 
 Transmission Via HTTPS
 ~~~~~~~~~~~~~~~~~~~~~~
 
-* Add an SSL certificate to the randopony.sadahome.ca domain so that
-  data entered by the rider on the pre-registration form is
+* Add an SSL certificate to the :kbd:`randopony.sadahome.ca` domain so
+  that data entered by the rider on the pre-registration form is
   transmitted via HTTPS from their browser to the Randopony server.
 
   * There are a variety of price points for SSL certificates, ranging
@@ -483,6 +484,7 @@ Populaires App Components and Workflow
 
      * First name
      * Last name
+     * Email address
      * Whether rider is a member of BC Randonneurs
      * Emergency contact phone number
      * Phone number of mobile phone they are carrying on the ride
@@ -502,7 +504,8 @@ Populaires App Components and Workflow
    transaction was successful:
 
    * The rider's database entry is updated to indicate payment confirmed
-   * A confirmation email is sent to the address the rider provided
+   * A confirmation email is sent to the email address the rider
+     provided
    * The Google Docs spreadsheet for the event is updated with the
      rider's information
 
@@ -537,6 +540,7 @@ The Google Docs spreadsheet for a populaire will contain 2 sheets:
 * The detailed riders list. This sheet contains the collected contact
   information for the riders and is intended for organizer use.
 
+
 Summary Riders List Columns
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -557,6 +561,7 @@ Detailed Riders List Columns
 * Phone number of mobile phone they are carrying on the ride
 * Whether rider is over or under 19 years of age
 * BC Randonneurs membership status
+* Rider's email address
 
 
 .. _SiteAndCodebaseMaintenance-section:
