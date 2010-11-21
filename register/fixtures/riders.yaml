@@ -14,8 +14,8 @@
   fields:
     brevet: 3
     club_member: true
-    email: djl@douglatornell.ca
-    name: Doug Latornell
+    email: fibber.mcgee@example.com
+    name: Fibber McGee
 
 - model: register.rider
   pk: 3
@@ -23,4 +23,4 @@
     brevet: 3
     club_member: true
     email: sea@susanallen.ca
-    name: Doug Latornell
+    name: Susan Allen

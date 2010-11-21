@@ -7,7 +7,10 @@ from datetime import datetime, time, timedelta
 from django.conf import settings
 from django.core import mail
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render_to_response, redirect
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response
+from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
 # Application:
@@ -170,6 +173,18 @@ def registration_form(request, region, event, date):
     response = render_to_response(
         'derived/register/registration_form.html', context)
     return response
+
+
+def brevet_rider_emails(request, region, event, date):
+    """
+    """
+    rider_list = model.Rider.objects.filter(
+        brevet__region=region, brevet__event=event,
+        brevet__date=datetime.strptime(date, '%d%b%Y').date())
+    if not rider_list:
+        raise Http404
+    email_list = ', '.join(rider.email for rider in rider_list)
+    return HttpResponse(email_list, mimetype='text/plain')
 
 
 def _process_registration(brevet, rider, request):
