@@ -28,11 +28,11 @@ urlpatterns = patterns('',
     # Register app home page
     url(r'^$', views.home, name='home'),
                        
-    # Region brevet pages
-    (r'^(?P<region>({0}))-events/$'.format(REGIONS), views.region_brevets),
+    # Region brevet pages (REGIONS regex precludes making this a named URL)
+    url(r'^(?P<region>({0}))-events/$'.format(REGIONS), views.region_brevets),
                        
     # Brevet page with rider list
-    ('{0}/$'.format(event_pattern), views.brevet),
+    url('{0}/$'.format(event_pattern), views.brevet, name='brevet'),
                        
     # Brevet page with rider pre-registration confirmation message
     ('{0}/(?P<rider_id>\d+)/$'.format(event_pattern), views.brevet),

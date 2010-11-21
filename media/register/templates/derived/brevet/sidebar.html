@@ -18,8 +18,8 @@
 
 {% block info-links %}
 <li>
-  <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
-    {{brevet}}
+  <a href="{% url register:brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
+    {{ brevet }}
   </a>
 </li>
 {% if not registration_closed %}
