@@ -44,6 +44,11 @@ urlpatterns = patterns('',
     # Rider pre-registration form page
     ('{0}/form/$'.format(event_pattern), views.registration_form),
                        
+    # List of rider email addresses for brevet
+    url('{0}/rider-emails/$'.format(event_pattern),
+        views.brevet_rider_emails,
+        name='rider-emails'),
+                       
     # What's up with the pony page
     (r'^about_pony/$', direct_to_template,
      {
