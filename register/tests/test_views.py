@@ -154,23 +154,26 @@ class TestBrevetView(django.test.TestCase):
         """GET request for brevet page works
         """
         brevet_date = adjust_date('01May2010')
-        response = self.client.get(
-            '/register/LM300/%s/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(
-            response, 'RandoPony::LM300 01-May-%s' % brevet_date.strftime('%Y'))
+            response, 'RandoPony::LM300 01-May-{0}'.format(brevet_date.year))
 
 
     def test_brevet_get_nonexistent_brevet_past(self):
         """GET request for nonexistent brevet in past fails with 404
         """
-        response = self.client.get('/register/LM200/13Mar1961/')
+        url = reverse('register:brevet', args=('LM', 200, '13Mar2001'))
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
 
     def test_brevet_get_nonexistent_brevet_future(self):
         """GET request for nonexistent brevet in future fails with 404
         """
-        response = self.client.get('/register/LM2000/25Dec2061/')
+        url = reverse('register:brevet', args=('LM', 200, '25Dec2001'))
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
 
@@ -178,10 +181,11 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct sidebar
         """
         brevet_date = adjust_date('01May2010')
-        response = self.client.get(
-            '/register/LM300/%s/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(
-            response, 'LM300 01-May-%s' % brevet_date.strftime('%Y'))
+            response, 'RandoPony::LM300 01-May-{0}'.format(brevet_date.year))
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
@@ -192,23 +196,27 @@ class TestBrevetView(django.test.TestCase):
         """
         brevet_date = adjust_date('01May2010')
         last_year = date.today().year - 1
-        response = self.client.get(
-            '/register/LM300/{0}/'
-            .format(brevet_date.replace(year=last_year).strftime('%d%b%Y')))
+        url = reverse(
+            'register:brevet',
+            args=('LM', 300,
+                  brevet_date.replace(year=last_year).strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(
             response, 'brevet is over, and the RandoPony has moved on!')
         self.assertContains(
             response,
             'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
             .format(brevet_date.replace(year=last_year).strftime('%y')))
+        self.assertNotContains(response, 'Be the first!')
 
 
     def test_brevet_started_page(self):
         """registration closed message suppressed 1 hour after brevet s
         """
-        response = self.client.get(
-            '/register/LM300/{0}/'
-            .format(datetime.now().date().strftime('%d%b%Y')))
+        url = reverse(
+            'register:brevet',
+            args=('LM', 300, datetime.now().date().strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertNotContains(
             response, 'Pre-registration for this event is closed')
 
@@ -217,8 +225,9 @@ class TestBrevetView(django.test.TestCase):
         """brevet page has expected msg when no riders are registered
         """
         brevet_date = adjust_date('01May2010')
-        response = self.client.get(
-            '/register/LM300/%s/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(response, 'Be the first!')
 
 
@@ -226,8 +235,9 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct page body with 1 registered rider
         """
         brevet_date = adjust_date('22May2010')
-        response = self.client.get(
-            '/register/LM400/%s/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:brevet', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(response, 'Manning Park')
         self.assertContains(response, '1 Pre-registered')
         self.assertContains(response, 'Doug Latornell')
@@ -239,8 +249,9 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct page body with 2 registered riders
         """
         brevet_date = adjust_date('17Apr2010')
-        response = self.client.get(
-            '/register/LM200/%s/' % brevet_date.strftime('%d%b%Y'))
+        url = reverse(
+            'register:brevet', args=('LM', 200, brevet_date.strftime('%d%b%Y')))
+        response = self.client.get(url)
         self.assertContains(response, '2 Pre-registered')
 
 
@@ -250,7 +261,7 @@ class TestBrevetView(django.test.TestCase):
         brevet_date = adjust_date('22May2010')
         response = self.client.get(
             '/register/LM400/%s/1/' % brevet_date.strftime('%d%b%Y'))
-        self.assertTrue('for this event. Cool!' in response.content)
+        self.assertContains(response, 'for this event. Cool!')
 
 
 class TestRegistrationFormView(django.test.TestCase):
@@ -711,7 +722,7 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_no_rider_emails_raises_404(self):
         """request for rider's emails for event w/ no riders raises 404
         """
-        url = reverse('rider-emails', args=('LM', '200', '20Nov2010'))
+        url = reverse('register:rider-emails', args=('LM', '200', '20Nov2010'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -722,7 +733,7 @@ class TestRiderEmailsView(django.test.TestCase):
         brevet_date = adjust_date('01May2010')
         last_year = date.today().year - 1
         url = reverse(
-            'rider-emails',
+            'register:rider-emails',
             args=('LM', '400',
                   brevet_date.replace(year=last_year).strftime('%d%b%Y')))
         response = self.client.get(url)

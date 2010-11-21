@@ -16,8 +16,8 @@
 {% block brevet-list %}
 {% for brevet in brevets %}
 <li>
-  <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-    {{brevet}}
+  <a href="{% url register:brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
+    {{ brevet }}
   </a>
 </li>
 {% endfor %}

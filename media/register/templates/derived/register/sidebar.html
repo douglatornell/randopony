@@ -7,7 +7,7 @@
 {% block info-links %}
 <li>
   <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-    {{brevet}}
+    {{ brevet }}
   </a>
 </li>
 <li>
