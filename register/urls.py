@@ -64,7 +64,7 @@ urlpatterns = patterns('',
     # Info for brevet organizers page
     url(r'^organizer_info/$', direct_to_template,
         {
-            'template': 'derived/about/about-pony.html',
+            'template': 'derived/organizer-info/organizer-info.html',
             'extra_context': {
                 'admin_email': h.email2words(settings.ADMINS[0][1])
             }
