@@ -32,7 +32,7 @@ def home(request):
         'regions': region_list,
         'admin_email': h.email2words(settings.ADMINS[0][1])
     })
-    response = render_to_response('derived/home/home.html', context)
+    response = render_to_response('derived/home.html', context)
     return response
 
 
@@ -51,8 +51,7 @@ def region_brevets(request, region):
             'long_name': model.REGIONS[region]},
         'brevets': brevet_list
     })
-    response = render_to_response(
-        'derived/region_brevets/region_brevets.html', context)
+    response = render_to_response('derived/region_brevets.html', context)
     return response
 
 
@@ -108,7 +107,7 @@ def brevet(request, region, event, date, rider_id=None):
         date=datetime.strptime(date, '%d%b%Y').date())
     results_url = _brevet_in_past(brevet, request)
     if results_url:
-        template = 'derived/home/past_brevet.html'
+        template = 'derived/past_brevet.html'
         context = RequestContext(request, {
             'brevet': str(brevet),
             'results_url': results_url
@@ -122,7 +121,7 @@ def brevet(request, region, event, date, rider_id=None):
             rider_email = h.email2words(rider.email)
         except (TypeError, model.Rider.DoesNotExist, AttributeError):
             rider = rider_email = None
-        template = 'derived/brevet/brevet.html'
+        template = 'derived/brevet.html'
         context = RequestContext(request, {
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
@@ -170,8 +169,7 @@ def registration_form(request, region, event, date):
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     })
-    response = render_to_response(
-        'derived/register/registration_form.html', context)
+    response = render_to_response('derived/registration_form.html', context)
     return response
 
 
