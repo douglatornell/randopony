@@ -1,4 +1,4 @@
-{% extends "derived/home/sidebar.html" %}
+{% extends "base/page.html" %}
 
 {% block title %}RandoPony::Registration{% endblock %}
 
@@ -34,4 +34,19 @@
 for your ride, please read the <a href="{% url organizer_info %}">Info
 for Brevet Organizers</a> page.
 </p>
+{% endblock %}
+
+
+{% block home-link %}
+<li><a href="{% url register:home %}" class="selected">Home</a></li>
+{% endblock %}
+    
+{% block region-list %}
+{% for region in regions %}
+<li>
+  <a href="{% url register.views.region_brevets region=region.abbrev %}">
+    {{ region.long_name }}
+  </a>
+</li>
+{% endfor %}
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends "derived/about/sidebar.html" %}
+{% extends "base/page.html" %}
 
 {% block title %}RandoPony::About{% endblock %}
 
@@ -29,4 +29,10 @@ and great support, you can use this <a
  href="http://www.webfaction.com?affiliate=dlatornell">affiliate
 link</a> to check them out.</p>
 
+{% endblock %}
+    
+{% block pony-info-link %}
+<li>
+  <a href="{% url about_pony %}" class="selected">What's up with the pony?</a>
+</li>
 {% endblock %}
