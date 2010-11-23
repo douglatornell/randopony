@@ -9,7 +9,7 @@
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
-<form action="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}"
+<form action="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}"
       method="POST">
   {{ form.name.errors }}
   <p>

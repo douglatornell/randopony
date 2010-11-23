@@ -11,7 +11,7 @@
   </a>
 </li>
 <li>
-  <a href="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
+  <a href="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
     Register
   </a>
 </li>
