@@ -290,9 +290,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_registration_form_get(self):
         """GET request for registration form page works
         """
-        brevet_date = adjust_date('22May2010')
-        response = self.client.get(
-            '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y'))
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -300,10 +300,11 @@ class TestRegistrationFormView(django.test.TestCase):
         """registration form view renders correct sidebar
         """
         brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        url = reverse(
+            'register:form', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
         response = self.client.get(url)
         self.assertContains(
-            response, 'LM400 %s' % brevet_date.strftime('%d-%b-%Y'))
+            response, 'LM400 {0}'.format(brevet_date.strftime('%d-%b-%Y')))
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
@@ -312,9 +313,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_with_qual_info(self):
         """registration form view renders page with qual info question
         """
-        brevet_date = adjust_date('22May2010')
-        response = self.client.get(
-            '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y'))
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
+        response = self.client.get(url)
         self.assertContains(response, 'Manning Park')
         self.assertContains(response, 'Name:')
         self.assertContains(response, 'Email:')
@@ -327,18 +328,18 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
-        brevet_date = adjust_date('01May2010')
-        response = self.client.get(
-            '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y'))
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 300, brevet_date))
+        response = self.client.get(url)
         self.assertNotContains(response, 'Qualifying info:')
 
 
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
         """
-        brevet_date = adjust_date('01May2010')
-        response = self.client.get(
-            '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y'))
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 300, brevet_date))
+        response = self.client.get(url)
         self.assertContains(
             response, 'Are you a human? Are you a randonneur? Please prove it.')
         self.assertContains(
@@ -360,7 +361,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration from submit w/ valid data redirects to brevet pg w/ msg
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/{0}/form/'.format(brevet_date)
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -369,8 +370,9 @@ class TestRegistrationFunction(django.test.TestCase):
              'captcha': 400},
             follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
-        self.assertRedirects(
-            response, '/register/LM300/{0}/{1}/'.format(brevet_date, rider_id))
+        url = reverse(
+            'register:prereg-confirm', args=('LM', 300, brevet_date, rider_id))
+        self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
         self.assertContains(
@@ -383,7 +385,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration from submit redirects to brevet pg w/ non-member msg
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/%s/form/' % brevet_date
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -392,8 +394,9 @@ class TestRegistrationFunction(django.test.TestCase):
              'captcha': 400},
             follow=True)
         rider_id = model.Rider.objects.order_by('-id')[0].id
-        self.assertRedirects(
-            response, '/register/LM300/%(brevet_date)s/%(rider_id)d/' % vars())
+        url = reverse(
+            'register:prereg-confirm', args=('LM', 300, brevet_date, rider_id))
+        self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
         self.assertContains(
@@ -406,7 +409,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration form name field must not be empty
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/%s/form/' % brevet_date
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         response = self.client.post(
             url,
             {'email': 'fibber@example.com',
@@ -420,7 +423,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration form email field must not be empty
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/%s/form/' % brevet_date
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -434,7 +437,7 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration form email field must be valid
         """
         brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = '/register/LM300/%s/form/' % brevet_date
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -448,8 +451,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_qual_info_required(self):
         """registration form qualifying info field must not be empty
         """
-        brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -463,8 +466,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_required(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -478,8 +481,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_is_int(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -494,8 +497,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -510,8 +513,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_wrong(self):
         """registration form CAPTCHA wrong answer
         """
-        brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 400, brevet_date))
         response = self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -535,7 +538,8 @@ class TestRegistrationFunction(django.test.TestCase):
             email='djl@example.com',
             brevet=brevet).save()
         # Try to register again
-        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        url = reverse(
+            'register:form', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
         response = self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -562,7 +566,8 @@ class TestRegistrationFunction(django.test.TestCase):
         """successful registration sends emails to member/rider & organizer
         """
         brevet_date = adjust_date('01May2010')
-        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        url = reverse(
+            'register:form', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
         self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -573,18 +578,18 @@ class TestRegistrationFunction(django.test.TestCase):
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for '
-            'LM300 %s Brevet' % brevet_date.strftime('%d-%b-%Y'))
+            'Pre-registration Confirmation for LM300 {0} Brevet'
+            .format(brevet_date.strftime('%d-%b-%Y')))
         self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
         self.assertTrue(
-            'pre-registered for the BC Randonneurs '
-            'LM300 %s brevet' % brevet_date.strftime('%d-%b-%Y')
+            'pre-registered for the BC Randonneurs LM300 {0} brevet'
+            .format(brevet_date.strftime('%d-%b-%Y'))
             in mail.outbox[0].body)
         self.assertTrue(
-            'http://testserver/register/LM300/%s/'
-            % brevet_date.strftime('%d%b%Y')
+            'http://testserver/register/LM300/{0}/'
+            .format(brevet_date.strftime('%d%b%Y'))
             in mail.outbox[0].body)
         self.assertTrue(
             'print out the event waiver form' in mail.outbox[0].body)
@@ -595,27 +600,27 @@ class TestRegistrationFunction(django.test.TestCase):
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Doug Latornell has Pre-registered for the '
-            'LM300 %s' % brevet_date.strftime('%d-%b-%Y'))
+            'Doug Latornell has Pre-registered for the LM300 {0}'
+            .format(brevet_date.strftime('%d-%b-%Y')))
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
             mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
         self.assertTrue(
             'Doug Latornell (djl@example.com) has pre-registered for the '
-            'LM300 %s brevet' % brevet_date.strftime('%d-%b-%Y')
+            'LM300 {0} brevet'.format( brevet_date.strftime('%d-%b-%Y'))
             in mail.outbox[1].body)
         self.assertTrue(
             'has indicated that zhe is a club member' in mail.outbox[1].body)
         self.assertTrue(
-            'please send email to %s' % settings.ADMINS[0][1]
+            'please send email to {0}'.format(settings.ADMINS[0][1])
             in mail.outbox[1].body)
 
 
     def test_registration_form_sends_email_for_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
-        brevet_date = adjust_date('01May2010')
-        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -639,7 +644,8 @@ class TestRegistrationFunction(django.test.TestCase):
         """successful registration email to organizer includes qualifying info
         """
         brevet_date = adjust_date('22May2010')
-        url = '/register/LM400/%s/form/' % brevet_date.strftime('%d%b%Y')
+        url = reverse(
+            'register:form', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
         self.client.post(
             url,
             {'name': 'Fibber McGee',
@@ -651,17 +657,17 @@ class TestRegistrationFunction(django.test.TestCase):
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM400 %s Brevet'
-             % brevet_date.strftime('%d-%b-%Y'))
+            'Pre-registration Confirmation for LM400 {0} Brevet'
+             .format(brevet_date.strftime('%d-%b-%Y')))
         self.assertTrue(
-            'http://testserver/register/LM400/%s/'
-            % brevet_date.strftime('%d%b%Y')
+            'http://testserver/register/LM400/{0}/'
+            .format(brevet_date.strftime('%d%b%Y'))
             in mail.outbox[0].body)
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Fibber McGee has Pre-registered for the LM400 %s'
-            % brevet_date.strftime('%d-%b-%Y'))
+            'Fibber McGee has Pre-registered for the LM400 {0}'
+            .format(brevet_date.strftime('%d-%b-%Y')))
         self.assertTrue(
             'Fibber McGee has answered LM300.' in mail.outbox[1].body)
 
@@ -669,8 +675,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_has_rider_address(self):
         """registration email to organizer contains rider email address
         """
-        brevet_date = adjust_date('01May2010')
-        url = '/register/LM300/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('LM', 300, brevet_date))
         self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -684,8 +690,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_to_2_organizers(self):
         """registration email goes to multiple organizers
         """
-        brevet_date = adjust_date('07Aug2010')
-        url = '/register/VI600/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('07Aug2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('VI', 600, brevet_date))
         self.client.post(
             url,
             {'name': 'Doug Latornell',
@@ -701,8 +707,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_replyto_2_organizers(self):
         """registration email to rider has 2 organizers in reply-to header
         """
-        brevet_date = adjust_date('07Aug2010')
-        url = '/register/VI600/%s/form/' % brevet_date.strftime('%d%b%Y')
+        brevet_date = adjust_date('07Aug2010').strftime('%d%b%Y')
+        url = reverse('register:form', args=('VI', 600, brevet_date))
         self.client.post(
             url,
             {'name': 'Doug Latornell',

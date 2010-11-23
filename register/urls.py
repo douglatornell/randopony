@@ -45,7 +45,9 @@ urlpatterns = patterns('',
         name='prereg-duplicate'),
                        
     # Rider pre-registration form page
-    ('{0}/form/$'.format(event_pattern), views.registration_form),
+    url('{0}/form/$'.format(event_pattern),
+        views.registration_form,
+        name='form'),
                        
     # List of rider email addresses for brevet
     url('{0}/rider-emails/$'.format(event_pattern),
@@ -53,19 +55,19 @@ urlpatterns = patterns('',
         name='rider-emails'),
                        
     # What's up with the pony page
-    (r'^about_pony/$', direct_to_template,
-     {
-         'template': 'derived/about/about-pony.html'
-     },
-     'about_pony'),
+    url(r'^about_pony/$', direct_to_template,
+        {
+            'template': 'derived/about/about-pony.html'
+        },
+        name='about_pony'),
 
     # Info for brevet organizers page
-    (r'^organizer_info/$', direct_to_template,
-     {
-         'template': 'derived/about/about-pony.html',
-         'extra_context': {
-             'admin_email': h.email2words(settings.ADMINS[0][1])
-         }
-     },
-     'organizer_info'),
+    url(r'^organizer_info/$', direct_to_template,
+        {
+            'template': 'derived/about/about-pony.html',
+            'extra_context': {
+                'admin_email': h.email2words(settings.ADMINS[0][1])
+            }
+        },
+        'organizer_info'),
 )

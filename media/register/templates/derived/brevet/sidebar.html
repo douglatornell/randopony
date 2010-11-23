@@ -24,7 +24,7 @@
 </li>
 {% if not registration_closed %}
 <li>
-  <a href="{% url register.views.registration_form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
+  <a href="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
     Register
   </a>
 </li>
