@@ -1,4 +1,4 @@
-{% extends "derived/region_brevets/sidebar.html" %}
+{% extends "base/page.html" %}
 
 {% block title %}RandoPony::{{ region.long_name }}{% endblock %}
 
@@ -45,4 +45,23 @@ Brevets
      alt="Sea to Sky Scenery" />
 {% endifequal %}
 
+{% endblock %}
+
+{% block region-link %}
+<li>
+  <a href="{% url register.views.region_brevets region=region.abbrev %}"
+     class="selected">
+    {{ region.long_name }}
+  </a>
+</li>
+{% endblock %}
+
+{% block brevet-list %}
+{% for brevet in brevets %}
+<li>
+  <a href="{% url register:brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
+    {{ brevet }}
+  </a>
+</li>
+{% endfor %}
 {% endblock %}
