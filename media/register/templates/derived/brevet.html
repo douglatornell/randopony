@@ -11,15 +11,15 @@
 
 {% block content %}
 <h3>
-  {% ifnotequal region.long_name "Club Events" %}
+  {% if region.long_name != "Club Events" %}
   {{ region.long_name }}
-  {% endifnotequal %}
+  {% endif %}
   {{ brevet.event|capfirst }}
 </h3>
 
-{% ifnotequal brevet.route_name|lower 'n/a' %}
+{% if brevet.route_name|lower != 'n/a' %}
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
-{% endifnotequal %}
+{% endif %}
 
 <p><strong>Start:</strong> {{ brevet.date|date:"D d-M-Y" }}
 at {{ brevet.start_time|time:"H:i" }}
@@ -29,17 +29,17 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 </p>
 
 <p><strong>
-{% ifnotequal brevet.route_name|lower 'n/a' %}
+{% if brevet.route_name|lower != 'n/a' %}
 Start
-{% endifnotequal %}
+{% endif %}
 Location:</strong> {{ brevet.start_location }}</p>
 
 {% if registration_closed and not brevet_started %}
 <div id="registration-closed">
-  {% ifnotequal region.long_name "Club Events" %}
+  {% if region.long_name != "Club Events" %}
   <p>Pre-registration for this event is closed, but you can still
   print out the <a
-   href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
+  href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
   the club web site, fill it out, and bring it with you to the
   start.</p>
@@ -49,7 +49,7 @@ Location:</strong> {{ brevet.start_location }}</p>
   <p>Pre-registration for this event is closed.</p>
 
   <p>Sorry!</p>
-  {% endifnotequal %}
+  {% endif %}
 </div>
 {% endif %}
 
@@ -62,7 +62,7 @@ Location:</strong> {{ brevet.start_location }}</p>
   <p>A confirmation email has been sent to you at
   <kbd>{{ rider_email }}</kbd>, and to the event organizer.</p>
 
-  {% ifnotequal brevet.route_name|lower 'n/a' %}
+  {% if brevet.route_name|lower != 'n/a' %}
   <p>You can print out the
   <a href="http://www.randonneurs.bc.ca/introduction/eventform.pdf"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
@@ -79,7 +79,7 @@ Location:</strong> {{ brevet.start_location }}</p>
 
   <p>Have a great ride!</p>
   {% endif %}
-  {% endifnotequal %}
+  {% endif %}
 </div> <!-- id="confirmation" -->
 {% endif %}
 
@@ -102,9 +102,9 @@ Location:</strong> {{ brevet.start_location }}</p>
     <tr>
       <th colspan=2>
 	    {{ rider_list|length }} Pre-registered
-        {% ifnotequal brevet.route_name|lower 'n/a' %}
+        {% if brevet.route_name|lower != 'n/a' %}
         Rider{{ rider_list|length|pluralize }}
-        {% endifnotequal %}
+        {% endif %}
       </th>
     </tr>
   </thead>
@@ -129,7 +129,7 @@ Be the first!
 {% endif %}
 
 {% if show_filler_photo %}
-{% ifnotequal brevet.route_name|lower 'n/a' %}
+{% if brevet.route_name|lower != 'n/a' %}
 <img class="filler_img"
      src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
      alt="Pre-registration list" />
@@ -137,7 +137,7 @@ Be the first!
 <img class="filler_img_extra_margins"
      src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
      alt="Pre-registration list" />
-{% endifnotequal %}
+{% endif %}
 {% endif %}
 {% endblock %}
 

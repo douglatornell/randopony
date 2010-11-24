@@ -4,9 +4,9 @@
 
 {% block page-subtitle %}
 {{ region.long_name }}
-{% ifnotequal region.long_name "Club Events" %}
+{% if region.long_name != "Club Events" %}
 Brevets
-{% endifnotequal %}
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -15,37 +15,11 @@ Brevets
   that you want to pre-register for.
 </p>
 
-{% ifequal region.abbrev "Club" %}
 <img class="filler_img"
-     src="{{ MEDIA_URL }}register/images/AGM-Brunch.jpg"
-     alt="Harrison Hotspings Road" />
-{% endifequal %}
-
-{% ifequal region.abbrev "LM" %}
-<img class="filler_img"
-     src="{{ MEDIA_URL }}register/images/LowerMainlandQuartet.jpg"
-     alt="Harrison Hotspings Road" />
-{% endifequal %}
-
-{% ifequal region.abbrev "VI" %}
-<img class="filler_img"
-     src="{{ MEDIA_URL }}register/images/VanIsDuo.jpg"
-     alt="Van Is Duo" />
-{% endifequal %}
-
-{% ifequal region.abbrev "SI" %}
-<img class="filler_img"
-     src="{{ MEDIA_URL }}register/images/SouthIntLivestock.jpg"
-     alt="Southern Interior Peloton" />
-{% endifequal %}
-
-{% ifequal region.abbrev "SW" %}
-<img class="filler_img_superweek_margins"
-     src="{{ MEDIA_URL }}register/images/SeaToSkyScenery.jpg"
-     alt="Sea to Sky Scenery" />
-{% endifequal %}
-
+     src="{{ MEDIA_URL }}register/images/{{ image.file }}"
+     alt="{{ image.alt }}" />
 {% endblock %}
+
 
 {% block region-link %}
 <li>

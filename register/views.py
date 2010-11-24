@@ -45,11 +45,34 @@ def region_brevets(request, region):
         ).exclude(
             date__lt=(seven_days_ago)
         )
+    mapping = {
+        'Club': {
+            'file': 'AGM-Brunch.jpg',
+            'alt': 'Brunch at Bedford House',
+        },
+        'LM': {
+            'file': 'LowerMainlandQuartet.jpg',
+            'alt': 'Harrison Hotspings Road',
+        },
+        'VI': {
+            'file': 'VanIsDuo.jpg',
+            'alt': 'Van Isle Duo',
+        },
+        'SI': {
+            'file': 'SouthIntLivestock.jpg',
+            'alt': 'Southern Interior Peloton',
+        },
+        'SW': {
+            'file': 'SeaToSkyScenery.jpg',
+            'alt': 'Sea to Sky Scenery',
+        },
+    }
     context = RequestContext(request, {
         'region': {
             'abbrev': region,
             'long_name': model.REGIONS[region]},
-        'brevets': brevet_list
+        'image': mapping[region],
+        'brevets': brevet_list,
     })
     response = render_to_response('derived/region_brevets.html', context)
     return response
