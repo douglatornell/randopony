@@ -17,6 +17,34 @@ REGIONS = dict(
 )
 
 
+class BaseEvent(models.Model):
+    """Base class for event models.
+    """
+    REGION_CHOICES = [
+        (key, REGIONS[key]) for key in sorted(REGIONS.keys())
+    ]
+    EVENT_CHOICES = ()
+    
+    class Meta():
+        ordering = ['date']
+
+    region = models.CharField(max_length=20, choices=REGION_CHOICES)
+    event = models.CharField(max_length=30, choices=EVENT_CHOICES)
+    date = models.DateField()
+    location = models.CharField(max_length=100)
+    time = models.TimeField()
+    organizer_email = models.CharField(
+        max_length=100,
+        help_text='Use commas to separate multiple email addresses')
+
+    def __unicode__(self):
+        event_id = '{region}{event} {date}'.format(
+            region='' if self.region == 'Club' else self.region,
+            event=self.event,
+            date=self.date.strftime('%d-%b-%Y'))
+        return event_id
+
+
 class Brevet(models.Model):
 
     REGION_CHOICES = [
