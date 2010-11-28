@@ -23,19 +23,22 @@ class BaseEvent(models.Model):
     REGION_CHOICES = [
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
-    EVENT_CHOICES = ()
     
     class Meta():
+        abstract = True
         ordering = ['date']
 
     region = models.CharField(max_length=20, choices=REGION_CHOICES)
-    event = models.CharField(max_length=30, choices=EVENT_CHOICES)
     date = models.DateField()
     location = models.CharField(max_length=100)
     time = models.TimeField()
     organizer_email = models.CharField(
         max_length=100,
         help_text='Use commas to separate multiple email addresses')
+    info_question = models.TextField(
+        "event info question", blank=True,
+        help_text='Optional question that will appear on the '
+                  'pre-registration form')
 
     def __unicode__(self):
         event_id = '{region}{event} {date}'.format(
@@ -45,46 +48,34 @@ class BaseEvent(models.Model):
         return event_id
 
 
-class Brevet(models.Model):
-
-    REGION_CHOICES = [
-        (key, REGIONS[key]) for key in sorted(REGIONS.keys())
-    ]
+class Brevet(BaseEvent):
+    """Brevet event model.
+    """
     EVENT_CHOICES = (
-        ('200', '200 km'),
-        ('300', '300 km'),
-        ('400', '400 km'),
-        ('600', '600 km'),
+        ( '200',  '200 km'),
+        ( '300',  '300 km'),
+        ( '400',  '400 km'),
+        ( '600',  '600 km'),
         ('1000', '1000 km'),
-        ('dinner', 'Dinner'),
-        ('AGM', 'AGM'),
     )
-    
-    class Meta():
-        ordering = ['date']
 
-    region = models.CharField(max_length=20, choices=REGION_CHOICES)
     event = models.CharField(max_length=30, choices=EVENT_CHOICES)
-    date = models.DateField()
     route_name = models.CharField(max_length=100)
-    start_location = models.CharField(max_length=100)
-    start_time = models.TimeField()
     alt_start_time = models.TimeField(
         'alternate start time', blank=True, null=True)
-    organizer_email = models.CharField(
-        max_length=100,
-        help_text='Use commas to separate multiple email addresses')
-    info_question = models.TextField(
-        "brevet info question", blank=True,
-        help_text='Optional question that will appear on the '
-                  'pre-registration form')
 
 
-    def __unicode__(self):
-        return ('%(region)s%(event)s %(date)s'
-                % dict(region=self.region,
-                       event=self.event,
-                       date=self.date.strftime('%d-%b-%Y')))
+class ClubEvent(BaseEvent):
+    """Non-riding event model.
+    """
+    EVENT_CHOICES = (
+        ( 'AGM',  'AGM'),
+        ( 'brunch',  'Brunch'),
+        ( 'dinner',  'Dinner'),
+        ( 'social',  'Spring Social'),
+    )
+
+    event = models.CharField(max_length=30, choices=EVENT_CHOICES)
         
 
 class Rider(models.Model):
