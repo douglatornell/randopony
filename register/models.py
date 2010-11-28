@@ -18,7 +18,7 @@ REGIONS = dict(
 
 
 class BaseEvent(models.Model):
-    """Base class for event models.
+    """Abstract base class for Brevet and ClubEvent models.
     """
     REGION_CHOICES = [
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
@@ -66,7 +66,7 @@ class Brevet(BaseEvent):
 
 
 class ClubEvent(BaseEvent):
-    """Non-riding event model.
+    """Non-brevet club event model.
     """
     EVENT_CHOICES = (
         ( 'AGM',  'AGM'),
@@ -76,21 +76,45 @@ class ClubEvent(BaseEvent):
     )
 
     event = models.CharField(max_length=30, choices=EVENT_CHOICES)
-        
 
-class Rider(models.Model):
-    name = models.CharField(max_length=30)
+
+class Person(models.Model):
+    """Abstract base class for BrevetRider and EventParticipant models.
+    """
+    class Meta():
+        abstract = True
+        ordering = ['last_name']
+
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
     email = models.EmailField()
-    club_member = models.BooleanField('club member?', default=False)
     info_answer = models.CharField(
         'info answer', max_length=100, blank=True)
-    brevet = models.ForeignKey(Brevet)
 
     def __unicode__(self):
-        return self.name
+        return self.full_name
 
-    class Meta():
-        ordering = ['name']
+
+    def _get_full_name(self):
+        """Return the person's full name.
+        """
+        return '{0} {1}'.format(self.first_name, self.last_name)
+    full_name = property(_get_full_name)
+        
+
+class BrevetRider(Person):
+    """Brevet rider model for people who have pre-registered to ride
+    in a brevet.
+    """
+    club_member = models.BooleanField('club member?', default=False)
+    brevet = models.ForeignKey(Brevet)
+        
+
+class EventParticipant(Person):
+    """Event participant model for people who have pre-registered for
+    a non-brevet club event.
+    """
+    event = models.ForeignKey(ClubEvent)
 
 
 class BaseRiderForm(forms.ModelForm):
@@ -120,11 +144,11 @@ class RiderForm(BaseRiderForm):
 
 
     class Meta:
-        model = Rider
+        model = BrevetRider
         exclude = ('brevet', )
 
 
 class RiderFormWithoutQualification(BaseRiderForm):
     class Meta:
-        model = Rider
+        model = BrevetRider
         exclude = ('brevet', 'info_answer')
