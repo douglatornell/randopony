@@ -6,7 +6,8 @@ from django import forms
 from django.contrib import admin
 from django.core.validators import validate_email
 # Application:
-from randopony.register.models import Brevet, Rider
+from randopony.register.models import Brevet
+from randopony.register.models import BrevetRider
 
 
 class CustomBrevetAdminForm(forms.ModelForm):
@@ -30,13 +31,15 @@ class BrevetAdmin(admin.ModelAdmin):
     form = CustomBrevetAdminForm
     # Set the order of the fields in the edit form
     fieldsets = [
-        (None, {'fields': ['region', 'event', 'date', 'route_name',
-                           'start_location', 'start_time',  'alt_start_time',
-                           'organizer_email','info_question' ]}),
+        (None, {'fields': 'region event date route_name location '
+                          'time alt_start_time organizer_email '
+                          'info_question '
+                          .split()}),
     ]
     # Display the brevets distance choices as radio buttons instead of
     # a select list
     radio_fields = {'event': admin.HORIZONTAL}
+admin.site.register(Brevet, BrevetAdmin)
         
 
 
@@ -45,15 +48,12 @@ class RiderAdmin(admin.ModelAdmin):
     """
     # Set the fields to display in the change-list, and its filter
     # sidebar, searching by name and brevet
-    list_display = ['brevet', 'name']
+    list_display = ['brevet', 'full_name']
     list_filter = ['brevet']
-    search_fields = ['name']
+    search_fields = ['^first_name',  '^last_name']
     # Set the grouping and order of the fields in the edit form
     fieldsets = [
-        (None, {'fields': ['brevet', 'name', 'email']}),
+        (None, {'fields': ['brevet', 'first_name', 'last_name', 'email']}),
         ('Qualifying info', {'fields': ['club_member', 'info_answer']})
     ]
-
-
-admin.site.register(Brevet, BrevetAdmin)
-admin.site.register(Rider, RiderAdmin)
+admin.site.register(BrevetRider, RiderAdmin)
