@@ -1,6 +1,9 @@
 """Model classes for RandoPony site register app
 
 """
+# Standard library:
+import uuid
+# Django:
 from django import forms
 from django.conf import settings
 from django.db import models
@@ -40,12 +43,28 @@ class BaseEvent(models.Model):
         help_text='Optional question that will appear on the '
                   'pre-registration form')
 
+
     def __unicode__(self):
         event_id = '{region}{event} {date}'.format(
             region='' if self.region == 'Club' else self.region,
             event=self.event,
             date=self.date.strftime('%d-%b-%Y'))
         return event_id
+
+
+    def _get_uuid(self):
+        """Return the URL namespace uuid for the event.
+        """
+        return uuid.uuid5(uuid.NAMESPACE_URL, self.get_absolute_url())
+    uuid = property(_get_uuid)
+
+
+    def get_absolute_url(self):
+        url_id = '{region}{event}{date}'.format(
+            region='' if self.region == 'Club' else self.region,
+            event=self.event,
+            date=self.date.strftime('%d%b%Y'))
+        return '/register/{0}'.format(url_id)
 
 
 class Brevet(BaseEvent):
