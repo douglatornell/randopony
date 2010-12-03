@@ -2,7 +2,11 @@
 
 """
 # Standard library:
-from datetime import date, datetime, timedelta
+from datetime import date
+from datetime import datetime
+from datetime import timedelta
+# Mock:
+from mock import patch
 # Django:
 import django.test
 from django.conf import settings
@@ -25,15 +29,15 @@ def adjust_date(brevet_date):
             else brevet_date.replace(year=next_year))
 
 
+def datetime_constructor(*args, **kwargs):
+    """datetime constructor for use as side effect in datetime mocks
+    so that they (mostly) act like read datetime objects.
+    """
+    return datetime(*args, **kwargs)
+
+
 class TestHomeView(django.test.TestCase):
     fixtures = ['brevets']
-
-    def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
-        """
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
 
     def test_home_get(self):
         """GET request for root page of register app works
@@ -45,7 +49,10 @@ class TestHomeView(django.test.TestCase):
     def test_home_context(self):
         """home view has correct context
         """
-        response = self.client.get(reverse('register:home'))
+        with patch('randopony.register.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.side_effect = datetime_constructor
+            response = self.client.get(reverse('register:home'))
         self.assertTrue(response.context['regions'])
         self.assertTrue(response.context['admin_email'])
 
@@ -63,7 +70,10 @@ class TestHomeView(django.test.TestCase):
     def test_home_regions_list(self):
         """home view renders regions list
         """
-        response = self.client.get(reverse('register:home'))
+        with patch('randopony.register.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.side_effect = datetime_constructor
+            response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Lower Mainland')
         self.assertContains(response, 'Vancouver Island')
         self.assertNotContains(response, 'Southern Interior')
@@ -75,13 +85,6 @@ class TestHomeView(django.test.TestCase):
 class TestRegionBrevetsView(django.test.TestCase):
     fixtures = ['brevets']
 
-    def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
-        """
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
-
     def test_region_brevets_get(self):
         """GET request for region brevets list page of register app works
         """
@@ -92,7 +95,10 @@ class TestRegionBrevetsView(django.test.TestCase):
     def test_region_brevets_context(self):
         """region_brevets view has correct context
         """
-        response = self.client.get('/register/LM-events/')
+        with patch('randopony.register.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.side_effect = datetime_constructor
+            response = self.client.get('/register/LM-events/')
         self.assertTrue(response.context['region'])
         self.assertTrue(response.context['brevets'])
 
@@ -100,7 +106,10 @@ class TestRegionBrevetsView(django.test.TestCase):
     def test_region_brevets_list(self):
         """region_brevets view renders brevets list
         """
-        response = self.client.get('/register/LM-events/')
+        with patch('randopony.register.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.side_effect = datetime_constructor
+            response = self.client.get('/register/LM-events/')
         for brevet in model.Brevet.objects.filter(region='LM'):
             self.assertContains(response, unicode(brevet))
 
@@ -128,37 +137,34 @@ class TestBrevetView(django.test.TestCase):
         """Tweak the test fixture brevets to provide the necessary
         test context.
         """
-        # Ensure that test fixture brevet dates are in the future.
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
-        # Add a brevet in the past
-        brevet_date = adjust_date('01May2010')
-        brevet = model.Brevet.objects.get(
-            region='LM', event=300, date=brevet_date)
-        last_year = date.today().year - 1
-        brevet.date = brevet.date.replace(year=last_year)
-        brevet.pk = None
-        brevet.save()
-        # Add a brevet that started 3.5 hours ago
-        brevet_date = adjust_date('01May2010')
-        brevet = model.Brevet.objects.get(
-            region='LM', event=300, date=brevet_date)
-        brevet.date = date.today()
-        brevet.start_time = (datetime.now() - timedelta(hours=3.5)).time()
-        brevet.pk = None
-        brevet.save()
+        # # Ensure that test fixture brevet dates are in the future.
+        # for brevet in model.Brevet.objects.all():
+        #     brevet.date = adjust_date(brevet.date)
+        #     brevet.save()
+        # # Add a brevet in the past
+        # brevet_date = adjust_date('01May2010')
+        # brevet = model.Brevet.objects.get(
+        #     region='LM', event=300, date=brevet_date)
+        # last_year = date.today().year - 1
+        # brevet.date = brevet.date.replace(year=last_year)
+        # brevet.pk = None
+        # brevet.save()
+        # # Add a brevet that started 3.5 hours ago
+        # brevet_date = adjust_date('01May2010')
+        # brevet = model.Brevet.objects.get(
+        #     region='LM', event=300, date=brevet_date)
+        # brevet.date = date.today()
+        # brevet.start_time = (datetime.now() - timedelta(hours=3.5)).time()
+        # brevet.pk = None
+        # brevet.save()
         
 
     def test_brevet_get(self):
         """GET request for brevet page works
         """
-        brevet_date = adjust_date('01May2010')
-        url = reverse(
-            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
+        url = reverse('register:brevet', args=('LM', 300, '01May2010'))
         response = self.client.get(url)
-        self.assertContains(
-            response, 'RandoPony::LM300 01-May-{0}'.format(brevet_date.year))
+        self.assertContains(response, 'RandoPony::LM300 01-May-2010')
 
 
     def test_brevet_get_nonexistent_brevet_past(self):
@@ -172,7 +178,7 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_get_nonexistent_brevet_future(self):
         """GET request for nonexistent brevet in future fails with 404
         """
-        url = reverse('register:brevet', args=('LM', 200, '25Dec2001'))
+        url = reverse('register:brevet', args=('LM', 200, '25Dec2099'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -180,12 +186,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
-        brevet_date = adjust_date('01May2010')
-        url = reverse(
-            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
+        url = reverse('register:brevet', args=('LM', 300, '01May2010'))
         response = self.client.get(url)
-        self.assertContains(
-            response, 'RandoPony::LM300 01-May-{0}'.format(brevet_date.year))
+        self.assertContains(response, 'RandoPony::LM300 01-May-2010')
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
@@ -234,9 +237,7 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_1_rider(self):
         """brevet view renders correct page body with 1 registered rider
         """
-        brevet_date = adjust_date('22May2010')
-        url = reverse(
-            'register:brevet', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
+        url = reverse('register:brevet', args=('LM', 400, '22May2010'))
         response = self.client.get(url)
         self.assertContains(response, 'Manning Park')
         self.assertContains(response, '1 Pre-registered')
