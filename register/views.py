@@ -2,7 +2,9 @@
 
 """
 # Standard library:
-from datetime import datetime, time, timedelta
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 # Django:
 from django.conf import settings
 from django.core import mail
@@ -78,35 +80,20 @@ def region_brevets(request, region):
     return response
 
 
-def _registration_closed(brevet):
-    """ Registration for brevets closes at noon on the day before the
-    event.
-
-    Note that the webfaction server hosting randopony is 2 hours ahead
-    of Pacific time.
-    """
-    one_day = timedelta(days=1)
-    server_tz_offset = 2
-    noon = time(12 + server_tz_offset, 0)
-    registration_closed = (
-        datetime.now() >= datetime.combine(brevet.date - one_day, noon))
-    return registration_closed
-
-
 def _brevet_started(brevet):
     """Start window for brevet closes 1 hour after brevet start time.
 
     Note that the webfaction server hosting randopony is 2 hours ahead
     of Pacific time.
     """
-    brevet_date_time = datetime.combine(brevet.date, brevet.start_time)
+    brevet_date_time = datetime.combine(brevet.date, brevet.time)
     server_tz_offset = 2
     one_hour = timedelta(hours=1 + server_tz_offset)
     brevet_started = datetime.now() >= brevet_date_time + one_hour
     return brevet_started
 
 
-def _brevet_in_past(brevet, request):
+def _brevet_in_past(brevet):
     """Render a page with a link to the year's results on the club
     site for brevets more than 7 days in the past.
     """
@@ -128,7 +115,7 @@ def brevet(request, region, event, date, rider_id=None):
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
-    results_url = _brevet_in_past(brevet, request)
+    results_url = _brevet_in_past(brevet)
     if results_url:
         template = 'derived/past_brevet.html'
         context = RequestContext(request, {
@@ -136,19 +123,19 @@ def brevet(request, region, event, date, rider_id=None):
             'results_url': results_url
         })
     else:
-        rider_list = model.Rider.objects.filter(
+        rider_list = model.BrevetRider.objects.filter(
             brevet__region=region, brevet__event=event,
             brevet__date=brevet.date)
         try:
-            rider = model.Rider.objects.get(pk=int(rider_id))
+            rider = model.BrevetRider.objects.get(pk=int(rider_id))
             rider_email = h.email2words(rider.email)
-        except (TypeError, model.Rider.DoesNotExist, AttributeError):
+        except (TypeError, model.BrevetRider.DoesNotExist, AttributeError):
             rider = rider_email = None
         template = 'derived/brevet.html'
         context = RequestContext(request, {
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
-            'registration_closed': _registration_closed(brevet),
+            'registration_closed': brevet.registration_closed,
             'brevet_started': _brevet_started(brevet),
             'show_filler_photo': len(rider_list) < 15,
             'rider_list': rider_list,

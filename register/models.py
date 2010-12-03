@@ -2,6 +2,9 @@
 
 """
 # Standard library:
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 import uuid
 # Django:
 from django import forms
@@ -82,6 +85,22 @@ class Brevet(BaseEvent):
     route_name = models.CharField(max_length=100)
     alt_start_time = models.TimeField(
         'alternate start time', blank=True, null=True)
+
+
+    def _registration_closed(self):
+        """ Registration for brevets closes at noon on the day before the
+        event.
+
+        Note that the webfaction server hosting randopony is 2 hours ahead
+        of Pacific time.
+        """
+        one_day = timedelta(days=1)
+        server_tz_offset = 2
+        noon = time(12 + server_tz_offset, 0)
+        registration_closed = (
+            datetime.now() >= datetime.combine(self.date - one_day, noon))
+        return registration_closed
+    registration_closed = property(_registration_closed)
 
 
 class ClubEvent(BaseEvent):

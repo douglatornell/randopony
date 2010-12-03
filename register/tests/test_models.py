@@ -3,8 +3,18 @@
 """
 # Standard library:
 from datetime import date
-import unittest2 as unittest
+from datetime import datetime
 import uuid
+import unittest2 as unittest
+# Mock:
+from mock import patch
+
+
+def datetime_constructor(*args, **kwargs):
+    """datetime constructor for use as side effect in datetime mocks
+    so that they (mostly) act like read datetime objects.
+    """
+    return datetime(*args, **kwargs)
 
 
 class TestBrevet(unittest.TestCase):
@@ -38,6 +48,39 @@ class TestBrevet(unittest.TestCase):
             '/register/LM200{0}'.format(today.strftime('%d%b%Y')))
         self.assertEqual(brevet.uuid, brevet_uuid)
 
+
+    def test_registration_closed_false_week_before_brevet(self):
+        """registration_closed property is False 7 days before brevet
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(2010, 4, 10, 11, 0)
+            mock_datetime.combine = datetime.combine
+            self.assertFalse(brevet.registration_closed)
+
+
+    def test_registration_closed_true_evening_before_brevet(self):
+        """registration_closed property is True evening before brevet
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(2010, 4, 16, 20, 0)
+            mock_datetime.combine = datetime.combine
+            self.assertTrue(brevet.registration_closed)
+
+
+    def test_registration_closed_true_week_after_brevet(self):
+        """registration_closed property is True 7 days after brevet
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(2010, 4, 24, 11, 0)
+            mock_datetime.combine = datetime.combine
+            self.assertTrue(brevet.registration_closed)
+        
 
 class TestClubEvent(unittest.TestCase):
     """Unit tests for ClubEvent model object.
