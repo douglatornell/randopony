@@ -1,26 +1,29 @@
 # Test data fixture for RandoPony register app Rider model
 
-- model: register.rider
+- model: register.brevetrider
   pk: 1
   fields:
     brevet: 2
     club_member: true
     email: djl@douglatornell.ca
-    name: Doug Latornell
+    first_name: Doug
+    last_name: Latornell
     info_answer: LM300 1-May-2010
 
-- model: register.rider
+- model: register.brevetrider
   pk: 2
   fields:
     brevet: 3
     club_member: true
     email: fibber.mcgee@example.com
-    name: Fibber McGee
+    first_name: Fibber
+    last_name: McGee
 
-- model: register.rider
+- model: register.brevetrider
   pk: 3
   fields:
     brevet: 3
     club_member: true
     email: sea@susanallen.ca
-    name: Susan Allen
+    first_name: Susan
+    last_name: Allen

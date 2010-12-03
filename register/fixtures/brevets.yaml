@@ -9,8 +9,8 @@
     info_question: ''
     region: LM
     route_name: Pemberton or Bust
-    start_location: Who knows?
-    start_time: '06:00'
+    location: Who knows?
+    time: '06:00'
     alt_start_time: null
 
 - model: register.brevet
@@ -22,8 +22,8 @@
     info_question: Please give the location and date of your most recent 300 km brevet; e.g. LM300 1-May-2010
     region: LM
     route_name: Manning Park
-    start_location: New Westminister
-    start_time: '21:00'
+    location: New Westminister
+    time: '21:00'
     alt_start_time: null
 
 - model: register.brevet
@@ -35,8 +35,8 @@
     info_question: ''
     region: LM
     route_name: Something
-    start_location: Who knows?
-    start_time: '07:00'
+    location: Who knows?
+    time: '07:00'
     alt_start_time: null
 
 - model: register.brevet
@@ -48,8 +48,8 @@
     info_question: 'There are 2 start times for this brevet: 06:00 or 20:00. Please indicate which start you will use. (You can also propose an different start time, but you will have to "sell" it to the organizers and other riders.)'
     region: LM
     route_name: Bella Coola
-    start_location: Broadway & Alma St, Vancouver
-    start_time: '06:00'
+    location: Broadway & Alma St, Vancouver
+    time: '06:00'
     alt_start_time: '20:00'
 
 - model: register.brevet
@@ -61,6 +61,6 @@
     info_question: ''
     region: VI
     route_name: Next Chance
-    start_location: Tim Horton's, Saanich Plaza, 3501 Ravine Way, Victoria
-    start_time: '05:00'
+    location: Tim Horton's, Saanich Plaza, 3501 Ravine Way, Victoria
+    time: '05:00'
     alt_start_time: null
