@@ -10,13 +10,6 @@ import unittest2 as unittest
 from mock import patch
 
 
-def datetime_constructor(*args, **kwargs):
-    """datetime constructor for use as side effect in datetime mocks
-    so that they (mostly) act like read datetime objects.
-    """
-    return datetime(*args, **kwargs)
-
-
 class TestBrevet(unittest.TestCase):
     """Unit tests for Brevet model object.
     """
@@ -80,6 +73,28 @@ class TestBrevet(unittest.TestCase):
             mock_datetime.now.return_value = datetime(2010, 4, 24, 11, 0)
             mock_datetime.combine = datetime.combine
             self.assertTrue(brevet.registration_closed)
+
+
+    def test_in_past_false_before_brevet(self):
+        """in_past property is False before brevet
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            self.assertFalse(brevet.in_past)
+
+
+    def test_in_past_results_url_week_after_brevet(self):
+        """in_past property is results URL on club site 8 days after brevet
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 25)
+            self.assertEqual(
+                brevet.in_past,
+                'http://randonneurs.bc.ca/results/10_times/10_times.html')
         
 
 class TestClubEvent(unittest.TestCase):

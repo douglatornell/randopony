@@ -93,20 +93,6 @@ def _brevet_started(brevet):
     return brevet_started
 
 
-def _brevet_in_past(brevet):
-    """Render a page with a link to the year's results on the club
-    site for brevets more than 7 days in the past.
-    """
-    results_url = None
-    today = datetime.today().date()
-    seven_days = timedelta(days=7)
-    if brevet.date < today - seven_days:
-        results_url = (
-            'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
-            .format(str(brevet.date.year)[-2:]))
-    return results_url
-
-
 def brevet(request, region, event, date, rider_id=None):
     """Display the brevet information, pre-registered riders list, and
     sometimes the registration confirmation, or duplicate registration
@@ -115,7 +101,7 @@ def brevet(request, region, event, date, rider_id=None):
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
-    results_url = _brevet_in_past(brevet)
+    results_url = brevet.in_past
     if results_url:
         template = 'derived/past_brevet.html'
         context = RequestContext(request, {
