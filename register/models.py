@@ -87,6 +87,21 @@ class Brevet(BaseEvent):
         'alternate start time', blank=True, null=True)
 
 
+    def _in_past(self):
+        """Return a link to the year's results on the club site for
+        brevets more than 7 days in the past, otherwise False.
+        """
+        results_url = False
+        today = datetime.today().date()
+        seven_days = timedelta(days=7)
+        if self.date < today - seven_days:
+            results_url = (
+                'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
+                .format(str(self.date.year)[-2:]))
+        return results_url
+    in_past = property(_in_past)
+
+
     def _registration_closed(self):
         """ Registration for brevets closes at noon on the day before the
         event.
