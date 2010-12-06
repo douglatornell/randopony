@@ -80,19 +80,6 @@ def region_brevets(request, region):
     return response
 
 
-def _brevet_started(brevet):
-    """Start window for brevet closes 1 hour after brevet start time.
-
-    Note that the webfaction server hosting randopony is 2 hours ahead
-    of Pacific time.
-    """
-    brevet_date_time = datetime.combine(brevet.date, brevet.time)
-    server_tz_offset = 2
-    one_hour = timedelta(hours=1 + server_tz_offset)
-    brevet_started = datetime.now() >= brevet_date_time + one_hour
-    return brevet_started
-
-
 def brevet(request, region, event, date, rider_id=None):
     """Display the brevet information, pre-registered riders list, and
     sometimes the registration confirmation, or duplicate registration
@@ -122,7 +109,7 @@ def brevet(request, region, event, date, rider_id=None):
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
             'registration_closed': brevet.registration_closed,
-            'brevet_started': _brevet_started(brevet),
+            'brevet_started': brevet.started,
             'show_filler_photo': len(rider_list) < 15,
             'rider_list': rider_list,
             'rider': rider,
