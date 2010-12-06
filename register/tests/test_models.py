@@ -4,6 +4,8 @@
 # Standard library:
 from datetime import date
 from datetime import datetime
+from datetime import time
+from datetime import timedelta
 import uuid
 import unittest2 as unittest
 # Mock:
@@ -76,7 +78,7 @@ class TestBrevet(unittest.TestCase):
 
 
     def test_in_past_false_before_brevet(self):
-        """in_past property is False before brevet
+        """in_past property is False before brevet start date
         """
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
@@ -95,6 +97,31 @@ class TestBrevet(unittest.TestCase):
             self.assertEqual(
                 brevet.in_past,
                 'http://randonneurs.bc.ca/results/10_times/10_times.html')
+
+
+    def test_started_false_before_brevet(self):
+        """started property is False before brevet start date
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17), time=time(7,0))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(2010, 4, 10, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.assertFalse(brevet.started)
+
+
+    def test_started_true_1_plus_hr_after_start(self):
+        """started property is True for > 1 hr after brevet start time
+        """
+        brevet = self._make_one(
+            region='LM', event='200', date=date(2010, 4, 17), time=time(7,0))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            # Server that hosts randopony is 2 hrs ahead of Pacific time
+            mock_datetime.now.return_value = datetime(2010, 4, 17, 10, 1)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.assertTrue(brevet.started)
         
 
 class TestClubEvent(unittest.TestCase):

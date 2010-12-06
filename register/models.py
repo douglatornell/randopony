@@ -13,6 +13,11 @@ from django.db import models
 from django.forms.util import ErrorList
 
 
+# The webfaction server hosting randopony is 2 hours ahead of Pacific
+# time.
+SERVER_TZ_OFFSET = 2
+
+
 REGIONS = dict(
     Club='Club Events',
     LM='Lower Mainland',
@@ -105,18 +110,24 @@ class Brevet(BaseEvent):
     def _registration_closed(self):
         """ Registration for brevets closes at noon on the day before the
         event.
-
-        Note that the webfaction server hosting randopony is 2 hours ahead
-        of Pacific time.
         """
         one_day = timedelta(days=1)
-        server_tz_offset = 2
-        noon = time(12 + server_tz_offset, 0)
+        noon = time(12 + SERVER_TZ_OFFSET, 0)
         registration_closed = (
             datetime.now() >= datetime.combine(self.date - one_day, noon))
         return registration_closed
     registration_closed = property(_registration_closed)
 
+
+    def _started(brevet):
+        """Start window for brevet closes 1 hour after brevet start time.
+        """
+        brevet_date_time = datetime.combine(brevet.date, brevet.time)
+        one_hour = timedelta(hours=1 + SERVER_TZ_OFFSET)
+        brevet_started = datetime.now() >= brevet_date_time + one_hour
+        return brevet_started
+    started = property(_started)
+    
 
 class ClubEvent(BaseEvent):
     """Non-brevet club event model.
