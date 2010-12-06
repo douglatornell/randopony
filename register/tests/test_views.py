@@ -29,11 +29,6 @@ def adjust_date(brevet_date):
             else brevet_date.replace(year=next_year))
 
 
-def datetime_constructor(*args, **kwargs):
-    """datetime constructor for use as side effect in datetime mocks
-    so that they (mostly) act like read datetime objects.
-    """
-    return datetime(*args, **kwargs)
 
 
 class TestHomeView(django.test.TestCase):
@@ -51,7 +46,6 @@ class TestHomeView(django.test.TestCase):
         """
         with patch('randopony.register.views.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
-            mock_datetime.side_effect = datetime_constructor
             response = self.client.get(reverse('register:home'))
         self.assertTrue(response.context['regions'])
         self.assertTrue(response.context['admin_email'])
@@ -72,7 +66,6 @@ class TestHomeView(django.test.TestCase):
         """
         with patch('randopony.register.views.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
-            mock_datetime.side_effect = datetime_constructor
             response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Lower Mainland')
         self.assertContains(response, 'Vancouver Island')
@@ -97,7 +90,6 @@ class TestRegionBrevetsView(django.test.TestCase):
         """
         with patch('randopony.register.views.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
-            mock_datetime.side_effect = datetime_constructor
             response = self.client.get('/register/LM-events/')
         self.assertTrue(response.context['region'])
         self.assertTrue(response.context['brevets'])
@@ -108,7 +100,6 @@ class TestRegionBrevetsView(django.test.TestCase):
         """
         with patch('randopony.register.views.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
-            mock_datetime.side_effect = datetime_constructor
             response = self.client.get('/register/LM-events/')
         for brevet in model.Brevet.objects.filter(region='LM'):
             self.assertContains(response, unicode(brevet))
@@ -132,32 +123,6 @@ class TestRegionBrevetsView(django.test.TestCase):
 
 class TestBrevetView(django.test.TestCase):
     fixtures = ['brevets', 'riders']
-
-    def setUp(self):
-        """Tweak the test fixture brevets to provide the necessary
-        test context.
-        """
-        # # Ensure that test fixture brevet dates are in the future.
-        # for brevet in model.Brevet.objects.all():
-        #     brevet.date = adjust_date(brevet.date)
-        #     brevet.save()
-        # # Add a brevet in the past
-        # brevet_date = adjust_date('01May2010')
-        # brevet = model.Brevet.objects.get(
-        #     region='LM', event=300, date=brevet_date)
-        # last_year = date.today().year - 1
-        # brevet.date = brevet.date.replace(year=last_year)
-        # brevet.pk = None
-        # brevet.save()
-        # # Add a brevet that started 3.5 hours ago
-        # brevet_date = adjust_date('01May2010')
-        # brevet = model.Brevet.objects.get(
-        #     region='LM', event=300, date=brevet_date)
-        # brevet.date = date.today()
-        # brevet.start_time = (datetime.now() - timedelta(hours=3.5)).time()
-        # brevet.pk = None
-        # brevet.save()
-        
 
     def test_brevet_get(self):
         """GET request for brevet page works
@@ -187,7 +152,12 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct sidebar
         """
         url = reverse('register:brevet', args=('LM', 300, '01May2010'))
-        response = self.client.get(url)
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'RandoPony::LM300 01-May-2010')
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
@@ -197,29 +167,31 @@ class TestBrevetView(django.test.TestCase):
     def test_past_brevet_page(self):
         """page for brevet >7 days ago is pointer to club site
         """
-        brevet_date = adjust_date('01May2010')
-        last_year = date.today().year - 1
-        url = reverse(
-            'register:brevet',
-            args=('LM', 300,
-                  brevet_date.replace(year=last_year).strftime('%d%b%Y')))
-        response = self.client.get(url)
+        url = reverse('register:brevet', args=('LM', 300, '01May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 5, 9)
+            mock_datetime.now.return_value = datetime(2010, 5, 9, 19, 21)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(
             response, 'brevet is over, and the RandoPony has moved on!')
         self.assertContains(
             response,
-            'http://randonneurs.bc.ca/results/{0}_times/{0}_times.html'
-            .format(brevet_date.replace(year=last_year).strftime('%y')))
+            'http://randonneurs.bc.ca/results/10_times/10_times.html')
         self.assertNotContains(response, 'Be the first!')
 
 
     def test_brevet_started_page(self):
         """registration closed message suppressed 1 hour after brevet s
         """
-        url = reverse(
-            'register:brevet',
-            args=('LM', 300, datetime.now().date().strftime('%d%b%Y')))
-        response = self.client.get(url)
+        url = reverse('register:brevet', args=('LM', 300, '01May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertNotContains(
             response, 'Pre-registration for this event is closed')
 
@@ -227,10 +199,13 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_no_riders(self):
         """brevet page has expected msg when no riders are registered
         """
-        brevet_date = adjust_date('01May2010')
-        url = reverse(
-            'register:brevet', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
-        response = self.client.get(url)
+        url = reverse('register:brevet', args=('LM', 300, '01May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'Be the first!')
 
 
@@ -238,7 +213,12 @@ class TestBrevetView(django.test.TestCase):
         """brevet view renders correct page body with 1 registered rider
         """
         url = reverse('register:brevet', args=('LM', 400, '22May2010'))
-        response = self.client.get(url)
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'Manning Park')
         self.assertContains(response, '1 Pre-registered')
         self.assertContains(response, 'Doug Latornell')
@@ -249,32 +229,41 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_2_riders(self):
         """brevet view renders correct page body with 2 registered riders
         """
-        brevet_date = adjust_date('17Apr2010')
-        url = reverse(
-            'register:brevet', args=('LM', 200, brevet_date.strftime('%d%b%Y')))
-        response = self.client.get(url)
+        url = reverse('register:brevet', args=('LM', 200, '17Apr2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, '2 Pre-registered')
 
 
     def test_brevet_page_prereg_confirmation(self):
         """brevet view w/ rider id includes pre-registration confirmation msg
         """
-        brevet_date = adjust_date('22May2010')
         url = reverse(
-            'register:prereg-confirm',
-            args=('LM', 400, brevet_date.strftime('%d%b%Y'), 1))
-        response = self.client.get(url)
+            'register:prereg-confirm', args=('LM', 400, '22May2010', 1))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'for this event. Cool!')
 
 
     def test_brevet_page_duplicate_prereg(self):
         """brevet view includes duplicate pre-registration msg when appropos
         """
-        brevet_date = adjust_date('22May2010')
         url = reverse(
-            'register:prereg-duplicate',
-            args=('LM', 400, brevet_date.strftime('%d%b%Y'), 1))
-        response = self.client.get(url)
+            'register:prereg-duplicate', args=('LM', 400, '22May2010', 1))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'Hmm... Someone using the name')
 
 
