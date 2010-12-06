@@ -264,31 +264,33 @@ class TestBrevetView(django.test.TestCase):
 class TestRegistrationFormView(django.test.TestCase):
     fixtures = ['brevets']
 
-    def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
-        """
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
-
     def test_registration_form_get(self):
         """GET request for registration form page works
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.get(url)
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        # brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
+        # url = reverse('register:form', args=('LM', 400, brevet_date))
+        # response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 
     def test_brevet_registration_form_sidebar(self):
         """registration form view renders correct sidebar
         """
-        brevet_date = adjust_date('22May2010')
-        url = reverse(
-            'register:form', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
-        response = self.client.get(url)
-        self.assertContains(
-            response, 'LM400 {0}'.format(brevet_date.strftime('%d-%b-%Y')))
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'LM400 22-May-2010')
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
@@ -297,11 +299,16 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_with_qual_info(self):
         """registration form view renders page with qual info question
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.get(url)
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'Manning Park')
-        self.assertContains(response, 'Name:')
+        self.assertContains(response, 'First name:')
+        self.assertContains(response, 'Last name:')
         self.assertContains(response, 'Email:')
         self.assertContains(response, 'Club member?')
         self.assertContains(
@@ -312,18 +319,26 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.get(url)
-        self.assertNotContains(response, 'Qualifying info:')
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertNotContains(response, 'Brevet info:')
 
 
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.get(url)
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(
             response, 'Are you a human? Are you a randonneur? Please prove it.')
         self.assertContains(
