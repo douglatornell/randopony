@@ -11,10 +11,15 @@
 
 <form action="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}"
       method="POST">
-  {{ form.name.errors }}
+  {{ form.first_name.errors }}
   <p>
-    <label for="id_name">Name:</label>
-    {{ form.name }}
+    <label for="id_first_name">First name:</label>
+    {{ form.first_name }}
+  </p>
+  {{ form.last_name.errors }}
+  <p>
+    <label for="id_last_name">Last name:</label>
+    {{ form.last_name }}
   </p>
   {{ form.email.errors }}
   <p>
