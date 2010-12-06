@@ -10,6 +10,8 @@ import uuid
 import unittest2 as unittest
 # Mock:
 from mock import patch
+# Django:
+from django.conf import settings
 
 
 class TestBrevet(unittest.TestCase):
@@ -211,3 +213,79 @@ class TestEventParticipant(unittest.TestCase):
         rider = self._make_one(
             first_name='Doug', last_name='Latornell')
         self.assertEqual(rider.full_name, u'Doug Latornell')
+
+
+class TestRiderForm(unittest.TestCase):
+    """Unit tests for RiderForm pre-registration form.
+    """
+    def _get_target_class(self):
+        from randopony.register.models import RiderForm
+        return RiderForm
+
+
+    def _make_one(self, *args, **kwargs):
+        return self._get_target_class()(*args, **kwargs)
+
+
+    def test_form_has_captcha_answer_field(self):
+        """pre-registration form has CAPTCHA answer field
+        """
+        form = self._make_one()
+        self.assertIn('captcha', form.fields)
+
+
+    def test_clean_captcha_correct_answer(self):
+        """clean_captcha returns answer & no error messages
+        """
+        form = self._make_one()
+        form.cleaned_data = {
+            'captcha': settings.REGISTRATION_FORM_CAPTCHA_ANSWER
+        }
+        form._errors = {}
+        answer = form.clean_captcha()
+        self.assertEqual(answer, settings.REGISTRATION_FORM_CAPTCHA_ANSWER)
+        self.assertFalse(form._errors)
+
+
+    def test_clean_captcha_wrong_answer(self):
+        """clean_captcha returns expected error message for wrong answer
+        """
+        form = self._make_one()
+        form.cleaned_data = {'captcha': 42}
+        form._errors = {}
+        answer = form.clean_captcha()
+        self.assertEqual(form._errors['captcha'][0], 'Wrong! See hint.')
+        self.assertEqual(answer, 42)
+
+
+    def test_info_answer_reqd(self):
+        """pre-registration form requires info_answer field value
+        """
+        form = self._make_one()
+        self.assertTrue(form.fields['info_answer'].required)
+
+
+    def test_brevet_field_excluded(self):
+        """pre-registration form excludes brevet field
+        """
+        form = self._make_one()
+        self.assertNotIn('brevet', form.fields)
+
+
+class TestRiderFormWithoutInfoQuestion(unittest.TestCase):
+    """Unit tests for RiderFormWithoutInfoQuestion pre-registration form.
+    """
+    def _get_target_class(self):
+        from randopony.register.models import RiderFormWithoutInfoQuestion
+        return RiderFormWithoutInfoQuestion
+
+
+    def _make_one(self, *args, **kwargs):
+        return self._get_target_class()(*args, **kwargs)
+
+
+    def test_info_answer_field_excluded(self):
+        """pre-registration form excludes info_answer field
+        """
+        form = self._make_one()
+        self.assertNotIn('info_answer', form.fields)
