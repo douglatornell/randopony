@@ -126,10 +126,10 @@ def registration_form(request, region, event, date):
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
-    if _registration_closed(brevet):
+    if brevet.registration_closed:
         raise Http404
     form_class = (model.RiderForm if brevet.info_question
-                  else model.RiderFormWithoutQualification)
+                  else model.RiderFormWithoutInfoQuestion)
     if request.method == 'POST':
         # Process submitted form data
         rider = form_class(
