@@ -182,7 +182,7 @@ class EventParticipant(Person):
 
 
 class BaseRiderForm(forms.ModelForm):
-    """Base class for rider pre-registration ModelForms.
+    """Base class for rider pre-registration ModelForm.
 
     Adds CAPTCHA answer field and its validator to the form.
     """
@@ -198,7 +198,7 @@ class BaseRiderForm(forms.ModelForm):
 
 
 class RiderForm(BaseRiderForm):
-    """Rider pre-registration from for a brevet that requires qualifying info.
+    """Rider pre-registration form for a brevet that requires qualifying info.
     """
     def __init__(self, *args, **kwargs):
         """Make qualifying info a required field.
@@ -212,7 +212,7 @@ class RiderForm(BaseRiderForm):
         exclude = ('brevet', )
 
 
-class RiderFormWithoutQualification(BaseRiderForm):
+class RiderFormWithoutInfoQuestion(BaseRiderForm):
     class Meta:
         model = BrevetRider
         exclude = ('brevet', 'info_answer')
