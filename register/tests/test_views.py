@@ -105,20 +105,14 @@ class TestRegionBrevetsView(django.test.TestCase):
             self.assertContains(response, unicode(brevet))
 
 
-    def test_region_brevets_past_events(self):
+    def test_region_brevets_list_excludes_past_events(self):
         """region_brevets view excludes past events correctly
         """
-        today = date.today()
-        brevets = model.Brevet.objects.all()
-        recent_brevet = brevets[0]
-        recent_brevet.date = today - timedelta(days=2)
-        recent_brevet.save()
-        older_brevet = brevets[1]
-        older_brevet.date = today - timedelta(days=10)
-        older_brevet.save()
-        response = self.client.get('/register/LM-events/')
-        self.assertContains(response, unicode(recent_brevet))
-        self.assertNotContains(response, unicode(older_brevet))
+        with patch('randopony.register.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 20)
+            response = self.client.get('/register/LM-events/')
+        self.assertContains(response, 'LM400 22-May-2010')
+        self.assertNotContains(response, 'LM200 17-Apr-2010')
 
 
 class TestBrevetView(django.test.TestCase):
