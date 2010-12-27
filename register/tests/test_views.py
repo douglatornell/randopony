@@ -109,7 +109,7 @@ class TestRegionBrevetsView(django.test.TestCase):
         """region_brevets view excludes past events correctly
         """
         with patch('randopony.register.views.datetime') as mock_datetime:
-            mock_datetime.today.return_value = datetime(2010, 4, 20)
+            mock_datetime.today.return_value = datetime(2010, 4, 27)
             response = self.client.get('/register/LM-events/')
         self.assertContains(response, 'LM400 22-May-2010')
         self.assertNotContains(response, 'LM200 17-Apr-2010')
@@ -349,12 +349,12 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
-    def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
-        """
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
+    # def setUp(self):
+    #     """Ensure that test fixture brevet dates are in the future.
+    #     """
+    #     for brevet in model.Brevet.objects.all():
+    #         brevet.date = adjust_date(brevet.date)
+    #         brevet.save()
 
     def test_registration_form_clean_submit(self):
         """registration from submit w/ valid data redirects to brevet pg w/ msg
