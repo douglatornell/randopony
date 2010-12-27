@@ -8,10 +8,12 @@ from django.core.validators import validate_email
 # Application:
 from randopony.register.models import Brevet
 from randopony.register.models import BrevetRider
+from randopony.register.models import ClubEvent
 
 
-class CustomBrevetAdminForm(forms.ModelForm):
-    """Custom admin form to validate organizer email address(es).
+class CustomEventAdminForm(forms.ModelForm):
+    """Custom event admin forms to validate organizer email
+    address(es).
 
     Facilitates multiple organizer addresses as a comma separated list.
     """
@@ -28,7 +30,7 @@ class CustomBrevetAdminForm(forms.ModelForm):
 class BrevetAdmin(admin.ModelAdmin):
     """Customize presentation of Brevet instance in admin.
     """
-    form = CustomBrevetAdminForm
+    form = CustomEventAdminForm
     # Set the order of the fields in the edit form
     fieldsets = [
         (None, {'fields': 'region event date route_name location '
@@ -40,8 +42,23 @@ class BrevetAdmin(admin.ModelAdmin):
     # a select list
     radio_fields = {'event': admin.HORIZONTAL}
 admin.site.register(Brevet, BrevetAdmin)
-        
 
+
+class ClubEventAdmin(admin.ModelAdmin):
+    """Customize presentation of ClubEvent instance in admin.
+    """
+    form = CustomEventAdminForm
+    # Set the order of the fields in the edit form
+    fieldsets = [
+        (None, {'fields': 'region event date location time organizer_email '
+                          'info_question '
+                          .split()}),
+    ]
+    # Display the event type choices as radio buttons instead of a
+    # select list
+    radio_fields = {'event': admin.HORIZONTAL}
+admin.site.register(ClubEvent, ClubEventAdmin)
+        
 
 class RiderAdmin(admin.ModelAdmin):
     """Customize presentation of Entrant instance in admin.
