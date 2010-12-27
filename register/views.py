@@ -158,7 +158,7 @@ def registration_form(request, region, event, date):
 def brevet_rider_emails(request, region, event, date):
     """
     """
-    rider_list = model.Rider.objects.filter(
+    rider_list = model.BrevetRider.objects.filter(
         brevet__region=region, brevet__event=event,
         brevet__date=datetime.strptime(date, '%d%b%Y').date())
     if not rider_list:
