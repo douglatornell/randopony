@@ -3,7 +3,6 @@
 """
 # Standard library:
 from datetime import datetime
-from datetime import time
 from datetime import timedelta
 # Django:
 from django.conf import settings
