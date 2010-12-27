@@ -38,8 +38,8 @@ class TestAdminBrevet(django.test.TestCase):
             'event': '600',
             'date': brevet_date,
             'route_name': 'Next Chance',
-            'start_location': "Tim Horton's, Victoria",
-            'start_time': time(5, 0),
+            'location': "Tim Horton's, Victoria",
+            'time': time(5, 0),
             'organizer_email': 'mcroy@example.com',
         }
         response = self.client.post(
@@ -61,8 +61,8 @@ class TestAdminBrevet(django.test.TestCase):
             'event': '600',
             'date': brevet_date,
             'route_name': 'Next Chance',
-            'start_location': "Tim Horton's, Victoria",
-            'start_time': time(5, 0),
+            'location': "Tim Horton's, Victoria",
+            'time': time(5, 0),
             'organizer_email': 'mcroy@example.com,dug.andrusiek@example.com'
         }
         self.client.post('/admin/register/brevet/add/', post_data)
@@ -82,8 +82,8 @@ class TestAdminBrevet(django.test.TestCase):
             'event': '600',
             'date': brevet_date,
             'route_name': 'Next Chance',
-            'start_location': "Tim Horton's, Victoria",
-            'start_time': time(5, 0),
+            'location': "Tim Horton's, Victoria",
+            'time': time(5, 0),
             'organizer_email': 'mcroy@example.com, dug.andrusiek@example.com'
         }
         self.client.post('/admin/register/brevet/add/', post_data)
