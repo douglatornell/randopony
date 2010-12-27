@@ -132,7 +132,7 @@ def registration_form(request, region, event, date):
     if request.method == 'POST':
         # Process submitted form data
         rider = form_class(
-            request.POST, instance=model.Rider(brevet=brevet))
+            request.POST, instance=model.BrevetRider(brevet=brevet))
         try:
             new_rider = rider.save(commit=False)
         except ValueError:
@@ -174,12 +174,13 @@ def _process_registration(brevet, rider, request):
         brevet, brevet.date.strftime('%d%b%Y'))
     # Check for duplicate registration
     try:
-        check_rider = model.Rider.objects.get(
-            name=rider.name, email=rider.email, brevet=brevet)
+        check_rider = model.BrevetRider.objects.get(
+            first_name=rider.first_name, last_name=rider.last_name,
+            email=rider.email, brevet=brevet)
         # Redirect to brevet page with duplicate flag to
         # trigger appropriate flash message
         return '/{0}/{1:d}/duplicate/'.format(brevet_page, check_rider.id)
-    except model.Rider.DoesNotExist:
+    except model.BrevetRider.DoesNotExist:
         # Save new rider pre-registration and send emails to
         # rider and brevet organizer
         rider.save()
@@ -221,7 +222,7 @@ def _email_to_organizer(brevet, rider, host):
     brevet_page_uri = 'http://{0}/{1}/'.format(host, brevet_page)
     email = mail.EmailMessage(
     subject='{0} has Pre-registered for the {1}'
-            .format(rider.name, brevet),
+            .format(rider.full_name, brevet),
     body=render_to_string(
         'email/to_organizer.txt',
         {'brevet': brevet,

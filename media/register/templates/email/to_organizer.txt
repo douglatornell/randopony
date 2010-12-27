@@ -1,14 +1,14 @@
-{{ rider.name }} ({{ rider.email }}) has pre-registered for the {{ brevet }} brevet.  Zher name should appear along with the other pre-registered riders on the list at {{ brevet_page_uri }}.
+{{ rider.full_name }} ({{ rider.email }}) has pre-registered for the {{ brevet }} brevet.  Zher name should appear along with the other pre-registered riders on the list at {{ brevet_page_uri }}.
 
 Zhe should have received a confirmation email that appears to have come from your email address so that zhe can contact you directly, if necessary.
 
-{{rider.name}} has indicated that zhe is {% if not rider.club_member %}NOT {% endif %}a club member, but you should confirm that against a current club membership list. {% if not rider.club_member %} Zhe has been informed that zhe need to be a member to do the ride, and that zhe need to join beforehand, or at the start.{% endif %}
+{{rider.full_name}} has indicated that zhe is {% if not rider.club_member %}NOT {% endif %}a club member, but you should confirm that against a current club membership list. {% if not rider.club_member %} Zhe has been informed that zhe need to be a member to do the ride, and that zhe need to join beforehand, or at the start.{% endif %}
 
 {% if rider.info_answer %} In response to the brevet info question:
 
 {{ brevet.info_question|safe }}
 
-{{ rider.name }} has answered {{ rider.info_answer }}. If this is qualifying information you should confirm that it is correct.{% endif %}
+{{ rider.full_name }} has answered {{ rider.info_answer }}. If this is qualifying information you should confirm that it is correct.{% endif %}
 
 This is an auto-generated email. If you are having problems with the RandoPony system please send email to {{ admin_email }}
 
