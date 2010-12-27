@@ -17,6 +17,8 @@ import randopony.register.models as model
 
 
 class TestHomeView(django.test.TestCase):
+    """Functional tests for home view.
+    """
     fixtures = ['brevets']
 
     def test_home_get(self):
@@ -61,6 +63,8 @@ class TestHomeView(django.test.TestCase):
 
 
 class TestRegionBrevetsView(django.test.TestCase):
+    """Functional tests for region_brevets view.
+    """
     fixtures = ['brevets']
 
     def test_region_brevets_get(self):
@@ -101,6 +105,8 @@ class TestRegionBrevetsView(django.test.TestCase):
 
 
 class TestBrevetView(django.test.TestCase):
+    """Functional tests for brevet view.
+    """
     fixtures = ['brevets', 'riders']
 
     def test_brevet_get(self):
@@ -247,6 +253,8 @@ class TestBrevetView(django.test.TestCase):
 
 
 class TestRegistrationFormView(django.test.TestCase):
+    """Functional tests for registration form view.
+    """
     fixtures = ['brevets']
 
     def test_registration_form_get(self):
@@ -329,6 +337,8 @@ class TestRegistrationFormView(django.test.TestCase):
 
 
 class TestRegistrationFunction(django.test.TestCase):
+    """Functional tests of registration for brevets.
+    """
     fixtures = ['brevets', 'riders']
 
     def test_registration_form_clean_submit(self):
@@ -801,6 +811,8 @@ class TestRegistrationFunction(django.test.TestCase):
 
 
 class TestRiderEmailsView(django.test.TestCase):
+    """Functional tests for rider email address list view.
+    """
     fixtures = ['brevets', 'riders']
 
     def test_no_rider_emails_raises_404(self):
@@ -838,6 +850,8 @@ class TestRiderEmailsView(django.test.TestCase):
 
 
 class TestAboutPonyView(django.test.TestCase):
+    """Functional tests for about RandoPony view.
+    """
     def test_about_pony_get(self):
         """GET request for about RandoPony page works
         """
@@ -856,6 +870,8 @@ class TestAboutPonyView(django.test.TestCase):
 
 
 class TestOrganizerInfoView(django.test.TestCase):
+    """Functional tests for info for event organizer's view.
+    """
     def test_organizer_info_get(self):
         """GET request for orgainzers info page works
         """
