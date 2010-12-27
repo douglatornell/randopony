@@ -16,19 +16,6 @@ from django.core.urlresolvers import reverse
 import randopony.register.models as model
 
 
-def adjust_date(brevet_date):
-    """If brevet_date is in the past, change its year to next year.
-    """
-    try:
-        brevet_date = datetime.strptime(brevet_date, '%d%b%Y').date()
-    except TypeError:
-        pass
-    today = date.today()
-    next_year = today.year + 1
-    return (brevet_date if brevet_date > today
-            else brevet_date.replace(year=next_year))
-
-
 class TestHomeView(django.test.TestCase):
     fixtures = ['brevets']
 
@@ -816,14 +803,6 @@ class TestRegistrationFunction(django.test.TestCase):
 class TestRiderEmailsView(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
-    def setUp(self):
-        """Ensure that test fixture brevet dates are in the future.
-        """
-        for brevet in model.Brevet.objects.all():
-            brevet.date = adjust_date(brevet.date)
-            brevet.save()
-
-
     def test_no_rider_emails_raises_404(self):
         """request for rider's emails for event w/ no riders raises 404
         """
@@ -835,12 +814,7 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_rider_emails_event_past(self):
         """request for rider's emails for event >7 days ago raises 404
         """
-        brevet_date = adjust_date('01May2010')
-        last_year = date.today().year - 1
-        url = reverse(
-            'register:rider-emails',
-            args=('LM', '400',
-                  brevet_date.replace(year=last_year).strftime('%d%b%Y')))
+        url = reverse('register:rider-emails', args=('LM', '300', '01May2009'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -848,8 +822,7 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_1_rider_email(self):
         """request for rider's emails for event w/ 1 rider returns address
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('rider-emails', args=('LM', '400', brevet_date))
+        url = reverse('register:rider-emails', args=('LM', 400, '22May2010'))
         response = self.client.get(url)
         self.assertContains(response, 'djl@douglatornell.ca')
 
@@ -857,8 +830,7 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_2_rider_emails(self):
         """request for rider's emails for event w/ 2 riders returns list
         """
-        brevet_date = adjust_date('17Apr2010').strftime('%d%b%Y')
-        url = reverse('rider-emails', args=('LM', '200', brevet_date))
+        url = reverse('register:rider-emails', args=('LM', '200', '17Apr2010'))
         response = self.client.get(url)
         self.assertEqual(
             set(response.content.split(', ')),
