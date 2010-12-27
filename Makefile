@@ -13,7 +13,7 @@ help:
 	@echo "  rsync-proj       to rsync the RandoPony project to webfaction"
 	@echo "  rsync-all        to rsync the RandoPony project & docs to webfaction"
 	@echo "  getwfdb          to rsync the RandoPony database FROM webfaction"
-	@echo "  coverage-report  to rsync the RandoPony database FROM webfaction"
+	@echo "  coverage-report  to generate test coverage report as HTML files"
 
 docs:
 	(cd docs; make html; cd ..)
