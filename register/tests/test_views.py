@@ -29,8 +29,6 @@ def adjust_date(brevet_date):
             else brevet_date.replace(year=next_year))
 
 
-
-
 class TestHomeView(django.test.TestCase):
     fixtures = ['brevets']
 
@@ -274,9 +272,6 @@ class TestRegistrationFormView(django.test.TestCase):
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
-        # brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        # url = reverse('register:form', args=('LM', 400, brevet_date))
-        # response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
 
@@ -349,28 +344,26 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
-    # def setUp(self):
-    #     """Ensure that test fixture brevet dates are in the future.
-    #     """
-    #     for brevet in model.Brevet.objects.all():
-    #         brevet.date = adjust_date(brevet.date)
-    #         brevet.save()
-
     def test_registration_form_clean_submit(self):
         """registration from submit w/ valid data redirects to brevet pg w/ msg
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400},
-            follow=True)
-        rider_id = model.Rider.objects.order_by('-id')[0].id
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
+        rider_id = model.BrevetRider.objects.order_by('-id')[0].id
         url = reverse(
-            'register:prereg-confirm', args=('LM', 300, brevet_date, rider_id))
+            'register:prereg-confirm', args=('LM', 300, '01May2010', rider_id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
@@ -383,18 +376,23 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_clean_submit_non_member(self):
         """registration from submit redirects to brevet pg w/ non-member msg
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'captcha': 400},
-            follow=True)
-        rider_id = model.Rider.objects.order_by('-id')[0].id
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
+        rider_id = model.BrevetRider.objects.order_by('-id')[0].id
         url = reverse(
-            'register:prereg-confirm', args=('LM', 300, brevet_date, rider_id))
+            'register:prereg-confirm', args=('LM', 300, '01May2010', rider_id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
@@ -404,16 +402,42 @@ class TestRegistrationFunction(django.test.TestCase):
             response, 'You must be a member of the club to ride')
 
 
-    def test_registration_form_name_required(self):
-        """registration form name field must not be empty
+    def test_registration_form_first_name_required(self):
+        """registration form first name field must not be empty
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.post(
-            url,
-            {'email': 'fibber@example.com',
-             'club_member': False,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
+        self.assertContains(response, 'This field is required.')
+        self.assertNotContains(response, 'Hint')
+
+
+    def test_registration_form_last_name_required(self):
+        """registration form last name field must not be empty
+        """
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
@@ -421,13 +445,19 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_required(self):
         """registration form email field must not be empty
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'club_member': False,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
@@ -435,14 +465,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_valid(self):
         """registration form email field must be valid
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber',
-             'club_member': False,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'LatMcGeeornell',
+            'email': 'fibber',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params)
         self.assertContains(response, 'Enter a valid e-mail address.')
         self.assertNotContains(response, 'Hint')
 
@@ -450,14 +486,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_qual_info_required(self):
         """registration form qualifying info field must not be empty
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
@@ -465,14 +507,17 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_required(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'qual_info': 'LM300'})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'qual_info': 'LM300',
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Hint')
 
@@ -480,15 +525,18 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_is_int(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'qual_info': 'LM300',
-             'captcha': 'afdga'})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'qual_info': 'LM300',
+            'captcha': 'afdga'
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            response = self.client.post(url, params)
         self.assertContains(response, 'Enter a whole number.')
         self.assertContains(response, 'Hint')
 
@@ -496,15 +544,18 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'qual_info': 'LM300',
-             'captcha': 'afdga'})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'qual_info': 'LM300',
+            'captcha': 'afdga'
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            response = self.client.post(url, params)
         self.assertContains(response, 'Enter a whole number.')
         self.assertContains(response, 'Hint')
 
@@ -512,15 +563,18 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_wrong(self):
         """registration form CAPTCHA wrong answer
         """
-        brevet_date = adjust_date('22May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 400, brevet_date))
-        response = self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'qual_info': 'LM300',
-             'captcha': 200})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'qual_info': 'LM300',
+            'captcha': 200
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            response = self.client.post(url, params)
         self.assertContains(response, 'Wrong! See hint.')
         self.assertContains(response, 'Hint')
 
@@ -529,29 +583,35 @@ class TestRegistrationFunction(django.test.TestCase):
         """registration form rejects duplicate entry w/ msg on brevet page
         """
         # Register for the brevet
-        brevet_date = adjust_date('01May2010')
         brevet = model.Brevet.objects.get(
-            region='LM', event=300, date=brevet_date)
-        model.Rider(
-            name='Doug Latornell',
+            region='LM', event=300, date=date(2010, 5, 1))
+        model.BrevetRider(
+            first_name='Doug',
+            last_name='Latornell',
             email='djl@example.com',
             brevet=brevet).save()
         # Try to register again
-        url = reverse(
-            'register:form', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
-        response = self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400},
-            follow=True)
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
         # Confirm the redriect, and flash message content
-        rider_query = model.Rider.objects.filter(
-            name='Doug Latornell', email='djl@example.com', brevet=brevet)
+        rider = model.BrevetRider.objects.filter(
+            first_name='Doug', last_name='Latornell',
+            email='djl@example.com', brevet=brevet)
         url = reverse(
             'register:prereg-duplicate',
-            args=('LM', 300, brevet_date.strftime('%d%b%Y'), rider_query[0].id))
+            args=('LM', 300, '01May2010', rider[0].id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
@@ -564,31 +624,33 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_for_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
-        brevet_date = adjust_date('01May2010')
-        url = reverse(
-            'register:form', args=('LM', 300, brevet_date.strftime('%d%b%Y')))
-        self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM300 {0} Brevet'
-            .format(brevet_date.strftime('%d-%b-%Y')))
+            'Pre-registration Confirmation for LM300 01-May-2010 Brevet')
         self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
         self.assertTrue(
-            'pre-registered for the BC Randonneurs LM300 {0} brevet'
-            .format(brevet_date.strftime('%d-%b-%Y'))
+            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
             in mail.outbox[0].body)
         self.assertTrue(
-            'http://testserver/register/LM300/{0}/'
-            .format(brevet_date.strftime('%d%b%Y'))
+            'http://testserver/register/LM300/01May2010/'
             in mail.outbox[0].body)
         self.assertTrue(
             'print out the event waiver form' in mail.outbox[0].body)
@@ -599,14 +661,13 @@ class TestRegistrationFunction(django.test.TestCase):
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Doug Latornell has Pre-registered for the LM300 {0}'
-            .format(brevet_date.strftime('%d-%b-%Y')))
+            'Doug Latornell has Pre-registered for the LM300 01-May-2010')
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
             mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
         self.assertTrue(
             'Doug Latornell (djl@example.com) has pre-registered for the '
-            'LM300 {0} brevet'.format( brevet_date.strftime('%d-%b-%Y'))
+            'LM300 01-May-2010 brevet'
             in mail.outbox[1].body)
         self.assertTrue(
             'has indicated that zhe is a club member' in mail.outbox[1].body)
@@ -618,14 +679,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_for_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'captcha': 400})
+        url = reverse('register:form', args=('VI', 600, '07Aug2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 8, 1)
+            mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(mail.outbox[0].to, ['fibber@example.com'])
@@ -642,31 +709,33 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
         """
-        brevet_date = adjust_date('22May2010')
-        url = reverse(
-            'register:form', args=('LM', 400, brevet_date.strftime('%d%b%Y')))
-        self.client.post(
-            url,
-            {'name': 'Fibber McGee',
-             'email': 'fibber@example.com',
-             'club_member': False,
-             'info_answer': 'LM300',
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 400, '22May2010'))
+        params = {
+            'first_name': 'Fibber',
+            'last_name': 'McGee',
+            'email': 'fibber@example.com',
+            'club_member': False,
+            'info_answer': 'LM300',
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(
             mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM400 {0} Brevet'
-             .format(brevet_date.strftime('%d-%b-%Y')))
+            'Pre-registration Confirmation for LM400 22-May-2010 Brevet')
         self.assertTrue(
-            'http://testserver/register/LM400/{0}/'
-            .format(brevet_date.strftime('%d%b%Y'))
+            'http://testserver/register/LM400/22May2010/'
             in mail.outbox[0].body)
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
-            'Fibber McGee has Pre-registered for the LM400 {0}'
-            .format(brevet_date.strftime('%d-%b-%Y')))
+            'Fibber McGee has Pre-registered for the LM400 22-May-2010')
         self.assertTrue(
             'Fibber McGee has answered LM300.' in mail.outbox[1].body)
 
@@ -674,14 +743,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_has_rider_address(self):
         """registration email to organizer contains rider email address
         """
-        brevet_date = adjust_date('01May2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('LM', 300, brevet_date))
-        self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400})
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         self.assertTrue('djl@example.com' in mail.outbox[1].body)
 
@@ -689,14 +764,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_to_2_organizers(self):
         """registration email goes to multiple organizers
         """
-        brevet_date = adjust_date('07Aug2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('VI', 600, brevet_date))
-        self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400})
+        url = reverse('register:form', args=('VI', 600, '07Aug2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 8, 1)
+            mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(
             set(mail.outbox[1].to),
@@ -706,14 +787,20 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_replyto_2_organizers(self):
         """registration email to rider has 2 organizers in reply-to header
         """
-        brevet_date = adjust_date('07Aug2010').strftime('%d%b%Y')
-        url = reverse('register:form', args=('VI', 600, brevet_date))
-        self.client.post(
-            url,
-            {'name': 'Doug Latornell',
-             'email': 'djl@example.com',
-             'club_member': True,
-             'captcha': 400})
+        url = reverse('register:form', args=('VI', 600, '07Aug2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 8, 1)
+            mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         self.assertEqual(
             mail.outbox[0].from_email,
