@@ -9,11 +9,15 @@ from datetime import timedelta
 # Django:
 import django.test
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.core import mail
 
 
 class TestAdminBrevet(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
+    fixtures = ['brevets']
+    
     def setUp(self):
         user = User.objects.create_superuser(
             'test_admin', 'test_admin@example.com', 'foobar42')
@@ -97,9 +101,57 @@ class TestAdminBrevet(django.test.TestCase):
             'mcroy@example.com, dug.andrusiek@example.com')
 
 
+    def test_brevet_notify_webmaster_1_brevet(self):
+        """notify webmaster admin action sends email for 1 brevet
+        """
+        params = {
+            u'action': [u'notify_webmaster'],
+            u'_selected_action': [u'1'],
+        }
+        response = self.client.post(
+            '/admin/register/brevet/', params, follow=True)
+        self.assertContains(response, 'URL for 1 brevet sent to webmaster')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony Pre-registration Page for LM300 01-May-2010')
+        self.assertEqual(mail.outbox[0].to, [settings.WEBMASTER_EMAIL])
+        self.assertEqual(
+            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+        body = mail.outbox[0].body
+        self.assertTrue(
+            'pre-registration page for the LM300 01-May-2010 event' in body)
+        self.assertTrue(
+            'The URL is http://testserver/register/LM300/01May2010/' in body)
+        self.assertTrue(
+            'please send email to {0}'.format(settings.ADMINS[0][1])
+            in body)
+
+
+    def test_brevet_notify_webmaster_2_brevets(self):
+        """notify webmaster admin action sends email for 2 brevets
+        """
+        params = {
+            u'action': [u'notify_webmaster'],
+            u'_selected_action': [u'1', u'2'],
+        }
+        response = self.client.post(
+            '/admin/register/brevet/', params, follow=True)
+        self.assertContains(response, 'URLs for 2 brevets sent to webmaster')
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony Pre-registration Page for LM300 01-May-2010')
+        self.assertEqual(
+            mail.outbox[1].subject,
+            'RandoPony Pre-registration Page for LM400 22-May-2010')
+
+
 class TestAdminClubEvent(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
+    fixtures = ['club_events']
+    
     def setUp(self):
         user = User.objects.create_superuser(
             'test_admin', 'test_admin@example.com', 'foobar42')
@@ -178,3 +230,50 @@ class TestAdminClubEvent(django.test.TestCase):
         self.assertEqual(
             event.organizer_email,
             'mcroy@example.com, dug.andrusiek@example.com')
+
+        
+    def test_club_event_notify_webmaster_1_event(self):
+        """notify webmaster admin action sends email for 1 club event
+        """
+        params = {
+            u'action': [u'notify_webmaster'],
+            u'_selected_action': [u'1'],
+        }
+        response = self.client.post(
+            '/admin/register/clubevent/', params, follow=True)
+        self.assertContains(response, 'URL for 1 event sent to webmaster')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony Pre-registration Page for Dinner 16-Mar-2010')
+        self.assertEqual(mail.outbox[0].to, [settings.WEBMASTER_EMAIL])
+        self.assertEqual(
+            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+        body = mail.outbox[0].body
+        self.assertTrue(
+            'pre-registration page for the Dinner 16-Mar-2010 event' in body)
+        self.assertTrue(
+            'The URL is http://testserver/register/ClubDinner/16Mar2010/'
+            in body)
+        self.assertTrue(
+            'please send email to {0}'.format(settings.ADMINS[0][1])
+            in body)
+
+
+    def test_club_event_notify_webmaster_2_events(self):
+        """notify webmaster admin action sends email for 2 club events
+        """
+        params = {
+            u'action': [u'notify_webmaster'],
+            u'_selected_action': [u'1', u'2'],
+        }
+        response = self.client.post(
+            '/admin/register/clubevent/', params, follow=True)
+        self.assertContains(response, 'URLs for 2 events sent to webmaster')
+        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony Pre-registration Page for Dinner 16-Mar-2010')
+        self.assertEqual(
+            mail.outbox[1].subject,
+            'RandoPony Pre-registration Page for AGM 03-Oct-2010')

@@ -1,0 +1,21 @@
+# Test data fixture for RandoPony register app ClubEvent model
+
+- model: register.ClubEvent
+  pk: 1
+  fields:
+    date: 2010-03-16
+    event: Dinner
+    organizer_email: jeff@example.com
+    region: Club
+    location: Moose's Down Under
+    time: '18:00'
+
+- model: register.ClubEvent
+  pk: 2
+  fields:
+    date: 2010-10-03
+    event: AGM
+    organizer_email: harold@example.com
+    region: Club
+    location: Bedford House, Fort Langley
+    time: '13:00'
