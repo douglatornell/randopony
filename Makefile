@@ -37,5 +37,7 @@ getwfdb:
 	rsync -hvz $(WF_PONY)/randopony/randopony-production.db ./
 
 coverage-report:
-	coverage run --source . manage.py test 
-	coverage html
+	coverage run --source . manage.py test
+	coverage report --omit "manage.py,webfaction-settings.py"
+	coverage html --omit "manage.py,webfaction-settings.py"
+	@echo "HTML coverage report is accessible from htmlcov/index.html"
