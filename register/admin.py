@@ -5,14 +5,22 @@
 from django import forms
 from django.contrib import admin
 from django.core.validators import validate_email
-# Application:
+# Model classes:
 from randopony.register.models import Brevet
 from randopony.register.models import BrevetRider
 from randopony.register.models import ClubEvent
 
 
-class CustomEventAdminForm(forms.ModelForm):
-    """Custom event admin forms to validate organizer email
+def clean_email_address_list(data):
+    """Custom validator for a comma separated list of email addresses.
+    """
+    for email in (email.strip() for email in data.split(',')):
+        validate_email(email)
+    return data
+
+
+class CustomBrevetAdminForm(forms.ModelForm):
+    """Custom brevet admin forms to validate organizer email
     address(es).
 
     Facilitates multiple organizer addresses as a comma separated list.
@@ -21,16 +29,14 @@ class CustomEventAdminForm(forms.ModelForm):
         model = Brevet
 
     def clean_organizer_email(self):
-        data = self.cleaned_data['organizer_email']
-        for email in (email.strip() for email in data.split(',')):
-            validate_email(email)
+        data = clean_email_address_list(self.cleaned_data['organizer_email'])
         return data
 
 
 class BrevetAdmin(admin.ModelAdmin):
     """Customize presentation of Brevet instance in admin.
     """
-    form = CustomEventAdminForm
+    form = CustomBrevetAdminForm
     # Set the order of the fields in the edit form
     fieldsets = [
         (None, {'fields': 'region event date route_name location '
@@ -44,10 +50,24 @@ class BrevetAdmin(admin.ModelAdmin):
 admin.site.register(Brevet, BrevetAdmin)
 
 
+class CustomClubEventAdminForm(forms.ModelForm):
+    """Custom club event admin forms to validate organizer email
+    address(es).
+
+    Facilitates multiple organizer addresses as a comma separated list.
+    """
+    class Meta:
+        model = ClubEvent
+
+    def clean_organizer_email(self):
+        data = clean_email_address_list(self.cleaned_data['organizer_email'])
+        return data
+
+
 class ClubEventAdmin(admin.ModelAdmin):
     """Customize presentation of ClubEvent instance in admin.
     """
-    form = CustomEventAdminForm
+    form = CustomClubEventAdminForm
     # Set the order of the fields in the edit form
     fieldsets = [
         (None, {'fields': 'region event date location time organizer_email '
