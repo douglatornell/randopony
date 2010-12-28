@@ -7,6 +7,7 @@ from datetime import timedelta
 # Django:
 from django.conf import settings
 from django.core import mail
+from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -195,9 +196,10 @@ def _process_registration(brevet, rider, request):
 def _email_to_rider(brevet, rider, host):
     """Send pre-registration confirmation email to rider.
     """
-    brevet_page = 'register/{0.region}{0.event}/{1}'.format(
-        brevet, brevet.date.strftime('%d%b%Y'))
-    brevet_page_uri = 'http://{0}/{1}/'.format(host, brevet_page)
+    brevet_page = reverse(
+        'register:brevet',
+        args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
+    brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0} Brevet'
                 .format(brevet),
@@ -205,30 +207,33 @@ def _email_to_rider(brevet, rider, host):
             'email/to_rider.txt',
             {'brevet': brevet,
              'rider': rider,
-             'brevet_page_uri': brevet_page_uri}),
+             'brevet_page_url': brevet_page_url}),
         from_email=brevet.organizer_email,
         to=[rider.email],
         headers={
             'Sender': settings.REGISTRATION_EMAIL_FROM,
-            'Reply-To': brevet.organizer_email})
+            'Reply-To': brevet.organizer_email}
+    )
     email.send()
 
 
 def _email_to_organizer(brevet, rider, host):
     """Send rider pre-registration notification email to event organizer(s).
     """
-    brevet_page = 'register/{0.region}{0.event}/{1}'.format(
-        brevet, brevet.date.strftime('%d%b%Y'))
-    brevet_page_uri = 'http://{0}/{1}/'.format(host, brevet_page)
+    brevet_page = reverse(
+        'register:brevet',
+        args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
+    brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
     email = mail.EmailMessage(
-    subject='{0} has Pre-registered for the {1}'
-            .format(rider.full_name, brevet),
-    body=render_to_string(
-        'email/to_organizer.txt',
-        {'brevet': brevet,
-         'rider': rider,
-         'brevet_page_uri': brevet_page_uri,
-         'admin_email': settings.ADMINS[0][1]}),
-    from_email=settings.REGISTRATION_EMAIL_FROM,
-    to=[addr.strip() for addr in brevet.organizer_email.split(',')])
+        subject='{0} has Pre-registered for the {1}'
+                .format(rider.full_name, brevet),
+        body=render_to_string(
+            'email/to_organizer.txt',
+            {'brevet': brevet,
+             'rider': rider,
+             'brevet_page_url': brevet_page_url,
+             'admin_email': settings.ADMINS[0][1]}),
+        from_email=settings.REGISTRATION_EMAIL_FROM,
+        to=[addr.strip() for addr in brevet.organizer_email.split(',')]
+    )
     email.send()
