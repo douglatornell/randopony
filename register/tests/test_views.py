@@ -502,7 +502,7 @@ class TestRegistrationFunction(django.test.TestCase):
 
 
     def test_registration_form_captcha_answer_required(self):
-        """registration form CAPTCHA answer field must not be empty
+        """registration form CAPTCHA answer field must not be missing
         """
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
@@ -520,7 +520,7 @@ class TestRegistrationFunction(django.test.TestCase):
 
 
     def test_registration_form_captcha_answer_is_int(self):
-        """registration form CAPTCHA answer field must not be empty
+        """registration form CAPTCHA answer field must be an integer
         """
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
@@ -529,7 +529,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'email': 'fibber@example.com',
             'club_member': False,
             'qual_info': 'LM300',
-            'captcha': 'afdga'
+            'captcha': 'afdga',
         }
         with patch('randopony.register.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -548,12 +548,12 @@ class TestRegistrationFunction(django.test.TestCase):
             'email': 'fibber@example.com',
             'club_member': False,
             'qual_info': 'LM300',
-            'captcha': 'afdga'
+            'captcha': ''
         }
         with patch('randopony.register.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.post(url, params)
-        self.assertContains(response, 'Enter a whole number.')
+        self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Hint')
 
 
