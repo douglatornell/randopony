@@ -1,6 +1,7 @@
 syntax: glob
 randopony*.db
 .email_host_password
+.google_docs_password
 .*secret_key
 .coverage
 htmlcov
