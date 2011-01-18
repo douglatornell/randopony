@@ -111,3 +111,8 @@ EMAIL_HOST = 'smtp.webfaction.com'
 EMAIL_HOST_USER = 'randopony'
 EMAIL_HOST_PASSWORD = open(
     path.join(project_path, '.email_host_password'), 'r').read()
+
+# Google Docs settings
+GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
+GOOGLE_DOCS_PASSWORD = open(
+    path.join(project_path, '.google_docs_password'), 'r').read()

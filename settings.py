@@ -113,3 +113,8 @@ WEBMASTER_EMAIL = 'eric_fergusson@telus.net'
 #    python -m smtpd -n -c DebuggingServer localhost:1025
 EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 1025
+
+# Google Docs settings
+GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
+GOOGLE_DOCS_PASSWORD = open(
+    path.join(project_path, '.google_docs_password'), 'r').read()

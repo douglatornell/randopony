@@ -50,6 +50,7 @@ class BaseEvent(models.Model):
         "event info question", blank=True,
         help_text='Optional question that will appear on the '
                   'pre-registration form')
+    google_doc_id = models.CharField(max_length=200)
 
 
     def __unicode__(self):
