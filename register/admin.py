@@ -9,6 +9,9 @@ from django.core.urlresolvers import reverse
 from django.contrib import admin
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
+# Google docs:
+import gdata.acl.data
+import gdata.docs.client
 # Model classes:
 from randopony.register.models import Brevet
 from randopony.register.models import BrevetRider
@@ -44,7 +47,7 @@ class BrevetAdmin(admin.ModelAdmin):
     # a select list
     radio_fields = {'event': admin.HORIZONTAL}
 
-    actions = ['notify_webmaster']
+    actions = ['notify_webmaster', 'create_rider_list_spreadsheet']
 
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
@@ -56,6 +59,56 @@ class BrevetAdmin(admin.ModelAdmin):
         self.message_user(request, '{0} sent to webmaster'.format(msg_bit))
     description = 'Send email with URL for brevet to webmaster'
     notify_webmaster.short_description = description
+
+    def _google_docs_login(self, service):
+        client = service()
+        client.ssl = True
+        client.ClientLogin(
+            settings.GOOGLE_DOCS_EMAIL, settings.GOOGLE_DOCS_PASSWORD,
+            'randopony')
+        return client
+
+    def _get_rider_list_template(self, client):
+        docs = client.GetDocList()
+        for doc in docs.entry:
+            if doc.title.text == 'Brevet Rider List Template':
+                template = doc
+                break
+        return template
+
+    def _share_rider_list_publicly(self, doc, client):
+        scope = gdata.acl.data.AclScope(type='default')
+        role = gdata.acl.data.AclRole(value='reader')
+        acl_entry = gdata.acl.data.AclEntry(scope=scope, role=role)
+        client.Post(acl_entry, doc.get_acl_feed_link().href)
+
+    def create_rider_list_spreadsheet(self, request, queryset):
+        client = self._google_docs_login(gdata.docs.client.DocsClient)
+        docs_count = 0
+        brevets_count = queryset.count()
+        for brevet in queryset:
+            if not brevet.google_doc_id:
+                template = self._get_rider_list_template(client)
+                created_doc = client.copy(template, unicode(brevet))
+                self._share_rider_list_publicly(created_doc, client)
+                brevet.google_doc_id = created_doc.resource_id.text
+                brevet.save()
+                docs_count += 1
+        if docs_count == 0:
+            msg = 'No rider lists created!'
+        elif docs_count == 1:
+            msg = 'Rider list created for 1 brevet.'
+        else:
+            msg = 'Rider lists created for {0} brevets.'.format(docs_count)
+        diff = brevets_count - docs_count
+        if diff:
+            if diff == 1:
+                msg += ' Brevet already had a rider list.'
+            else:
+                msg += ' {0} brevets already had rider lists.'
+        self.message_user(request, msg)
+    description = 'Copy Google Docs rider list template for brevet(s)'
+    create_rider_list_spreadsheet.short_description = description
 admin.site.register(Brevet, BrevetAdmin)
 
 
