@@ -15,8 +15,11 @@ from django.shortcuts import render_to_response
 from django.shortcuts import redirect
 from django.template import RequestContext
 from django.template.loader import render_to_string
-# Application:
-import randopony.register.helpers as h
+# Google Docs:
+from gdata.spreadsheet.service import SpreadsheetsService
+# RandoPony:
+from randopony.register.helpers import email2words
+from randopony.register.helpers import google_docs_login
 import randopony.register.models as model
 
 
@@ -32,7 +35,7 @@ def home(request):
         } for region in regions]
     context = RequestContext(request, {
         'regions': region_list,
-        'admin_email': h.email2words(settings.ADMINS[0][1])
+        'admin_email': email2words(settings.ADMINS[0][1])
     })
     response = render_to_response('derived/home.html', context)
     return response
@@ -101,7 +104,7 @@ def brevet(request, region, event, date, rider_id=None):
             brevet__date=brevet.date)
         try:
             rider = model.BrevetRider.objects.get(pk=int(rider_id))
-            rider_email = h.email2words(rider.email)
+            rider_email = email2words(rider.email)
         except (TypeError, model.BrevetRider.DoesNotExist, AttributeError):
             rider = rider_email = None
         template = 'derived/brevet.html'
@@ -185,12 +188,48 @@ def _process_registration(brevet, rider, request):
         # Save new rider pre-registration and send emails to
         # rider and brevet organizer
         rider.save()
+        _update_google_spreadsheet(brevet)
         host = request.get_host()
         _email_to_rider(brevet, rider, host)
         _email_to_organizer(brevet, rider, host)
         # Redirect to brevet page with rider record id to
         # trigger registration confirmation flash message
         return '/{0}/{1:d}/'.format(brevet_page, rider.id)
+
+
+def _update_google_spreadsheet(brevet):
+    """Update the rider list spreadsheet on Google docs, preserving
+    the list's sorted by last name order.
+    """
+    client = google_docs_login(SpreadsheetsService)
+    key = brevet.google_doc_id.split(':')[1]
+    spreadsheet_list = client.GetListFeed(key)
+    spreadsheet_rows = len(spreadsheet_list.entry)
+    rider_list = model.BrevetRider.objects.filter(
+        brevet__region=brevet.region, brevet__event=brevet.event,
+        brevet__date=brevet.date)
+    # Update the rows already in the spreadsheet
+    for row, rider in enumerate(rider_list[:spreadsheet_rows]):
+        rider_number = row + 1
+        new_row_data = _make_spreadsheet_row_dict(rider_number, rider)
+        client.UpdateRow(spreadsheet_list.entry[row], new_row_data)
+        client.UpdateCell(rider_number + 1, 5, rider.info_answer, key)
+    # Add remaining rows
+    for row, rider in enumerate(rider_list[spreadsheet_rows:]):
+        rider_number = spreadsheet_rows + row + 1
+        row_data = _make_spreadsheet_row_dict(rider_number, rider)
+        client.InsertRow(row_data, key)
+        client.UpdateCell(rider_number + 1, 5, rider.info_answer, key)
+
+
+def _make_spreadsheet_row_dict(rider_number, rider):
+        row_data = {
+            'ridernumber': str(rider_number),
+            'lastname': rider.last_name,
+            'firstname': rider.first_name,
+            'clubmember': 'Y' if rider.club_member else 'N',
+        }
+        return row_data
 
 
 def _email_to_rider(brevet, rider, host):
