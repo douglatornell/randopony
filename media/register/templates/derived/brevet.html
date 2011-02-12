@@ -22,7 +22,7 @@
 {% endif %}
 
 <p><strong>Start:</strong> {{ brevet.date|date:"D d-M-Y" }}
-at {{ brevet.start_time|time:"H:i" }}
+at {{ brevet.time|time:"H:i" }}
 {% if brevet.alt_start_time %}
 or {{ brevet.alt_start_time|time:"H:i" }}
 {% endif %}
@@ -32,7 +32,7 @@ or {{ brevet.alt_start_time|time:"H:i" }}
 {% if brevet.route_name|lower != 'n/a' %}
 Start
 {% endif %}
-Location:</strong> {{ brevet.start_location }}</p>
+Location:</strong> {{ brevet.location }}</p>
 
 {% if registration_closed and not brevet_started %}
 <div id="registration-closed">
