@@ -1,8 +1,8 @@
 """Helper functions for the randopony register app.
 
 """
-# Python 2.6 with future features:
-from __future__ import absolute_import
+# Django:
+from django.conf import settings
 
 
 def email2words(email):
@@ -11,3 +11,11 @@ def email2words(email):
     Replaces @ with ' at ', and . with ' dot '.
     """
     return email.replace('@', ' at ').replace('.', ' dot ')
+
+
+def google_docs_login(service):
+    client = service()
+    client.ssl = True
+    client.ClientLogin(
+        settings.GOOGLE_DOCS_EMAIL, settings.GOOGLE_DOCS_PASSWORD, 'randopony')
+    return client
