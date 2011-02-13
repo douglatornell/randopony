@@ -5,7 +5,7 @@
 from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 from django.views.generic.simple import direct_to_template
-# Application:
+# RandoPony:
 import randopony.register.helpers as h
 import randopony.register.models as model
 import randopony.register.views as views
@@ -50,7 +50,7 @@ urlpatterns = patterns('',
         name='form'),
                        
     # List of rider email addresses for brevet
-    url('{0}/rider-emails/$'.format(event_pattern),
+    url('{0}/rider-emails/(?P<uuid>[a-f0-9\-]+)/$'.format(event_pattern),
         views.brevet_rider_emails,
         name='rider-emails'),
                        

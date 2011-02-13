@@ -12,7 +12,7 @@ import django.test
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
-# Application:
+# RandoPony:
 import randopony.register.models as model
 
 
@@ -815,10 +815,12 @@ class TestRiderEmailsView(django.test.TestCase):
     """
     fixtures = ['brevets', 'riders']
 
-    def test_no_rider_emails_raises_404(self):
-        """request for rider's emails for event w/ no riders raises 404
+
+    def test_rider_emails_bad_uuid(self):
+        """request for rider's emails with bad brevet uuid raises 404
         """
-        url = reverse('register:rider-emails', args=('LM', '200', '20Nov2010'))
+        url = reverse(
+            'register:rider-emails', args=('LM', '200', '17Apr2010', 'f00'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -826,24 +828,56 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_rider_emails_event_past(self):
         """request for rider's emails for event >7 days ago raises 404
         """
-        url = reverse('register:rider-emails', args=('LM', '300', '01May2009'))
-        response = self.client.get(url)
+        url = reverse(
+            'register:rider-emails',
+            args=('LM', '200', '17Apr2010',
+                  'eb45e7d4-46b5-5efc-9d17-8d25a74fcae0'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 27)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+        
+
+    def test_no_rider_emails_returns_msg(self):
+        """request for rider's emails for event w/ no riders returns msg
+        """
+        url = reverse(
+            'register:rider-emails',
+            args=('LM', '300', '01May2010',
+                  'dc554a2d-50ce-5c67-ba40-aa541ab3bf2d'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'No riders have registered yet!')
 
 
     def test_1_rider_email(self):
         """request for rider's emails for event w/ 1 rider returns address
         """
-        url = reverse('register:rider-emails', args=('LM', 400, '22May2010'))
-        response = self.client.get(url)
+        url = reverse(
+            'register:rider-emails',
+            args=('LM', 400, '22May2010',
+                  'eb280730-b798-5560-a665-b849a908feb7'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertContains(response, 'djl@douglatornell.ca')
 
 
     def test_2_rider_emails(self):
         """request for rider's emails for event w/ 2 riders returns list
         """
-        url = reverse('register:rider-emails', args=('LM', '200', '17Apr2010'))
-        response = self.client.get(url)
+        url = reverse(
+            'register:rider-emails',
+            args=('LM', '200', '17Apr2010',
+                  'eb45e7d4-46b5-5efc-9d17-8d25a74fcae0'))
+        with patch('randopony.register.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
         self.assertEqual(
             set(response.content.split(', ')),
             set('sea@susanallen.ca fibber.mcgee@example.com'.split()))
