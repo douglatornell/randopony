@@ -159,15 +159,26 @@ def registration_form(request, region, event, date):
     return response
 
 
-def brevet_rider_emails(request, region, event, date):
+def brevet_rider_emails(request, region, event, date, uuid):
+    """Display a comma separated list of email addresses for the
+    riders that have pre-registered for a brevet.
+
+    The URL that requests this view includes a namespace UUID for the
+    brevet to provide a measure of protection from email address
+    collecting 'bots.
+
+    Requests for this view more than 7 days after the brevet will fail
+    with a 404.
     """
-    """
-    rider_list = model.BrevetRider.objects.filter(
-        brevet__region=region, brevet__event=event,
-        brevet__date=datetime.strptime(date, '%d%b%Y').date())
-    if not rider_list:
+    brevet_date = datetime.strptime(date, '%d%b%Y').date()
+    brevet = get_object_or_404(
+        model.Brevet, region=region, event=event, date=brevet_date)
+    if uuid != str(brevet.uuid) or brevet.in_past:
         raise Http404
-    email_list = ', '.join(rider.email for rider in rider_list)
+    rider_list = model.BrevetRider.objects.filter(
+        brevet__region=region, brevet__event=event, brevet__date=brevet_date)
+    email_list = (', '.join(rider.email for rider in rider_list)
+                  or 'No riders have registered yet!')
     return HttpResponse(email_list, mimetype='text/plain')
 
 
