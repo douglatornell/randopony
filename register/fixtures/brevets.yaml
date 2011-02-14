@@ -12,6 +12,7 @@
     location: Who knows?
     time: '06:00'
     alt_start_time: null
+    google_doc_id: spreadsheet:foo
 
 - model: register.Brevet
   pk: 2

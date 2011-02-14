@@ -147,6 +147,41 @@ class TestAdminBrevet(django.test.TestCase):
             'RandoPony Pre-registration Page for LM400 22-May-2010')
 
 
+    def test_brevet_notify_brevet_organizer_1_brevet(self):
+        """notify brevet organizer(s) admin action sends email for 1 brevet
+        """
+        params = {
+            u'action': [u'notify_brevet_organizer'],
+            u'_selected_action': [u'1'],
+        }
+        response = self.client.post(
+            '/admin/register/brevet/', params, follow=True)
+        self.assertContains(response, 'Email for 1 brevet sent to organizer(s)')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony URLs for LM300 01-May-2010')
+        self.assertEqual(mail.outbox[0].to, ['pumpkinrider@example.com'])
+        self.assertEqual(
+            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+        body = mail.outbox[0].body
+        self.assertTrue(
+            'pre-registration page for the LM300 01-May-2010 brevet' in body)
+        self.assertTrue(
+            'The URL is http://testserver/register/LM300/01May2010/' in body)
+        self.assertTrue(
+            'The rider list URL is https://spreadsheets.google.com/ccc?key=foo'
+            in body)
+        self.assertTrue(
+            'The riders email address list URL is '
+            'http://testserver/register/LM300/01May2010/rider-emails/'
+            'dc554a2d-50ce-5c67-ba40-aa541ab3bf2d/'
+            in body)
+        self.assertTrue(
+            'please send email to {0}'.format(settings.ADMINS[0][1])
+            in body)
+
+
 class TestAdminClubEvent(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
