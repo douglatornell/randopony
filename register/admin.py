@@ -48,10 +48,14 @@ class BrevetAdmin(admin.ModelAdmin):
     ]
     # Display the brevets distance choices as radio buttons instead of
     # a select list
-    radio_fields = {'event': admin.HORIZONTAL}
-
-    actions = ['notify_webmaster', 'create_rider_list_spreadsheet']
-
+    radio_fields = {
+        'event': admin.HORIZONTAL
+    }
+    actions = [
+        'create_rider_list_spreadsheet',
+        'notify_webmaster',
+        'notify_brevet_organizer',
+    ]
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
         brevets_count = queryset.count()
@@ -62,9 +66,27 @@ class BrevetAdmin(admin.ModelAdmin):
         self.message_user(request, '{0} sent to webmaster'.format(msg_bit))
     description = 'Send email with URL for brevet to webmaster'
     notify_webmaster.short_description = description
+
+    
+    def notify_brevet_organizer(self, request, queryset):
+        _notify_brevet_organizer(request, queryset)
+        brevets_count = queryset.count()
+        if brevets_count == 1:
+            msg_bit = 'Email for 1 brevet'
+        else:
+            msg_bit = 'Emails for {0} brevets'.format(brevets_count)
+        self.message_user(
+            request, '{0} sent to organizer(s)'.format(msg_bit))
+    description = 'Send email with brevet URLs to brevet organizer(s)'
+    notify_brevet_organizer.short_description = description
     
 
     def create_rider_list_spreadsheet(self, request, queryset):
+        """Create a Google Docs rider list spreadsheet from the rider
+        list template for the brevet(s) in the queryset.
+        
+        Handler for create_rider_list_spreadsheet admin action.
+        """
         client = google_docs_login(DocsClient)
         docs_count = 0
         brevets_count = queryset.count()
@@ -190,7 +212,7 @@ def _notify_webmaster(request, queryset):
     """Send email message to club webmaster containing the URL of the
     pre-registration page for the event(s) in the queryset.
 
-    Handle for notify_webmaster admin actions.
+    Handler for notify_webmaster admin action.
     """
     for event in queryset:
         event_page = reverse(
@@ -204,9 +226,50 @@ def _notify_webmaster(request, queryset):
                 'email/to_webmaster.txt',
                 {'event': event,
                  'event_page_url': event_page_url,
-                 'admin_email': settings.ADMINS[0][1]}
+                 'admin_email': settings.ADMINS[0][1],
+                }
             ),
             from_email=settings.REGISTRATION_EMAIL_FROM,
             to=[settings.WEBMASTER_EMAIL],
+        )
+        email.send()
+
+
+
+def _notify_brevet_organizer(request, queryset):
+    """Send email message to brevet organizer(s) containing the URLs
+    of the:
+
+    * pre-registration page
+    * Google Docs rider list spreadsheet
+    * pre-registered riders email address list
+
+    for the brevet(s) in the queryset.
+    """
+    host = request.get_host()
+    for brevet in queryset:
+        brevet_page = reverse(
+            'register:brevet',
+            args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
+        brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+        rider_list_url = (
+            'https://spreadsheets.google.com/ccc?key={0}'
+            .format(brevet.google_doc_id.split(':')[1]))
+        rider_emails_url = (
+            'http://{0}{1}rider-emails/{2}/'
+            .format(host, brevet_page, brevet.uuid))
+        email = mail.EmailMessage(
+            subject='RandoPony URLs for {0}'.format(brevet),
+            body=render_to_string(
+                'email/URLs_to_organizer.txt',
+                {'brevet': brevet,
+                 'brevet_page_url': brevet_page_url,
+                 'rider_list_url': rider_list_url,
+                 'rider_emails_url': rider_emails_url,
+                 'admin_email': settings.ADMINS[0][1],
+                },
+            ),
+            from_email=settings.REGISTRATION_EMAIL_FROM,
+            to=[addr.strip() for addr in brevet.organizer_email.split(',')],
         )
         email.send()
