@@ -3,7 +3,7 @@
 .PHONY:	help docs clean-docs rsync-all rsync-proj rsync-docs getwfdb \
 	    coverage-report
 
-WF_PONY = webfaction:webapps/randopony
+WF_PONY = webfaction:webapps/randopony2011
 
 help:
 	@echo "Use \`make <target>' where <target> is one of"
@@ -28,6 +28,8 @@ rsync-proj:
 	rsync -ahvz \
     --exclude=.hg* --exclude=*.pyc --exclude=*.db --exclude=.DS_Store \
     --exclude=settings.py --exclude=.secret_key --exclude=docs \
+	--exclude=Makefile --exclude=.coverage --exclude=htmlcov \
+	--exclude=gymkhana.py \
     --exclude=*.aside --exclude=*.backup \
     ../randopony $(WF_PONY)/
 
