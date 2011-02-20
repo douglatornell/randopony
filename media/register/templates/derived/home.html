@@ -1,12 +1,13 @@
-{% extends "base/page.html" %}
+{% extends "base/register-page.html" %}
 
-{% block title %}RandoPony::Registration{% endblock %}
+{% block title %}RandoPony::Brevets{% endblock %}
+{% block page-subtitle %}brevet pre-registration{% endblock %}
 
 {% block content %}
-<p>  Welcome to the pre-registration site for the BC Randonneurs Cycling
-  Club brevets.
+<p>  Please click the tab on the right side of the page for the region
+  where the brevet that you want to pre-register for is.
 </p>
-<p>  This site provides a pre-registration service for brevets that
+<p>  These pages provides a pre-registration service for brevets that
   simply lets the ride organizer know that you are intending to
   ride. We collect your name and email address so that we can confirm
   your pre-registration to you and the organizer by email.
@@ -26,25 +27,23 @@
   organizers. Feedback about this site can be sent to
   <kbd>{{ admin_email }}</kbd>
 </p>
-<p>  Please click the tab on the right side of the page for the region
-  where the brevet that you want to pre-register for is.
-</p>
-
 <p>If you are a brevet organizer and would like set up pre-registration
-for your ride, please read the <a href="{% url organizer_info %}">Info
+for your ride, please read the <a href="{% url pasture:organizer-info %}">Info
 for Brevet Organizers</a> page.
 </p>
 {% endblock %}
 
 
 {% block home-link %}
-<li><a href="{% url register:home %}" class="selected">Home</a></li>
+<li>
+  <a href="{% url register:home %}" class="selected">Register for Brevets</a>
+</li>
 {% endblock %}
     
-{% block region-list %}
+{% block sidebar-links %}
 {% for region in regions %}
 <li>
-  <a href="{% url register.views.region_brevets region=region.abbrev %}">
+  <a href="">
     {{ region.long_name }}
   </a>
 </li>
