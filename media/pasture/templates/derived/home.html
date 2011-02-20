@@ -1,0 +1,31 @@
+{% extends "pasture/templates/base/page.html" %}
+
+{% block app-css %}
+<link rel="stylesheet" type="text/css" 
+      href="{{ MEDIA_URL }}pasture/pasture.css" />
+{% endblock %}
+
+{% block title %}RandoPony{% endblock %}
+{% block page-subtitle %}event pre-registration{% endblock %}
+
+{% block content %}
+<p>
+  Welcome to the pre-registration site for the BC Randonneurs Cycling
+  Club brevets, populaires, and other events.
+</p>
+<img class="filler_img"
+     src="{{ MEDIA_URL }}pasture/images/HomeClimb.jpg"
+     alt="BC Randonneurs brevet, populaires and events" />
+{% endblock %}
+
+
+{% block home-link %}
+<li><a href="{% url pasture:home %}" class="selected">Home</a></li>
+{% endblock %}
+
+
+{% block sidebar-links %}
+<li><a href="{% url register:home %}">Register for Brevets</a></li>
+
+<li><a href="">Register for Populaires</a></li>
+{% endblock %}

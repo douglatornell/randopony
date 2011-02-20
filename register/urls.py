@@ -1,17 +1,15 @@
-"""URL map for RandoPony site.
+"""URL map for RandoPony brevets & events registration app.
 
 """
 # Django:
-from django.conf import settings
-from django.conf.urls.defaults import patterns, url
-from django.views.generic.simple import direct_to_template
+from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import url
 # RandoPony:
-import randopony.register.helpers as h
-import randopony.register.models as model
-import randopony.register.views as views
+from randopony.register import models
+from randopony.register import views
 
 
-REGIONS = '(?i)%s' % '|'.join(model.REGIONS.keys())
+REGIONS = '(?i)%s' % '|'.join(models.REGIONS.keys())
 EVENTS = '[12]000|1200|[2346]00|dinner|AGM'
 DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
@@ -26,7 +24,7 @@ event_pattern = (
 
 urlpatterns = patterns('',
     # Register app home page
-    url(r'^$', views.home, name='home'),
+    url(r'', views.home, name='home'),
                        
     # Region brevet pages (REGIONS regex precludes making this a named URL)
     url(r'^(?P<region>({0}))-events/$'.format(REGIONS), views.region_brevets),
@@ -53,21 +51,4 @@ urlpatterns = patterns('',
     url('{0}/rider-emails/(?P<uuid>[a-f0-9\-]+)/$'.format(event_pattern),
         views.brevet_rider_emails,
         name='rider-emails'),
-                       
-    # What's up with the pony page
-    url(r'^about_pony/$', direct_to_template,
-        {
-            'template': 'derived/about-pony.html'
-        },
-        name='about_pony'),
-
-    # Info for brevet organizers page
-    url(r'^organizer_info/$', direct_to_template,
-        {
-            'template': 'derived/organizer-info.html',
-            'extra_context': {
-                'admin_email': h.email2words(settings.ADMINS[0][1])
-            }
-        },
-        'organizer_info'),
 )
