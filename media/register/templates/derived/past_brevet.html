@@ -1,11 +1,11 @@
-{% extends "base/page.html" %}
+{% extends "base/register-page.html" %}
 
 {% block title %}RandoPony::{{ brevet }}{% endblock %}
 
 {% block page-subtitle %}{{ brevet }}{% endblock %}
 
 {% block home-link %}
-<li><a href="{% url register:home %}">Home</a></li>
+<li><a href="{% url register:home %}">Brevets</a></li>
 {% endblock %}
 
 {% block content %}

@@ -1,7 +1,7 @@
 {% extends "base/register-page.html" %}
 
 {% block title %}RandoPony::Brevets{% endblock %}
-{% block page-subtitle %}brevet pre-registration{% endblock %}
+{% block page-subtitle %}Brevet Pre-registration{% endblock %}
 
 {% block content %}
 <p>  Please click the tab on the right side of the page for the region
@@ -36,16 +36,15 @@ for Brevet Organizers</a> page.
 
 {% block home-link %}
 <li>
-  <a href="{% url register:home %}" class="selected">Register for Brevets</a>
+  <a href="{% url register:home %}" class="selected">Brevets</a>
 </li>
 {% endblock %}
     
 {% block sidebar-links %}
 {% for region in regions %}
+{% url register:region-brevets region.abbrev as region_url %}
 <li>
-  <a href="">
-    {{ region.long_name }}
-  </a>
+ <a href="{{ region_url }}">{{ region.long_name }}</a>
 </li>
 {% endfor %}
 {% endblock %}

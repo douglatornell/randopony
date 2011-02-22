@@ -25,7 +25,7 @@ class TestHomeView(django.test.TestCase):
         """GET request for root page of register app works
         """
         response = self.client.get(reverse('register:home'))
-        self.assertContains(response, 'RandoPony::Registration')
+        self.assertContains(response, 'RandoPony::Brevets')
 
 
     def test_home_context(self):
@@ -42,9 +42,9 @@ class TestHomeView(django.test.TestCase):
         """home view renders brevets list
         """
         response = self.client.get(reverse('register:home'))
-        self.assertContains(response, 'Home')
+        self.assertContains(response, 'Brevets')
         self.assertContains(response, 'randonneurs.bc.ca')
-        self.assertContains(response, 'Info for Brevet Organizers')
+        self.assertContains(response, 'Info for Event Organizers')
         self.assertContains(response, "What's up with the pony?")
 
 
@@ -883,41 +883,3 @@ class TestRiderEmailsView(django.test.TestCase):
             set('sea@susanallen.ca fibber.mcgee@example.com'.split()))
 
 
-class TestAboutPonyView(django.test.TestCase):
-    """Functional tests for about RandoPony view.
-    """
-    def test_about_pony_get(self):
-        """GET request for about RandoPony page works
-        """
-        response = self.client.get(reverse('about_pony'))
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_about_pony_sidebar(self):
-        """organizer_info view renders expected sidebar
-        """
-        response = self.client.get(reverse('about_pony'))
-        self.assertTrue('Home' in response.content)
-        self.assertTrue('randonneurs.bc.ca' in response.content)
-        self.assertTrue('Info for Brevet Organizers' in response.content)
-        self.assertTrue("What's up with the pony?" in response.content)
-
-
-class TestOrganizerInfoView(django.test.TestCase):
-    """Functional tests for info for event organizer's view.
-    """
-    def test_organizer_info_get(self):
-        """GET request for orgainzers info page works
-        """
-        response = self.client.get(reverse('organizer_info'))
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_organizer_info_sidebar(self):
-        """organizer_info view renders expected sidebar
-        """
-        response = self.client.get(reverse('organizer_info'))
-        self.assertTrue('Home' in response.content)
-        self.assertTrue('randonneurs.bc.ca' in response.content)
-        self.assertTrue('Info for Brevet Organizers' in response.content)
-        self.assertTrue("What's up with the pony?" in response.content)
