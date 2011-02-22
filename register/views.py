@@ -37,7 +37,7 @@ def home(request):
         'regions': region_list,
         'admin_email': email2words(settings.ADMINS[0][1])
     })
-    response = render_to_response('derived/home.html', context)
+    response = render_to_response('register/templates/derived/home.html', context)
     return response
 
 

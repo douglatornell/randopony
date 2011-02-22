@@ -9,7 +9,7 @@ from randopony.register import models
 from randopony.register import views
 
 
-REGIONS = '(?i)%s' % '|'.join(models.REGIONS.keys())
+REGIONS = '{0}'.format('|'.join(models.REGIONS.keys()))
 EVENTS = '[12]000|1200|[2346]00|dinner|AGM'
 DAYS = '(0*)[1-9]|[12][0-9]|3[01]'
 MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
@@ -24,10 +24,12 @@ event_pattern = (
 
 urlpatterns = patterns('',
     # Register app home page
-    url(r'', views.home, name='home'),
-                       
-    # Region brevet pages (REGIONS regex precludes making this a named URL)
-    url(r'^(?P<region>({0}))-events/$'.format(REGIONS), views.region_brevets),
+    url(r'^$', views.home, name='home'),
+
+    # Region brevet pages
+    url(r'(?P<region>({0}))-events/$'.format(REGIONS),
+        views.region_brevets,
+        name='region-brevets'),
                        
     # Brevet page with rider list
     url('{0}/$'.format(event_pattern), views.brevet, name='brevet'),

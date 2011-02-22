@@ -1,4 +1,4 @@
-{% extends "pasture/templates/base/page.html" %}
+{% extends "base/page.html" %}
 
 {% block app-css %}
 <link rel="stylesheet" type="text/css" 
@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block title %}RandoPony{% endblock %}
-{% block page-subtitle %}event pre-registration{% endblock %}
+{% block page-subtitle %}Event Pre-registration{% endblock %}
 
 {% block content %}
 <p>
@@ -25,7 +25,7 @@
 
 
 {% block sidebar-links %}
+{% if brevets %}
 <li><a href="{% url register:home %}">Register for Brevets</a></li>
-
-<li><a href="">Register for Populaires</a></li>
+{% endif %}
 {% endblock %}

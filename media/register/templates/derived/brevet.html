@@ -1,4 +1,4 @@
-{% extends "base/page.html" %}
+{% extends "base/register-page.html" %}
 
 {% block page-css %}
   <link rel="stylesheet" type="text/css"
@@ -96,6 +96,7 @@ Location:</strong> {{ brevet.location }}</p>
 {% endif %}
 {% endif %}
 
+
 {% if rider_list %}
 <table>
   <thead>
@@ -122,9 +123,8 @@ Location:</strong> {{ brevet.location }}</p>
 {% else %}
 Nobody has pre-registered.
 {% if not registration_closed %}
-<a href="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-Be the first!
-</a>
+{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url%}
+<a href="{{ form_url }}">Be the first!</a>
 {% endif %}
 {% endif %}
 
@@ -141,25 +141,22 @@ Be the first!
 {% endif %}
 {% endblock %}
 
-{% block region-link %}
+{% block sidebar-links %}
+{% url register:region-brevets region.abbrev as region_url %}
 <li>
-  <a href="{% url register.views.region_brevets region=region.abbrev %}">
-    {{ region.long_name }}
-  </a>
+  <a href="{{ region_url }}">{{ region.long_name }}</a>
 </li>
 {% endblock %}
 
 {% block info-links %}
+{% url register:brevet region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as brevet_url %}
 <li>
-  <a href="{% url register:brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
-    {{ brevet }}
-  </a>
+  <a href="{{ brevet_url }}" class="selected">{{ brevet }}</a>
 </li>
 {% if not registration_closed %}
+{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url%}
 <li>
-  <a href="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-    Register
-  </a>
+  <a href="{{ form_url }}">Register</a>
 </li>
 {% endif %}
 {% if not brevet_started %}
