@@ -102,7 +102,7 @@ class TestBrevet(unittest.TestCase):
 
 
     def test_started_false_before_brevet(self):
-        """started property is False before brevet start date
+        """started property is False before brevet start datetime
         """
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17), time=time(7,0))

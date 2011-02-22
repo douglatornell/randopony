@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'south',
     'randopony.pasture',
     'randopony.register',
+    'randopony.populaires',
 )
 
 # Application-specific settings:
