@@ -223,7 +223,7 @@ def _notify_webmaster(request, queryset):
         email = mail.EmailMessage(
             subject='RandoPony Pre-registration Page for {0}'.format(event),
             body=render_to_string(
-                'email/to_webmaster.txt',
+                'register/templates/email/to_webmaster.txt',
                 {'event': event,
                  'event_page_url': event_page_url,
                  'admin_email': settings.ADMINS[0][1],
