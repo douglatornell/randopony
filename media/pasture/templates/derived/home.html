@@ -28,4 +28,8 @@
 {% if brevets %}
 <li><a href="{% url register:home %}">Register for Brevets</a></li>
 {% endif %}
+
+{% if brevets %}
+<li><a href="{% url populaires:event_list %}">Register for Populaires</a></li>
+{% endif %}
 {% endblock %}
