@@ -76,6 +76,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     path.join(project_path, 'media/register/templates'),
     path.join(project_path, 'media/pasture/templates'),
+    path.join(project_path, 'media/populaires/templates'),
     path.join(project_path, 'media/templates'),
     path.join(project_path, 'media/'),
 )

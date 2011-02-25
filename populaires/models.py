@@ -34,7 +34,8 @@ class Populaire(models.Model):
     registration_closes = models.DateTimeField()
     entry_form_url = models.CharField(
         max_length=200,
-        help_text='Full URL of entry form PDF')
+        help_text='Full URL of entry form PDF;<br/> e.g. '
+                  'http://www.randonneurs.bc.ca/VicPop/VicPop11_registration.pdf')
     entry_form_url_label = models.CharField(
         max_length=30,
         default='Entry Form (PDF)')

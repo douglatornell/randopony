@@ -1,0 +1,14 @@
+# Test data fixture for RandoPony populaires app Populaire model
+
+- model: populaires.Populaire
+  pk: 1
+  fields:
+    event_name: Victoria Populaire
+    short_name: VicPop
+    date: 2011-03-27
+    location: University of Victoria, Parking Lot #2 (Gabriola Road, near McKinnon Gym)
+    time: '10:00'
+    organizer_email: mjansson@islandnet.com
+    registration_closes: 2011-03-23 12:00
+    entry_form_url: http://www.randonneurs.bc.ca/VicPop/VicPop11_registration.pdf
+    entry_form_url_label: Entry Form (PDF)
