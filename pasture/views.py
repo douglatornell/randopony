@@ -10,8 +10,8 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 # RandoPony:
+from ..helpers import email2words
 from ..populaires.models import Populaire
-from ..register.helpers import email2words
 from ..register.models import Brevet
 
 

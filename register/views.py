@@ -1,6 +1,7 @@
 """View functions for RandoPony site register app.
 
 """
+from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta
@@ -18,8 +19,8 @@ from django.template.loader import render_to_string
 # Google Docs:
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
-from randopony.register.helpers import email2words
-from randopony.register.helpers import google_docs_login
+from ..helpers import email2words
+from ..helpers import google_docs_login
 import randopony.register.models as model
 
 

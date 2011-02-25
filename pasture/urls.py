@@ -1,14 +1,15 @@
 """URL map for RandoPony top level (pasture) app.
 
 """
+from __future__ import absolute_import
 # Django:
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
 from django.views.generic.simple import direct_to_template
 # RandoPony:
-from randopony.register.helpers import email2words
-from randopony.pasture import views
+from . import views
+from ..helpers import email2words
 
 
 urlpatterns = patterns(
