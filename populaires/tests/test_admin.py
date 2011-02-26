@@ -88,3 +88,40 @@ class TestAdminPopulaire(django.test.TestCase):
         self.assertTrue(
             'please send email to {0}'.format(settings.ADMINS[0][1])
             in body)
+
+
+    def test_populaire_notify_organizer(self):
+        """notify populaire organizer(s) admin action sends expected email
+        """
+        params = {
+            u'action': [u'notify_populaire_organizer'],
+            u'_selected_action': [u'1'],
+        }
+        response = self.client.post(
+            '/admin/populaires/populaire/', params, follow=True)
+        self.assertContains(
+            response, 'Email for 1 populaire sent to organizer(s)')
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'RandoPony URLs for VicPop 27-Mar-2011')
+        self.assertEqual(mail.outbox[0].to, ['mjansson@example.com'])
+        self.assertEqual(
+            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+        body = mail.outbox[0].body
+        self.assertTrue(
+            'pre-registration page for the VicPop 27-Mar-2011 event' in body)
+        self.assertTrue(
+            'The URL is http://testserver/populaires/VicPop/27Mar2011/'
+            in body)
+        self.assertTrue(
+            'The rider list URL is https://spreadsheets.google.com/ccc?key=foo'
+            in body)
+        self.assertTrue(
+            'The riders email address list URL is '
+            'http://testserver/populaires/VicPop/27Mar2011/rider-emails/'
+            '2fa8a5ff-d738-59c5-bea4-22fcfa4c9c6e/'
+            in body)
+        self.assertTrue(
+            'please send email to {0}'.format(settings.ADMINS[0][1])
+            in body)

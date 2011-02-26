@@ -51,8 +51,8 @@ class PopulaireAdmin(admin.ModelAdmin):
     ]
     actions = [
         'create_rider_list_spreadsheet',
+        'notify_populaire_organizer',
         'notify_webmaster',
-#         'notify_populaire_organizer',
     ]
 
     
@@ -87,16 +87,33 @@ class PopulaireAdmin(admin.ModelAdmin):
             else:
                 msg += ' {0} populaires already had rider lists.'.format(diff)
         self.message_user(request, msg)
+    description = 'Copy Google Docs rider list template for populaire'
+    create_rider_list_spreadsheet.short_description = description
+
+        
+    def notify_populaire_organizer(self, request, queryset):
+        _notify_populaire_organizer(request, queryset)
+        pop_count = queryset.count()
+        if pop_count == 1:
+            msg_bit = 'Email for 1 populaire'
+        else:
+            msg_bit = 'Emails for {0} populaires'.format(pop_count)
+        self.message_user(
+            request, '{0} sent to organizer(s)'.format(msg_bit))
+    description = 'Send email with populaire URLs to event organizer(s)'
+    notify_populaire_organizer.short_description = description
 
 
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
-        brevets_count = queryset.count()
-        if brevets_count == 1:
+        pop_count = queryset.count()
+        if pop_count == 1:
             msg_bit = 'URL for 1 populaire'
         else:
-            msg_bit = 'URLs for {0} populaires'.format(brevets_count)
+            msg_bit = 'URLs for {0} populaires'.format(pop_count)
         self.message_user(request, '{0} sent to webmaster'.format(msg_bit))
+    description = 'Send email with URL for populaire to webmaster'
+    notify_webmaster.short_description = description
 
 admin.site.register(Populaire, PopulaireAdmin)
 
@@ -107,6 +124,45 @@ def _clean_email_address_list(data):
     for email in (email.strip() for email in data.split(',')):
         validate_email(email)
     return data
+
+
+def _notify_populaire_organizer(request, queryset):
+    """Send email message to populaire organizer(s) containing the URLs
+    of the:
+
+    * pre-registration page
+    * Google Docs rider list spreadsheet
+    * pre-registered riders email address list
+
+    for the populaire(s) in the queryset.
+    """
+    host = request.get_host()
+    for pop in queryset:
+        pop_page = reverse(
+            'populaires:populaire',
+            args=(pop.short_name, pop.date.strftime('%d%b%Y')))
+        pop_page_url = 'http://{0}{1}'.format(host, pop_page)
+        rider_list_url = (
+            'https://spreadsheets.google.com/ccc?key={0}'
+            .format(pop.google_doc_id.split(':')[1]))
+        rider_emails_url = (
+            'http://{0}{1}rider-emails/{2}/'
+            .format(host, pop_page, pop.uuid))
+        email = mail.EmailMessage(
+            subject='RandoPony URLs for {0}'.format(pop),
+            body=render_to_string(
+                'populaires/templates/email/URLs_to_organizer.txt',
+                {'populaire': pop,
+                 'pop_page_url': pop_page_url,
+                 'rider_list_url': rider_list_url,
+                 'rider_emails_url': rider_emails_url,
+                 'admin_email': settings.ADMINS[0][1],
+                },
+            ),
+            from_email=settings.REGISTRATION_EMAIL_FROM,
+            to=[addr.strip() for addr in pop.organizer_email.split(',')],
+        )
+        email.send()
 
 
 def _notify_webmaster(request, queryset):
