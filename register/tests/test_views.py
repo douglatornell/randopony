@@ -39,7 +39,7 @@ class TestHomeView(django.test.TestCase):
 
 
     def test_home_base_sidebar(self):
-        """home view renders brevets list
+        """home view renders standard sidebar tabs
         """
         response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Brevets')
