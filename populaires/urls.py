@@ -22,7 +22,7 @@ event_pattern = (
 urlpatterns = patterns(
     '',
     # Populaires app home page; list of events available for pre-registration
-    url(r'^$', views.event_list, name='event_list'),
+    url(r'^$', views.populaires_list, name='populaires-list'),
 
     # Populaire page with rider list
     url('{0}'.format(event_pattern), views.populaire, name='populaire'),

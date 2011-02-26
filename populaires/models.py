@@ -24,7 +24,7 @@ class Populaire(models.Model):
     event_name = models.CharField(max_length=100)
     short_name = models.CharField(
         max_length=20,
-        help_text='For use in URLs and sidebar; e.g. VicPop')    
+        help_text='For use in URLs and sidebar; e.g. VicPop')
     date = models.DateField()
     location = models.CharField('start location', max_length=100)
     time = models.TimeField('start time')

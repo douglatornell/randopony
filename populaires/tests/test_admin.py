@@ -67,7 +67,7 @@ class TestAdminPopulaire(django.test.TestCase):
         """
         params = {
             u'action': [u'notify_webmaster'],
-            u'_selected_action': [u'1'],
+            u'_selected_action': [u'2'],
         }
         response = self.client.post(
             '/admin/populaires/populaire/', params, follow=True)
@@ -95,7 +95,7 @@ class TestAdminPopulaire(django.test.TestCase):
         """
         params = {
             u'action': [u'notify_populaire_organizer'],
-            u'_selected_action': [u'1'],
+            u'_selected_action': [u'2'],
         }
         response = self.client.post(
             '/admin/populaires/populaire/', params, follow=True)
