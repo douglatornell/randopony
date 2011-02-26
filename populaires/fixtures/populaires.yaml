@@ -3,6 +3,20 @@
 - model: populaires.Populaire
   pk: 1
   fields:
+    event_name: New Year's Day Populaire
+    short_name: NewYearsPop
+    date: 2011-01-01
+    location: Christies Pub, 1739 Fort St, Victoria
+    time: '10:00'
+    organizer_email: mcroy@example.com
+    registration_closes: 2010-12-31 12:00
+    entry_form_url: ''
+    entry_form_url_label: ''
+    google_doc_id: spreadsheet:bar
+
+- model: populaires.Populaire
+  pk: 2
+  fields:
     event_name: Victoria Populaire
     short_name: VicPop
     date: 2011-03-27

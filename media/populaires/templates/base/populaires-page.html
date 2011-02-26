@@ -1,0 +1,12 @@
+{% extends "pasture/templates/base/page.html" %}
+
+{% block app-css %}
+<link rel="stylesheet" type="text/css" 
+      href="{{ MEDIA_URL }}populaires/populaires.css" />
+{% endblock %}
+
+{% block home-link %}
+<li>
+  <a href="{% url populaires:populaires-list %}">Populaires</a>
+</li>
+{% endblock %}
