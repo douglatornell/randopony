@@ -11,7 +11,6 @@ from django.contrib import admin
 from django.core.validators import validate_email
 from django.template.loader import render_to_string
 # Google Docs:
-import gdata.acl.data
 from gdata.docs.client import DocsClient
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
@@ -55,32 +54,9 @@ class BrevetAdmin(admin.ModelAdmin):
     }
     actions = [
         'create_rider_list_spreadsheet',
-        'notify_webmaster',
         'notify_brevet_organizer',
+        'notify_webmaster',
     ]
-    def notify_webmaster(self, request, queryset):
-        _notify_webmaster(request, queryset)
-        brevets_count = queryset.count()
-        if brevets_count == 1:
-            msg_bit = 'URL for 1 brevet'
-        else:
-            msg_bit = 'URLs for {0} brevets'.format(brevets_count)
-        self.message_user(request, '{0} sent to webmaster'.format(msg_bit))
-    description = 'Send email with URL for brevet to webmaster'
-    notify_webmaster.short_description = description
-
-    
-    def notify_brevet_organizer(self, request, queryset):
-        _notify_brevet_organizer(request, queryset)
-        brevets_count = queryset.count()
-        if brevets_count == 1:
-            msg_bit = 'Email for 1 brevet'
-        else:
-            msg_bit = 'Emails for {0} brevets'.format(brevets_count)
-        self.message_user(
-            request, '{0} sent to organizer(s)'.format(msg_bit))
-    description = 'Send email with brevet URLs to brevet organizer(s)'
-    notify_brevet_organizer.short_description = description
     
 
     def create_rider_list_spreadsheet(self, request, queryset):
@@ -124,6 +100,31 @@ class BrevetAdmin(admin.ModelAdmin):
         client = google_docs_login(SpreadsheetsService)
         key = google_doc_id.split(':')[1]
         client.UpdateCell(1, 5, info_question, key)
+
+    
+    def notify_brevet_organizer(self, request, queryset):
+        _notify_brevet_organizer(request, queryset)
+        brevets_count = queryset.count()
+        if brevets_count == 1:
+            msg_bit = 'Email for 1 brevet'
+        else:
+            msg_bit = 'Emails for {0} brevets'.format(brevets_count)
+        self.message_user(
+            request, '{0} sent to organizer(s)'.format(msg_bit))
+    description = 'Send email with brevet URLs to brevet organizer(s)'
+    notify_brevet_organizer.short_description = description
+
+    
+    def notify_webmaster(self, request, queryset):
+        _notify_webmaster(request, queryset)
+        brevets_count = queryset.count()
+        if brevets_count == 1:
+            msg_bit = 'URL for 1 brevet'
+        else:
+            msg_bit = 'URLs for {0} brevets'.format(brevets_count)
+        self.message_user(request, '{0} sent to webmaster'.format(msg_bit))
+    description = 'Send email with URL for brevet to webmaster'
+    notify_webmaster.short_description = description
 admin.site.register(Brevet, BrevetAdmin)
 
 
@@ -220,7 +221,6 @@ def _notify_webmaster(request, queryset):
             to=[settings.WEBMASTER_EMAIL],
         )
         email.send()
-
 
 
 def _notify_brevet_organizer(request, queryset):
