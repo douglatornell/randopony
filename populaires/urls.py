@@ -14,10 +14,9 @@ MONTHS = '(?i)Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec'
 YEAR = '20\d\d'
 
 event_pattern = (
-    r'^(?P<short_name>\w+)/(?P<date>({days})({months})({year}))/$'
+    r'^(?P<short_name>\w+)/(?P<date>({days})({months})({year}))'
       .format(days=DAYS, months=MONTHS, year=YEAR)
 )
-
 
 urlpatterns = patterns(
     '',
@@ -25,5 +24,9 @@ urlpatterns = patterns(
     url(r'^$', views.populaires_list, name='populaires-list'),
 
     # Populaire page with rider list
-    url('{0}'.format(event_pattern), views.populaire, name='populaire'),
+    url('{0}/$'.format(event_pattern), views.populaire, name='populaire'),
+
+    # Populaire re-registration form page
+    url('{0}/form/$'.format(event_pattern),
+        views.registration_form, name='form'),
 )
