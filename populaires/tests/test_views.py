@@ -73,7 +73,7 @@ class TestPopulairesListView(TestCase):
 class TestPopulaire(TestCase):
     """Functional tests for populaire view.
     """
-    fixtures = ['populaires']
+    fixtures = ['populaires', 'riders']
 
     def test_populaire_get(self):
         """GET request for populaire page works
@@ -187,3 +187,33 @@ class TestPopulaire(TestCase):
         self.assertContains(
             response,
             reverse('populaires:form', args=('VicPop', '27Mar2011')), 2)
+
+
+    def test_populaire_page_1_rider(self):
+        """populaire view renders correct page body w/ 1 rider
+        """
+        url = reverse(
+            'populaires:populaire', args=('NewYearsPop', '01Jan2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 12, 26)
+            mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, '1 Pre-registered Rider')
+        self.assertContains(response, 'Mike Croy')
+        self.assertContains(response, '60 km')
+        self.assertNotContains(response, 'registered for this brevet. Cool!')
+        self.assertNotContains(response, 'Be the first!')
+
+
+    def test_populaire_page_2_riders(self):
+        """populaires view renders correct page body w/ 2 riders
+        """
+        url = reverse(
+            'populaires:populaire', args=('NanPop', '25Jun2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 12, 27)
+            mock_datetime.now.return_value = datetime(2011, 12, 27, 14, 4)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, '2 Pre-registered Riders')

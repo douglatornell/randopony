@@ -29,3 +29,18 @@
     entry_form_url: http://www.randonneurs.bc.ca/VicPop/VicPop11_registration.pdf
     entry_form_url_label: Entry Form (PDF)
     google_doc_id: spreadsheet:foo
+
+- model: populaires.Populaire
+  pk: 3
+  fields:
+    event_name: Nanaimo Populaire
+    short_name: NanPop
+    distance: 100 km
+    date: 2011-06-25
+    location: Somewhere in Hub City
+    time: '10:00'
+    organizer_email: lringham@example.com
+    registration_closes: 2011-06-21 12:00
+    entry_form_url: ''
+    entry_form_url_label: ''
+    google_doc_id: spreadsheet:baz

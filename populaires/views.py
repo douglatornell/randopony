@@ -13,6 +13,7 @@ from django.template import RequestContext
 # RandoPony:
 from ..helpers import email2words
 from .models import Populaire
+from .models import Rider
 
 
 def populaires_list(request):
@@ -37,7 +38,8 @@ def populaire(request, short_name, date, rider_id=None):
     pop = get_object_or_404(
         Populaire, short_name=short_name,
         date=datetime.strptime(date, '%d%b%Y').date())
-    rider_list = []
+    rider_list = Rider.objects.filter(
+        populaire__short_name=short_name, populaire__date=pop.date)
     template = 'derived/populaire.html'
     context = RequestContext(request, {
         'populaire': pop,
