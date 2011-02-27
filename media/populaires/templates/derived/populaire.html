@@ -26,6 +26,23 @@
 </p>
 
 {% if rider_list %}
+<table>
+  <thead>
+    <tr>
+      <th colspan=2>
+        {{ rider_list|length }} Pre-registered Rider{{ rider_list|length|pluralize }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rider in rider_list %}
+    <tr>
+      <td>{{ rider.full_name }} </td>
+      <td>{{ rider.distance }} km</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% else %}
 Nobody has pre-registered
 {% if not registration_closed %}
