@@ -5,6 +5,7 @@
   fields:
     event_name: New Year's Day Populaire
     short_name: NewYearsPop
+    distance: 60 km
     date: 2011-01-01
     location: Christies Pub, 1739 Fort St, Victoria
     time: '10:00'
@@ -19,6 +20,7 @@
   fields:
     event_name: Victoria Populaire
     short_name: VicPop
+    distance: 50 km, 100 km
     date: 2011-03-27
     location: University of Victoria, Parking Lot 2 (Gabriola Road, near McKinnon Gym)
     time: '10:00'

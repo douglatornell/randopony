@@ -13,12 +13,16 @@
 <h3>{{ populaire.event_name }}</h3>
 
 <p>
-<strong>Start:</strong>
+<strong>Distance: </strong>{{ populaire.distance }}
+</p>
+
+<p>
+<strong>Start: </strong>
 {{ populaire.date|date:"D d-M-Y" }} at {{ populaire.time|time:"H:i" }}
 </p>
 
 <p>
-<strong>Start Location:</strong>{{ populaire.location }}
+<strong>Start Location: </strong>{{ populaire.location }}
 </p>
 
 {% if rider_list %}

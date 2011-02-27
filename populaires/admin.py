@@ -40,6 +40,7 @@ class PopulaireAdmin(admin.ModelAdmin):
     # appear in
     fieldsets = [(None, {'fields': 'event_name '
                                    'short_name '
+                                   'distance '
                                    'date '
                                    'location '
                                    'time '

@@ -25,6 +25,9 @@ class Populaire(models.Model):
     short_name = models.CharField(
         max_length=20,
         help_text='For use in URLs and sidebar; e.g. VicPop')
+    distance = models.CharField(
+        max_length=100,
+        help_text='Separate multiple distance with commas; e.g. 50 km, 100 km')
     date = models.DateField()
     location = models.CharField('start location', max_length=100)
     time = models.TimeField('start time')
