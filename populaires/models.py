@@ -97,3 +97,25 @@ class Populaire(models.Model):
                 .format(str(self.date.year)[-2:]))
         return results_url
     in_past = property(_in_past)
+
+
+class Rider(models.Model):
+    """Rider model for people who have pre-registered to ride a
+    populaire.
+    """
+    class Meta:
+        ordering = ['last_name']
+        
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    email = models.EmailField()
+    distance = models.IntegerField()
+    populaire = models.ForeignKey(Populaire)
+
+    def __unicode__(self):
+        return self.full_name
+
+
+    def _get_full_name(self):
+        return '{0} {1}'.format(self.first_name, self.last_name)
+    full_name = property(_get_full_name)
