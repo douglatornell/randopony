@@ -4,6 +4,7 @@
 from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
+from datetime import timedelta
 # Mock:
 from mock import patch
 # Django:
@@ -38,9 +39,13 @@ class TestPopulairesListView(TestCase):
         """
         response = self.client.get(reverse('populaires:populaires-list'))
         self.assertContains(response, 'Populaires')
+        self.assertContains(response, reverse('populaires:populaires-list'))
         self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'http://randonneurs.bc.ca')
         self.assertContains(response, 'Info for Event Organizers')
+        self.assertContains(response, reverse('pasture:organizer-info'))
         self.assertContains(response, "What's up with the pony?")
+        self.assertContains(response, reverse('pasture:about-pony'))
 
 
     def test_populaires_list_events_list(self):
@@ -50,6 +55,9 @@ class TestPopulairesListView(TestCase):
             mock_datetime.today.return_value = datetime(2011, 2, 26)
             response = self.client.get(reverse('populaires:populaires-list'))
         self.assertContains(response, 'VicPop 27-Mar-2011')
+        self.assertContains(
+            response,
+            reverse('populaires:populaire', args=('VicPop', '27Mar2011')))
 
 
     def test_populaires_list_excludes_past_events(self):
@@ -60,3 +68,122 @@ class TestPopulairesListView(TestCase):
             response = self.client.get(reverse('populaires:populaires-list'))
         self.assertContains(response, 'VicPop 27-Mar-2011')
         self.assertNotContains(response, 'NewYearsPop 01-Jan-2011')
+
+
+class TestPopulaire(TestCase):
+    """Functional tests for populaire view.
+    """
+    fixtures = ['populaires']
+
+    def test_populaire_get(self):
+        """GET request for populaire page works
+        """
+        response = self.client.get(
+            reverse('populaires:populaire', args=('VicPop', '27Mar2011')))
+        self.assertContains(response, 'RandoPony::VicPop 27-Mar-2011')
+
+
+    def test_populaire_get_nonexistent_event_past(self):
+        """GET request for nonexistent populaire in past fails with 404
+        """
+        response = self.client.get(
+            reverse('populaires:populaire', args=('Nanaimo', '23Mar2001')))
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_populaire_get_nonexistent_event_future(self):
+        """GET request for nonexistent populaire in future fails with 404
+        """
+        response = self.client.get(
+            reverse('populaires:populaire', args=('CanadaDay', '01Jul2099')))
+        self.assertEqual(response.status_code, 404)
+
+
+
+    def test_populaire_page_sidebar_w_entry_form(self):
+        """populaire view renders correct sidebar for event w/ entry form URL
+        """
+        url = reverse(
+            'populaires:populaire', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 2, 26)
+            mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'Populaires')
+        self.assertContains(response, reverse('populaires:populaires-list'))
+        self.assertContains(response, 'VicPop 27-Mar-2011')
+        self.assertContains(response, 'Register')
+        self.assertContains(
+            response, reverse('populaires:form', args=('VicPop', '27Mar2011')))
+        self.assertContains(response, 'Entry Form (PDF)')
+        self.assertContains(response, url)
+        self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'http://randonneurs.bc.ca')
+        self.assertContains(response, 'Info for Event Organizers')
+        self.assertContains(response, reverse('pasture:organizer-info'))
+        self.assertContains(response, "What's up with the pony?")
+        self.assertContains(response, reverse('pasture:about-pony'))
+
+
+    def test_populaire_page_sidebar_wo_entry_form(self):
+        """populaire view renders correct sidebar for event w/o entry form URL
+        """
+        url = reverse(
+            'populaires:populaire', args=('NewYearsPop', '01Jan2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 12, 26)
+            mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'Populaires')
+        self.assertContains(response, reverse('populaires:populaires-list'))
+        self.assertContains(response, 'NewYearsPop 01-Jan-2011')
+        self.assertContains(response, url)
+        self.assertContains(response, 'Register')
+        self.assertContains(
+            response,
+            reverse('populaires:form', args=('NewYearsPop', '01Jan2011')))
+        self.assertNotContains(response, 'Entry Form (PDF)')
+        self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'http://randonneurs.bc.ca')
+        self.assertContains(response, 'Info for Event Organizers')
+        self.assertContains(response, reverse('pasture:organizer-info'))
+        self.assertContains(response, "What's up with the pony?")
+        self.assertContains(response, reverse('pasture:about-pony'))
+
+
+    def test_populaire_page_event_info(self):
+        """populaire view renders event info correctly
+        """
+        url = reverse(
+            'populaires:populaire', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 2, 26)
+            mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'VicPop 27-Mar-2011', 3)
+        self.assertContains(response, 'Victoria Populaire')
+        self.assertContains(response, '50 km, 100 km')
+        self.assertContains(response, 'Sun 27-Mar-2011 at 10:00')
+        self.assertContains(
+            response, 'University of Victoria, Parking Lot 2 '
+            '(Gabriola Road, near McKinnon Gym)')
+
+
+    def test_populaire_page_no_riders(self):
+        """populaire view has expected message when no riders are registered
+        """
+        url = reverse(
+            'populaires:populaire', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.views.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 2, 26)
+            mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
+            mock_datetime.strptime = datetime.strptime
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'Be the first!')
+        self.assertContains(
+            response,
+            reverse('populaires:form', args=('VicPop', '27Mar2011')), 2)

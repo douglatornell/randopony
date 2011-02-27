@@ -7,6 +7,7 @@ from datetime import datetime
 from datetime import timedelta
 # Django:
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 # RandoPony:
@@ -29,6 +30,26 @@ def populaires_list(request):
 
 
 def populaire(request, short_name, date, rider_id=None):
+    """Display the populaire information, pre-registered riders list,
+    and sometime the registration confirmation, or duplicate
+    registration flash message.
+    """
+    pop = get_object_or_404(
+        Populaire, short_name=short_name,
+        date=datetime.strptime(date, '%d%b%Y').date())
+    rider_list = []
+    template = 'derived/populaire.html'
+    context = RequestContext(request, {
+        'populaire': pop,
+        'registration_closed': pop.registration_closed,
+        'show_filler_photo': len(rider_list) < 15,
+        'rider_list': rider_list,
+    })
+    response = render_to_response(template, context)
+    return response
+
+
+def registration_form(request, short_name, date):
     """
     """
     pass
