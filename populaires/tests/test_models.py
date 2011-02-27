@@ -115,3 +115,32 @@ class TestPopulaire(unittest.TestCase):
                 'http://randonneurs.bc.ca/results/11_times/11_times.html')
 
 
+class TestRider(unittest.TestCase):
+    """Unit tests for Rider model object.
+    """
+    def _get_target_class(self):
+        from ..models import Rider
+        return Rider
+
+
+    def _make_one(self, *args, **kwargs):
+        return self._get_target_class()(*args, **kwargs)
+
+    
+    def test_unicode(self):
+        """__unicode__ returns {first_name} {last_name} for rider
+        """
+        rider = self._make_one(
+            first_name='Doug', last_name='Latornell')
+        self.assertEqual(unicode(rider), u'Doug Latornell')
+
+
+    def test_full_name(self):
+        """full_name property returns {first_name} {last_name} for rider
+        """
+        rider = self._make_one(
+            first_name='Doug', last_name='Latornell')
+        self.assertEqual(rider.full_name, u'Doug Latornell')
+
+
+

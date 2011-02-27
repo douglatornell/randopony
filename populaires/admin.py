@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from gdata.docs.client import DocsClient
 # RandoPony:
 from .models import Populaire
+from .models import Rider
 from ..helpers import get_rider_list_template
 from ..helpers import google_docs_login
 from ..helpers import share_rider_list_publicly
@@ -117,6 +118,27 @@ class PopulaireAdmin(admin.ModelAdmin):
     notify_webmaster.short_description = description
 
 admin.site.register(Populaire, PopulaireAdmin)
+
+
+class RiderAdmin(admin.ModelAdmin):
+    """Customize presentation of Rider instance in admin.
+    """
+    # Set the fields to display in the change-list, and its filter
+    # sidebar, searching by name and brevet
+    list_display = ['populaire', 'full_name']
+    list_filter = ['populaire']
+    search_fields = ['^first_name',  '^last_name']
+    # Set the fields that appear on the edit form, and the order they
+    # appear in
+    fieldsets = [(None, {'fields': 'populaire '
+                                   'first_name '
+                                   'last_name '
+                                   'email '
+                                   'distance '
+                                   .split()}),
+    ]
+
+admin.site.register(Rider, RiderAdmin)
 
 
 def _clean_email_address_list(data):
