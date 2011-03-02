@@ -47,9 +47,12 @@ Nobody has pre-registered
 {% endif %}
 
 {% if show_filler_photo %}
-<img class="filler_img"
-     src="{{ MEDIA_URL }}populaires/images/tandem_tuesday.jpg"
-     alt="Pre-registration list" />
+<div class="filler_img">
+  <img class="filler_img"
+       src="{{ MEDIA_URL }}populaires/images/tandem_tuesday.jpg"
+       alt="Pre-registration list" />
+  <div class="photo-credit">Karen Smith</div>
+</div>
 {% endif %}
 {% endblock %}
 
