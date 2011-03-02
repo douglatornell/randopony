@@ -150,13 +150,14 @@ def registration_form(request, region, event, date):
     else:
         # Unbound form to render entry form
         form = form_class()
+    template = 'register/templates/derived/registration_form.html'
     context = RequestContext(request, {
         'brevet': brevet,
         'region_name': model.REGIONS[region],
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
     })
-    response = render_to_response('derived/registration_form.html', context)
+    response = render_to_response(template, context)
     return response
 
 

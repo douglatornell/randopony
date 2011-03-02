@@ -107,7 +107,7 @@ class TestPopulaire(TestCase):
             'populaires:populaire', args=('VicPop', '27Mar2011'))
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 2, 26)
-            mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'Populaires')
@@ -217,3 +217,112 @@ class TestPopulaire(TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, '2 Pre-registered Riders')
+
+
+class TestRegistrationFormView(TestCase):
+    """Functional tests for registration form view.
+    """
+    fixtures = ['populaires']
+
+    def test_registration_form_get(self):
+        """GET request for registration form page works
+        """
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+
+
+    def test_registration_form_sidebar_w_entry_form(self):
+        """registration form renders correct sidebar for event w/ entry form URL
+        """
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'Populaires')
+        self.assertContains(response, reverse('populaires:populaires-list'))
+        self.assertContains(response, 'VicPop 27-Mar-2011')
+        self.assertContains(response, 'Register')
+        self.assertContains(
+            response, reverse('populaires:form', args=('VicPop', '27Mar2011')))
+        self.assertContains(response, 'Entry Form (PDF)')
+        self.assertContains(response, url)
+        self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'http://randonneurs.bc.ca')
+        self.assertContains(response, 'Info for Event Organizers')
+        self.assertContains(response, reverse('pasture:organizer-info'))
+        self.assertContains(response, "What's up with the pony?")
+        self.assertContains(response, reverse('pasture:about-pony'))
+
+
+
+    def test_registration_form_sidebar_wo_entry_form(self):
+        """registartion form sidebar correct for event w/o entry form URL
+        """
+        url = reverse(
+            'populaires:form', args=('NewYearsPop', '01Jan2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 12, 26)
+            mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'Populaires')
+        self.assertContains(response, reverse('populaires:populaires-list'))
+        self.assertContains(response, 'NewYearsPop 01-Jan-2011')
+        self.assertContains(response, url)
+        self.assertContains(response, 'Register')
+        self.assertContains(
+            response,
+            reverse('populaires:form', args=('NewYearsPop', '01Jan2011')))
+        self.assertNotContains(response, 'Entry Form (PDF)')
+        self.assertContains(response, 'randonneurs.bc.ca')
+        self.assertContains(response, 'http://randonneurs.bc.ca')
+        self.assertContains(response, 'Info for Event Organizers')
+        self.assertContains(response, reverse('pasture:organizer-info'))
+        self.assertContains(response, "What's up with the pony?")
+        self.assertContains(response, reverse('pasture:about-pony'))
+
+
+
+    def test_registration_form_body_multi_distance(self):
+        """registration form has expected form fields for multi-distance event
+        """
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'First name:')
+        self.assertContains(response, 'Last name:')
+        self.assertContains(response, 'Email:')
+        self.assertContains(response, 'Distance:')
+        self.assertContains(response, '50 km')
+        self.assertContains(response, '100 km')
+
+
+    def test_brevet_registration_form_has_captcha(self):
+        """registration form view renders captcha question
+        """
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(
+            response, 'Are you a human? Are you a cyclist? Please prove it.')
+        self.assertContains(
+            response, 'A bicycle has ___ wheels. Fill in the blank:')
