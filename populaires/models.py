@@ -6,7 +6,9 @@ from datetime import datetime
 from datetime import timedelta
 import uuid
 # Django:
+from django import forms
 from django.db import models
+from django.forms.util import ErrorList
 
 
 # The webfaction server hosting randopony is 2 hours ahead of Pacific
@@ -119,3 +121,30 @@ class Rider(models.Model):
     def _get_full_name(self):
         return '{0} {1}'.format(self.first_name, self.last_name)
     full_name = property(_get_full_name)
+
+
+class RiderForm(forms.ModelForm):
+    """Rider pre-registration form.
+    """
+    def __init__(self, *args, **kwargs):
+        distance_choices = kwargs.pop('distance_choices')
+        super(RiderForm, self).__init__(*args, **kwargs)
+        self.fields['distance'].widget = forms.RadioSelect(
+            choices=distance_choices)
+        self.fields['distance'].error_messages={
+            'required': 'Please choose a distance'}
+
+    class Meta:
+        model = Rider
+        exclude = ('populaire', )
+
+    captcha = forms.IntegerField()
+
+
+    def clean_captcha(self):
+        """Validate the CAPTCHA answer.
+        """
+        answer = self.cleaned_data['captcha']
+        if answer != 2:
+            self._errors['captcha'] = ErrorList(['Wrong!'])
+        return answer
