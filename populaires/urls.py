@@ -26,6 +26,14 @@ urlpatterns = patterns(
     # Populaire page with rider list
     url('{0}/$'.format(event_pattern), views.populaire, name='populaire'),
 
+    # Populaire page with rider pre-registration confirmation message
+    url('{0}/(?P<rider_id>\d+)/$'.format(event_pattern),
+        views.populaire, name='prereg-confirm'),
+                       
+    # Populaire page with rider pre-registration duplication message
+    url('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
+        views.populaire, name='prereg-duplicate'),
+
     # Populaire re-registration form page
     url('{0}/form/$'.format(event_pattern),
         views.registration_form, name='form'),
