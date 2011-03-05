@@ -108,6 +108,7 @@ class TestPopulaire(TestCase):
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 2, 26)
             mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
+            mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'Populaires')
@@ -134,6 +135,7 @@ class TestPopulaire(TestCase):
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 12, 26)
             mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'Populaires')
@@ -161,6 +163,7 @@ class TestPopulaire(TestCase):
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 2, 26)
             mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
+            mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'VicPop 27-Mar-2011', 3)
@@ -197,6 +200,7 @@ class TestPopulaire(TestCase):
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 12, 26)
             mock_datetime.now.return_value = datetime(2010, 12, 26, 12, 35)
+            mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, '1 Pre-registered Rider')
@@ -214,6 +218,7 @@ class TestPopulaire(TestCase):
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 12, 27)
             mock_datetime.now.return_value = datetime(2011, 12, 27, 14, 4)
+            mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, '2 Pre-registered Riders')
@@ -326,3 +331,37 @@ class TestRegistrationFormView(TestCase):
             response, 'Are you a human? Are you a cyclist? Please prove it.')
         self.assertContains(
             response, 'A bicycle has ___ wheels. Fill in the blank:')
+
+
+
+class TestRegistrationFunction(TestCase):
+    """Functional tests of registration for populaires.
+    """
+    fixtures = ['populaires']
+
+    def test_registration_form_clean_submit(self):
+        """registration form submit w/ valid data redirects to pop pg w/ msg
+        """
+        from ..models import Rider
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'distance': 100,
+            'captcha': 2
+        }
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            response = self.client.post(url, params, follow=True)
+        rider_id = Rider.objects.order_by('-id')[0].id
+        url = reverse(
+            'populaires:prereg-confirm', args=('VicPop', '27Mar2011', rider_id))
+        self.assertRedirects(response, url)
+        self.assertContains(
+            response, 'You have pre-registered for this event. Cool!')
+        self.assertContains(response, 'djl@example.com')

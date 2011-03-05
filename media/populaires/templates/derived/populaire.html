@@ -20,6 +20,62 @@
 <strong>Start Location: </strong>{{ populaire.location }}
 </p>
 
+{% if registration_closed and not event_started %}
+<div id="registration-closed">
+ <p>
+   Pre-registration for this event is closed. 
+   {% if populaire.entry_form_url %}
+   But you can still print out the <a href="{{ populaire.entry_form_url }}"
+   title="Event Waiver Form">event waiver form</a> from the club web
+   site, fill it out, and bring it with you to the start. 
+   {% endif %}
+ </p>
+
+  <p>See you on the road!</p>
+</div>
+{% endif %}
+
+{% if rider %}
+{% if not duplicate_registration %}
+<div id="confirmation">
+  <p>
+  You have pre-registered for this event. Cool! Your name should be on
+  the list below.
+  </p>
+
+  <p>
+  A confirmation email has been sent to you at
+  <kbd>{{ rider.email }}</kbd>, and to the event organizer(s).
+  </p>
+
+  {% if populaire.entry_form_url %}
+  <p>
+  You can print out the <a href="{{ populaire.entry_form_url }}"
+  title="Event Waiver Form">event waiver form</a> from the club web
+  site, fill it out, and bring it with you to the start to save time
+  and make the organizers like you even more.
+  </p>
+  {% endif %}
+
+  <p>Have a great ride!</p>
+</div> <!-- id="confirmation" -->
+{% else %}
+<div id="duplicate_registration">
+  <p>
+  Hmm... Someone using the name <kbd>{{ rider.full_name }}</kbd> and
+  the email address <kbd>{{ rider.email }}</kbd> has already
+  pre-registered for this event. Are you sure that you are registering
+  for the event you intended to?
+  </p>
+
+  <p>
+  If you are trying to change your email address, by re-registering,
+  please contact the event organizer.
+  </p>
+</div> <!-- id="duplicate_registration" -->
+{% endif %}
+{% endif %}
+
 {% if rider_list %}
 <table>
   <thead>
