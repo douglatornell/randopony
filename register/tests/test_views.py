@@ -342,7 +342,7 @@ class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
     def test_registration_form_clean_submit(self):
-        """registration from submit w/ valid data redirects to brevet pg w/ msg
+        """registration form submit w/ valid data redirects to brevet pg w/ msg
         """
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
