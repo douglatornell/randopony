@@ -5,6 +5,7 @@ from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta
+import os
 # Django:
 from django.conf import settings
 from django.core import mail
@@ -24,6 +25,10 @@ from ..helpers import google_docs_login
 import randopony.register.models as model
 
 
+def _qualify_template(template):
+    return os.path.join('register/templates', template)
+
+
 def home(request):
     """Display the welcome information and list of regions in the sidebar.
     """
@@ -34,11 +39,12 @@ def home(request):
         'abbrev': region,
         'long_name': model.REGIONS[region]
         } for region in regions]
+    template = _qualify_template('derived/home.html')
     context = RequestContext(request, {
         'regions': region_list,
         'admin_email': email2words(settings.ADMINS[0][1])
     })
-    response = render_to_response('register/templates/derived/home.html', context)
+    response = render_to_response(template, context)
     return response
 
 
@@ -73,6 +79,7 @@ def region_brevets(request, region):
             'alt': 'Sea to Sky Scenery',
         },
     }
+    template = _qualify_template('derived/region_brevets.html')
     context = RequestContext(request, {
         'region': {
             'abbrev': region,
@@ -80,7 +87,7 @@ def region_brevets(request, region):
         'image': mapping[region],
         'brevets': brevet_list,
     })
-    response = render_to_response('derived/region_brevets.html', context)
+    response = render_to_response(template, context)
     return response
 
 
@@ -94,7 +101,7 @@ def brevet(request, region, event, date, rider_id=None):
         date=datetime.strptime(date, '%d%b%Y').date())
     results_url = brevet.in_past
     if results_url:
-        template = 'derived/past_brevet.html'
+        template = _qualify_template('derived/past_brevet.html')
         context = RequestContext(request, {
             'brevet': str(brevet),
             'results_url': results_url
@@ -108,7 +115,7 @@ def brevet(request, region, event, date, rider_id=None):
             rider_email = email2words(rider.email)
         except (TypeError, model.BrevetRider.DoesNotExist, AttributeError):
             rider = rider_email = None
-        template = 'derived/brevet.html'
+        template = _qualify_template('derived/brevet.html')
         context = RequestContext(request, {
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
@@ -150,7 +157,7 @@ def registration_form(request, region, event, date):
     else:
         # Unbound form to render entry form
         form = form_class()
-    template = 'register/templates/derived/registration_form.html'
+    template = _qualify_template('derived/registration_form.html')
     context = RequestContext(request, {
         'brevet': brevet,
         'region_name': model.REGIONS[region],
@@ -252,11 +259,12 @@ def _email_to_rider(brevet, rider, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    template = _qualify_template('email/to_rider.txt')
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0} Brevet'
                 .format(brevet),
         body=render_to_string(
-            'email/to_rider.txt',
+            template,
             {'brevet': brevet,
              'rider': rider,
              'brevet_page_url': brevet_page_url}),
@@ -276,11 +284,12 @@ def _email_to_organizer(brevet, rider, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    template = _qualify_template('email/to_organizer.txt')
     email = mail.EmailMessage(
         subject='{0} has Pre-registered for the {1}'
                 .format(rider.full_name, brevet),
         body=render_to_string(
-            'email/to_organizer.txt',
+            template,
             {'brevet': brevet,
              'rider': rider,
              'brevet_page_url': brevet_page_url,
