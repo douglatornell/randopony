@@ -160,7 +160,9 @@ class TestBrevetView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(
-            response, 'brevet is over, and the RandoPony has moved on!')
+            response,
+            'The LM300 01-May-2010 event is over, and the RandoPony '
+            'has moved on!')
         self.assertContains(
             response,
             'http://randonneurs.bc.ca/results/10_times/10_times.html')

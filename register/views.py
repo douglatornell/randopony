@@ -99,12 +99,11 @@ def brevet(request, region, event, date, rider_id=None):
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
-    results_url = brevet.in_past
-    if results_url:
-        template = _qualify_template('derived/past_brevet.html')
+    if brevet.in_past:
+        template = 'pasture/templates/derived/past_event.html'
         context = RequestContext(request, {
-            'brevet': str(brevet),
-            'results_url': results_url
+            'event': brevet,
+            'results_url': brevet.in_past
         })
     else:
         rider_list = model.BrevetRider.objects.filter(
