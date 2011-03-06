@@ -216,8 +216,8 @@ class TestPopulaire(TestCase):
         url = reverse(
             'populaires:populaire', args=('NanPop', '25Jun2011'))
         with patch('randopony.populaires.models.datetime') as mock_datetime:
-            mock_datetime.today.return_value = datetime(2011, 12, 27)
-            mock_datetime.now.return_value = datetime(2011, 12, 27, 14, 4)
+            mock_datetime.today.return_value = datetime(2011, 3, 5)
+            mock_datetime.now.return_value = datetime(2011, 3, 5, 16, 34)
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)

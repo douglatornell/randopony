@@ -53,22 +53,29 @@ def populaire(request, short_name, date, rider_id=None):
     pop = get_object_or_404(
         Populaire, short_name=short_name,
         date=datetime.strptime(date, '%d%b%Y').date())
-    rider_list = Rider.objects.filter(
-        populaire__short_name=short_name, populaire__date=pop.date)
-    try:
-        rider = Rider.objects.get(pk=int(rider_id))
-    except (Rider.DoesNotExist, TypeError):
-        rider = None
-    template = _qualify_template('derived/populaire.html')
-    context = RequestContext(request, {
-        'populaire': pop,
-        'registration_closed': pop.registration_closed,
-        'event_started': pop.started,
-        'rider': rider,
-        'duplicate_registration': request.path.endswith('duplicate/'),
-        'rider_list': rider_list,
-        'show_filler_photo': len(rider_list) < 15,
-    })
+    if pop.in_past:
+        template = 'pasture/templates/derived/past_event.html'
+        context = RequestContext(request, {
+            'event': pop,
+            'results_url': pop.in_past,
+        })
+    else:
+        rider_list = Rider.objects.filter(
+            populaire__short_name=short_name, populaire__date=pop.date)
+        try:
+            rider = Rider.objects.get(pk=int(rider_id))
+        except (Rider.DoesNotExist, TypeError):
+            rider = None
+        template = _qualify_template('derived/populaire.html')
+        context = RequestContext(request, {
+            'populaire': pop,
+            'registration_closed': pop.registration_closed,
+            'event_started': pop.started,
+            'rider': rider,
+            'duplicate_registration': request.path.endswith('duplicate/'),
+            'rider_list': rider_list,
+            'show_filler_photo': len(rider_list) < 15,
+        })
     response = render_to_response(template, context)
     return response
 
