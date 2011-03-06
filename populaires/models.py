@@ -38,11 +38,12 @@ class Populaire(models.Model):
         help_text='Use commas to separate multiple email addresses')
     registration_closes = models.DateTimeField()
     entry_form_url = models.CharField(
-        max_length=200,
+        max_length=200, blank=True,
         help_text='Full URL of entry form PDF;<br/> e.g. '
-                  'http://www.randonneurs.bc.ca/VicPop/VicPop11_registration.pdf')
+                  'http://www.randonneurs.bc.ca/VicPop/'
+                  'VicPop11_registration.pdf')
     entry_form_url_label = models.CharField(
-        max_length=30,
+        max_length=30, blank=True,
         default='Entry Form (PDF)')
     google_doc_id = models.CharField(max_length=200)
 
