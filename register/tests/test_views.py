@@ -2,6 +2,7 @@
 
 """
 # Standard library:
+from contextlib import nested
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -354,7 +355,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -383,7 +388,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -631,7 +640,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -686,7 +699,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -717,7 +734,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'info_answer': 'LM300',
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -750,7 +771,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -771,7 +796,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -794,7 +823,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
