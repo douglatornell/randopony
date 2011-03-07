@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.http import Http404
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render_to_response
@@ -222,3 +223,26 @@ def _email_to_organizer(populaire, rider, host):
         to=[addr.strip() for addr in populaire.organizer_email.split(',')]
     )
     email.send()
+
+
+def rider_emails(request, short_name, date, uuid):
+    """Display a comma separated list of email addresses for the
+    riders that have pre-registered for a populaire.
+
+    The URL that requests this view includes a namespace UUID for the
+    populaire to provide a measure of protection from email address
+    collecting 'bots.
+
+    Requests for this view more than 7 days after the populaire will
+    fail with a 404.
+    """
+    pop = get_object_or_404(
+        Populaire, short_name=short_name,
+        date=datetime.strptime(date, '%d%b%Y').date())
+    if uuid != str(pop.uuid) or pop.in_past:
+        raise Http404
+    rider_list = Rider.objects.filter(
+        populaire__short_name=short_name, populaire__date=pop.date)
+    email_list = (', '.join(rider.email for rider in rider_list)
+                  or 'No riders have registered yet!')
+    return HttpResponse(email_list, mimetype='text/plain')
