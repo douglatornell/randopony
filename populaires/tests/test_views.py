@@ -3,6 +3,7 @@
 """
 from __future__ import absolute_import
 # Standard library:
+from contextlib import nested
 from datetime import datetime
 from datetime import timedelta
 # Mock:
@@ -352,7 +353,11 @@ class TestRegistrationFunction(TestCase):
             'distance': 100,
             'captcha': 2
         }
-        with patch('randopony.populaires.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.populaires.models.datetime'),
+            patch('randopony.populaires.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2011, 3, 1)
             mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
             mock_datetime.combine = datetime.combine
@@ -365,3 +370,76 @@ class TestRegistrationFunction(TestCase):
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
         self.assertContains(response, 'djl@example.com')
+
+
+
+class TestRiderEmailsView(TestCase):
+    """Functional tests for rider email address list view.
+    """
+    fixtures = ['populaires', 'riders']
+
+    def test_rider_emails_bad_uuid(self):
+        """request for rider's emails with bad event uuid raises 404
+        """
+        url = reverse(
+            'populaires:rider-emails', args=('VicPop', '27Mar2011', 'f00'))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_rider_emails_event_past(self):
+        """request for rider's emails for event >7 days ago raises 404
+        """
+        url = reverse(
+            'populaires:rider-emails',
+            args=('NewYearsPop', '01Jan2011',
+                  'ccf79bf6-57bc-5084-94a9-2a6154efef53'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 6)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+
+    def test_no_rider_emails_returns_msg(self):
+        """request for rider's emails for event w/ no riders returns msg
+        """
+        url = reverse(
+            'populaires:rider-emails',
+            args=('VicPop', '27Mar2011',
+                  '2fa8a5ff-d738-59c5-bea4-22fcfa4c9c6e'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 6)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'No riders have registered yet!')
+
+
+    def test_1_rider_email(self):
+        """request for rider's emails for event w/ 1 rider returns address
+        """
+        url = reverse(
+            'populaires:rider-emails',
+            args=('NewYearsPop', '01Jan2011',
+                  'ccf79bf6-57bc-5084-94a9-2a6154efef53'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2010, 12, 26)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertContains(response, 'mcroy@example.com')
+
+
+    def test_2_rider_emails(self):
+        """request for rider's emails for event w/ 2 riders returns list
+        """
+        url = reverse(
+            'populaires:rider-emails',
+            args=('NanPop', '25Jun2011',
+                  '97b2109c-3281-5263-90fd-c782c17e7cf8'))
+        with patch('randopony.populaires.models.datetime') as mock_datetime:
+            mock_datetime.today.return_value = datetime(2011, 3, 6)
+            mock_datetime.timedelta = timedelta
+            response = self.client.get(url)
+        self.assertEqual(
+            set(response.content.split(', ')),
+            set('lringham@example.com rhesjedal@example.com'.split()))

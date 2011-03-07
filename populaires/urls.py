@@ -37,4 +37,8 @@ urlpatterns = patterns(
     # Populaire re-registration form page
     url('{0}/form/$'.format(event_pattern),
         views.registration_form, name='form'),
+                       
+    # List of rider email addresses for populaire
+    url('{0}/rider-emails/(?P<uuid>[a-f0-9\-]+)/$'.format(event_pattern),
+        views.rider_emails, name='rider-emails'),
 )
