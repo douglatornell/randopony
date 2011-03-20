@@ -43,12 +43,14 @@ class TestAdminPopulaire(django.test.TestCase):
         post_data = {
             'event_name': 'Victoria Populaire',
             'short_name': 'VicPop',
+            'distance': '50 km, 100 km',
             'date': pop_date,
             'location': 'University of Victoria, Parking Lot #2 '
                         '(Gabriola Road, near McKinnon Gym)',
             'time': time(10, 0),
             'organizer_email': 'mjansson@islandnet.com',
-            'registration_closes': datetime.combine(pop_date - timedelta(days=4), time(12, 0)),
+            'registration_closes_0': pop_date - timedelta(days=4),
+            'registration_closes_1': time(12, 0),
             'entry_form_url': 'http://www.randonneurs.bc.ca/VicPop/'
                               'VicPop11_registration.pdf',
             'entry_form_url_label': 'Entry Form (PDF)',
@@ -58,8 +60,13 @@ class TestAdminPopulaire(django.test.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Select populaire to change')
         pop = Populaire.objects.get(short_name='VicPop', date=pop_date)
+        self.assertEqual(
+            pop.registration_closes,
+            datetime.combine(pop_date - timedelta(days=4), time(12, 0)))
+        post_data.pop('registration_closes_0')
+        post_data.pop('registration_closes_1')
         for key, value in post_data.iteritems():
-            self.assertEqual(pop.__getattribute__(key), value)
+            self.assertEqual(getattr(pop, key), value)
 
 
     def test_populaire_notify_webmaster(self):
