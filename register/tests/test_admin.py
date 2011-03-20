@@ -1,4 +1,4 @@
-"""Funcitonal tests for customized admin elements of RandoPony
+"""Functional tests for customized admin elements of RandoPony
 register app.
 
 """

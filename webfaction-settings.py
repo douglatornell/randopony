@@ -74,8 +74,11 @@ TEMPLATE_DIRS = (
     # "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    path.join(project_path, 'media/templates'),
     path.join(project_path, 'media/register/templates'),
+    path.join(project_path, 'media/pasture/templates'),
+    path.join(project_path, 'media/populaires/templates'),
+    path.join(project_path, 'media/templates'),
+    path.join(project_path, 'media/'),
 )
 
 INSTALLED_APPS = (
@@ -85,7 +88,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'south',
+    'randopony.pasture',
     'randopony.register',
+    'randopony.populaires',
 )
 
 # Application-specific settings:

@@ -127,10 +127,12 @@ h3 {
 	links
 */
 a {
-	color:#910000;
+	color: #910000;
+    text-decoration: none;
 }
 a:hover {
-	color:#880000;
+	color: #880000;
+    text-decoration: underline;
 }
 div#sidebar ul li a.selected, div#sidebar ul li a.selected:hover {
 	background-color:#ffffff;

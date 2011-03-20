@@ -1,0 +1,28 @@
+# Test data fixture for RandoPony populaires app Rider model
+
+- model: populaires.Rider
+  pk: 1
+  fields:
+    populaire: 1
+    first_name: Mike
+    last_name: Croy
+    email: mcroy@example.com
+    distance: 60
+
+- model: populaires.Rider
+  pk: 2
+  fields:
+    populaire: 3
+    first_name: Lee
+    last_name: Ringham
+    email: lringham@example.com
+    distance: 100
+
+- model: populaires.Rider
+  pk: 3
+  fields:
+    populaire: 3
+    first_name: Ryder
+    last_name: Hesjedal
+    email: rhesjedal@example.com
+    distance: 50

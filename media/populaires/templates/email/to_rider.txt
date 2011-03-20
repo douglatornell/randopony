@@ -1,0 +1,7 @@
+You have pre-registered for the BC Randonneurs {{ populaire.event_name }} on {{ populaire.date }}. Your name should appear on the list at {{ pop_page_url }}.
+
+This is an auto-generated email, but you can reply to it to contact the populaire organizer(s). 
+
+{% if populaire.entry_form_url %}You can print out the event waiver form from the club web site <{{ populaire.entry_form_url }}>, read it carefully, fill it out, and bring it with you to the start to save time and make the organizers like you even more.{% endif %}
+
+Have a great ride!

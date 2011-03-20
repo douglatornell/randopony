@@ -1,4 +1,4 @@
-{% extends "base/page.html" %}
+{% extends "base/register-page.html" %}
 
 {% block title %}RandoPony::{{ brevet }}{% endblock %}
 
@@ -9,8 +9,8 @@
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
-<form action="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}"
-      method="POST">
+{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url %}
+<form action="{{ form_url }}" method="POST">
   {{ form.first_name.errors }}
   <p>
     <label for="id_first_name">First name:</label>
@@ -55,15 +55,13 @@
 {% endblock %}
 
 {% block info-links %}
+{% url register:brevet region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as brevet_url %}
 <li>
-  <a href="{% url register.views.brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-    {{ brevet }}
-  </a>
+  <a href="{{ brevet_url }}">{{ brevet }}</a>
 </li>
+{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url%}
 <li>
-  <a href="{% url register:form region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}" class="selected">
-    Register
-  </a>
+  <a href="{{ form_url }}" class="selected">Register</a>
 </li>
 <li>
   <a href="http://www.randonneurs.bc.ca/organize/eventform.pdf">

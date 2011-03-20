@@ -6,9 +6,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   {% block app-css %}
   <link rel="stylesheet" type="text/css"
-        href="{{ MEDIA_URL }}register/foxy.css" />
-  <link rel="stylesheet" type="text/css"
-        href="{{ MEDIA_URL }}register/register.css" />
+        href="{{ MEDIA_URL }}foxy/foxy.css" />
   {% endblock %}
   {% block page-css %}{% endblock %}
   <title>{% block title %}RandoPony::Page Not Found{% endblock %}</title>
@@ -29,13 +27,13 @@
   <div id="content">
     <div id="page">
       <div class="innerpage">
-       {% block content %}
-       <p>Sorry... there is no there there.</p>
+        {% block content %}
+        <p>Sorry... there is no there there.</p>
 
-        <img src="{{ MEDIA_URL }}register/images/404_pony.jpg"
+        <img src="{{ MEDIA_URL }}pasture/images/404_pony.jpg"
              alt="Nothing to see"
              style="margin-left: 33%; width: 34%;"/>
-      {% endblock %}
+        {% endblock %}
       </div>
     </div>
     {% block sidebar %}{% endblock %}
@@ -45,7 +43,7 @@
   {% block footer %}
   <div id="footer">
     <p>
-      &copy; 2009-2010 <a href="http://douglatornell.ca">douglatornell.ca</a> |
+      &copy; 2011 <a href="http://douglatornell.ca">douglatornell.ca</a> |
       CSS Design: <a
   href="http://justfreetemplates.com/preview/web-templates/206.html">
   foxy template</a> by <a href="http://www.spyka.net">spyka webmaster</a>

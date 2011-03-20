@@ -10,11 +10,15 @@ from django.contrib import admin
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
-    # Resolve '/' to the register app until there are more apps
-    (r'', include('randopony.register.urls')),
+urlpatterns = patterns(
+    '',
+    # Resolve '/' to the pasture (top level) app
+    (r'', include('randopony.pasture.urls', namespace='pasture')),
     # Brevet pre-registration
     (r'^register/', include('randopony.register.urls', namespace='register')),
+    # Populaire pre-registration
+    (r'^populaires/',
+     include('randopony.populaires.urls', namespace='populaires')),
     # Django auto-generated site admin
     (r'^admin/', include(admin.site.urls)),
 )

@@ -2,6 +2,7 @@
 
 """
 # Standard library:
+from contextlib import nested
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -25,7 +26,7 @@ class TestHomeView(django.test.TestCase):
         """GET request for root page of register app works
         """
         response = self.client.get(reverse('register:home'))
-        self.assertContains(response, 'RandoPony::Registration')
+        self.assertContains(response, 'RandoPony::Brevets')
 
 
     def test_home_context(self):
@@ -39,12 +40,12 @@ class TestHomeView(django.test.TestCase):
 
 
     def test_home_base_sidebar(self):
-        """home view renders brevets list
+        """home view renders standard sidebar tabs
         """
         response = self.client.get(reverse('register:home'))
-        self.assertContains(response, 'Home')
+        self.assertContains(response, 'Brevets')
         self.assertContains(response, 'randonneurs.bc.ca')
-        self.assertContains(response, 'Info for Brevet Organizers')
+        self.assertContains(response, 'Info for Event Organizers')
         self.assertContains(response, "What's up with the pony?")
 
 
@@ -160,7 +161,9 @@ class TestBrevetView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(
-            response, 'brevet is over, and the RandoPony has moved on!')
+            response,
+            'The LM300 01-May-2010 event is over, and the RandoPony '
+            'has moved on!')
         self.assertContains(
             response,
             'http://randonneurs.bc.ca/results/10_times/10_times.html')
@@ -342,7 +345,7 @@ class TestRegistrationFunction(django.test.TestCase):
     fixtures = ['brevets', 'riders']
 
     def test_registration_form_clean_submit(self):
-        """registration from submit w/ valid data redirects to brevet pg w/ msg
+        """registration form submit w/ valid data redirects to brevet pg w/ msg
         """
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
@@ -352,7 +355,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -381,7 +388,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -629,7 +640,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -684,7 +699,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -715,7 +734,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'info_answer': 'LM300',
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -748,7 +771,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -769,7 +796,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -792,7 +823,11 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        context_mgr = nested(
+            patch('randopony.register.models.datetime'),
+            patch('randopony.register.views._update_google_spreadsheet'),
+        )
+        with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -883,41 +918,3 @@ class TestRiderEmailsView(django.test.TestCase):
             set('sea@susanallen.ca fibber.mcgee@example.com'.split()))
 
 
-class TestAboutPonyView(django.test.TestCase):
-    """Functional tests for about RandoPony view.
-    """
-    def test_about_pony_get(self):
-        """GET request for about RandoPony page works
-        """
-        response = self.client.get(reverse('about_pony'))
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_about_pony_sidebar(self):
-        """organizer_info view renders expected sidebar
-        """
-        response = self.client.get(reverse('about_pony'))
-        self.assertTrue('Home' in response.content)
-        self.assertTrue('randonneurs.bc.ca' in response.content)
-        self.assertTrue('Info for Brevet Organizers' in response.content)
-        self.assertTrue("What's up with the pony?" in response.content)
-
-
-class TestOrganizerInfoView(django.test.TestCase):
-    """Functional tests for info for event organizer's view.
-    """
-    def test_organizer_info_get(self):
-        """GET request for orgainzers info page works
-        """
-        response = self.client.get(reverse('organizer_info'))
-        self.assertEqual(response.status_code, 200)
-
-
-    def test_organizer_info_sidebar(self):
-        """organizer_info view renders expected sidebar
-        """
-        response = self.client.get(reverse('organizer_info'))
-        self.assertTrue('Home' in response.content)
-        self.assertTrue('randonneurs.bc.ca' in response.content)
-        self.assertTrue('Info for Brevet Organizers' in response.content)
-        self.assertTrue("What's up with the pony?" in response.content)
