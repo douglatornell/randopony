@@ -35,7 +35,7 @@ class BaseEvent(models.Model):
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
     
-    class Meta():
+    class Meta:
         abstract = True
         ordering = ['date']
 
@@ -134,10 +134,10 @@ class ClubEvent(BaseEvent):
     """Non-brevet club event model.
     """
     EVENT_CHOICES = (
-        ( 'AGM',  'AGM'),
-        ( 'brunch',  'Brunch'),
-        ( 'dinner',  'Dinner'),
-        ( 'social',  'Spring Social'),
+        ('AGM', 'AGM'),
+        ('brunch', 'Brunch'),
+        ('dinner', 'Dinner'),
+        ('social', 'Spring Social'),
     )
 
     event = models.CharField(max_length=30, choices=EVENT_CHOICES)
@@ -146,7 +146,7 @@ class ClubEvent(BaseEvent):
 class Person(models.Model):
     """Abstract base class for BrevetRider and EventParticipant models.
     """
-    class Meta():
+    class Meta:
         abstract = True
         ordering = ['last_name']
 
