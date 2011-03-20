@@ -1,4 +1,5 @@
-"""Model classes for RandoPony site register app
+"""Model classes for RandoPony register app (for brevets & club event
+pre-registration).
 
 """
 # Standard library:
@@ -120,10 +121,10 @@ class Brevet(BaseEvent):
     registration_closed = property(_registration_closed)
 
 
-    def _started(brevet):
+    def _started(self):
         """Start window for brevet closes 1 hour after brevet start time.
         """
-        brevet_date_time = datetime.combine(brevet.date, brevet.time)
+        brevet_date_time = datetime.combine(self.date, self.time)
         one_hour = timedelta(hours=1 + SERVER_TZ_OFFSET)
         brevet_started = datetime.now() >= brevet_date_time + one_hour
         return brevet_started

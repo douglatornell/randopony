@@ -1,4 +1,4 @@
-{% extends "base/page.html" %}
+{% extends "base/register-page.html" %}
 
 {% block title %}RandoPony::{{ region.long_name }}{% endblock %}
 
@@ -21,21 +21,16 @@ Brevets
 {% endblock %}
 
 
-{% block region-link %}
+{% block sidebar-links %}
+{% url register:region-brevets region.abbrev as region_url %}
 <li>
-  <a href="{% url register.views.region_brevets region=region.abbrev %}"
-     class="selected">
-    {{ region.long_name }}
-  </a>
+  <a href="{{ region_url }}" class="selected">{{ region.long_name }}</a>
 </li>
-{% endblock %}
 
-{% block brevet-list %}
 {% for brevet in brevets %}
+{% url register:brevet region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as brevet_url %}
 <li>
-  <a href="{% url register:brevet region=brevet.region,event=brevet.event,date=brevet.date|date:"dMY" %}">
-    {{ brevet }}
-  </a>
+  <a href="{{ brevet_url }}">{{ brevet }}</a>
 </li>
 {% endfor %}
 {% endblock %}

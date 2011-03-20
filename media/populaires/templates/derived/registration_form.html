@@ -1,0 +1,67 @@
+{% extends "base/populaires-page.html" %}
+
+{% block title %}RandoPony::{{ populaire }}{% endblock %}
+
+{% block page-subtitle %}{{ populaire }}{% endblock %}
+
+{% block content %}
+<h3>{{ populaire.event_name }}</h3>
+
+{% url populaires:form short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
+<form action="{{ form_url }}" method="POST">
+ {{ form.first_name.errors }}
+  <p>
+    <label for="id_first_name">First name:</label>
+    {{ form.first_name }}
+  </p>
+
+  {{ form.last_name.errors }}
+  <p>
+    <label for="id_last_name">Last name:</label>
+    {{ form.last_name }}
+  </p>
+
+  {{ form.email.errors }}
+  <p>
+    <label for="id_email">Email:</label>
+    {{ form.email }}
+  </p>
+
+  {{ form.distance.errors }}
+  <label for="id_distance" class="outside-paragraph">Distance:</label>
+  {{ form.distance }}
+
+  <p>
+    {{ captcha_question }}
+    {{ form.captcha.errors }}
+    {{ form.captcha }}
+  </p>
+  <input class="formbutton" type="submit" value="Register" />
+</form>
+
+<div class="filler_img">
+  <img class="filler_img"
+       src="{{ MEDIA_URL }}populaires/images/banana_smiles.jpg"
+       alt="Sign-on" />
+  <div class="photo-credit">Dan McGuire</div>
+</div>
+{% endblock %}
+
+{% block sidebar-links %}
+{% url populaires:populaire short_name=populaire.short_name date=populaire.date|date:"dMY" as populaire_url %}
+<li>
+ <a href="{{ populaire_url }}">{{ populaire }}</a>
+</li>
+
+<li>
+  <a href="{{ form_url }}" class="selected">Register</a>
+</li>
+
+{% if populaire.entry_form_url %}
+<li>
+  <a href="{{ populaire.entry_form_url }}">
+    {{ populaire.entry_form_url_label }}
+  </a>
+</li>
+{% endif %}
+{% endblock %}

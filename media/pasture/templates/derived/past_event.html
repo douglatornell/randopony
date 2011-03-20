@@ -1,0 +1,27 @@
+{% extends "base/page.html" %}
+
+{% block app-css %}
+<link rel="stylesheet" type="text/css" 
+      href="{{ MEDIA_URL }}pasture/pasture.css" />
+{% endblock %}
+
+{% block title %}RandoPony::{{ event }}{% endblock %}
+
+{% block page-subtitle %}{{ event }}{% endblock %}
+
+{% block content %}
+<p>The {{ event }} event is over, and the RandoPony has moved on!
+</p>
+<p>You should be able to find a link to the results of that event at:
+</p>
+<p>{{ results_url|urlize }}</p>
+
+<img class="filler_img" src="{{ MEDIA_URL }}pasture/images/ItsOver.jpg"
+     alt="It's Over!" />
+{% endblock %}
+
+{% block sidebar-links %}
+<li><a href="{% url register:home %}">Brevets</a></li>
+
+<li><a href="{% url populaires:populaires-list %}">Populaires</a></li>
+{% endblock %}

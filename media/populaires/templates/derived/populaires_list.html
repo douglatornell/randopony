@@ -1,0 +1,42 @@
+{% extends "base/populaires-page.html" %}
+
+{% block title %}RandoPony::Populaires{% endblock %}
+{% block page-subtitle %}Populaire Pre-registration{% endblock %}
+
+{% block content %}
+<p>
+Please click the tab on the right side of the page for the event that
+you want to pre-register for.
+</p>
+<p>
+These pages provides a pre-registration service for populaires that
+simply lets the ride organizer know that you are intending to ride. We
+collect your name and email address so that we can confirm your
+pre-registration to you and the organizer by email.
+</p>
+<p>
+This is <em>not</em> a credit card payment site, so you'll still need
+to bring cash or a cheque with you to the start to pay for the event.
+</p>
+<p>
+Questions about the events should be directed to the ride
+organizers. Feedback about this site can be sent to
+<kbd>{{ admin_email }}</kbd>
+</p>
+{% endblock %}
+
+
+{% block home-link %}
+<li>
+  <a href="{% url populaires:populaires-list %}" class="selected">Populaires</a>
+</li>
+{% endblock %}
+    
+{% block sidebar-links %}
+{% for event in events %}
+{% url populaires:populaire short_name=event.short_name date=event.date|date:"dMY" as event_url %}
+<li>
+ <a href="{{ event_url }}">{{ event }}</a>
+</li>
+{% endfor %}
+{% endblock %}

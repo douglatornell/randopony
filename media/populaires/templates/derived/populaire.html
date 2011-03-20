@@ -1,0 +1,135 @@
+{% extends "base/populaires-page.html" %}
+
+{% block title %}RandoPony::{{ populaire }}{% endblock %}
+
+{% block page-subtitle %}{{ populaire }}{% endblock %}
+
+{% block content %}
+<h3>{{ populaire.event_name }}</h3>
+
+<p>
+<strong>Distance: </strong>{{ populaire.distance }}
+</p>
+
+<p>
+<strong>Start: </strong>
+{{ populaire.date|date:"D d-M-Y" }} at {{ populaire.time|time:"H:i" }}
+</p>
+
+<p>
+<strong>Start Location: </strong>{{ populaire.location }}
+</p>
+
+{% if registration_closed and not event_started %}
+<div id="registration-closed">
+ <p>
+   Pre-registration for this event is closed. 
+   {% if populaire.entry_form_url %}
+   But you can still print out the <a href="{{ populaire.entry_form_url }}"
+   title="Event Waiver Form">event waiver form</a> from the club web
+   site, read it carefully, fill it out, and bring it with you to the start. 
+   {% endif %}
+ </p>
+
+  <p>See you on the road!</p>
+</div>
+{% endif %}
+
+{% if rider %}
+{% if not duplicate_registration %}
+<div id="confirmation">
+  <p>
+  You have pre-registered for this event. Cool! Your name should be on
+  the list below.
+  </p>
+
+  <p>
+  A confirmation email has been sent to you at
+  <kbd>{{ rider.email }}</kbd>, and to the event organizer(s).
+  </p>
+
+  {% if populaire.entry_form_url %}
+  <p>
+  You can print out the <a href="{{ populaire.entry_form_url }}"
+  title="Event Waiver Form">event waiver form</a> from the club web
+  site, read it carefully, fill it out, and bring it with you to the
+  start to save time and make the organizers like you even more.
+  </p>
+  {% endif %}
+
+  <p>Have a great ride!</p>
+</div> <!-- id="confirmation" -->
+{% else %}
+<div id="duplicate_registration">
+  <p>
+  Hmm... Someone using the name <kbd>{{ rider.full_name }}</kbd> and
+  the email address <kbd>{{ rider.email }}</kbd> has already
+  pre-registered for this event. Are you sure that you are registering
+  for the event you intended to?
+  </p>
+
+  <p>
+  If you are trying to change your email address, by re-registering,
+  please contact the event organizer.
+  </p>
+</div> <!-- id="duplicate_registration" -->
+{% endif %}
+{% endif %}
+
+{% if rider_list %}
+<table>
+  <thead>
+    <tr>
+      <th colspan=2>
+        {{ rider_list|length }} Pre-registered Rider{{ rider_list|length|pluralize }}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for rider in rider_list %}
+    <tr>
+      <td>{{ rider.full_name }} </td>
+      <td>{{ rider.distance }} km</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+Nobody has pre-registered
+{% if not registration_closed %}
+{% url populaires:form short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
+<a href="{{ form_url }}">Be the first!</a>
+{% endif %}
+{% endif %}
+
+{% if show_filler_photo %}
+<div class="filler_img">
+  <img class="filler_img"
+       src="{{ MEDIA_URL }}populaires/images/tandem_tuesday.jpg"
+       alt="Pre-registration list" />
+  <div class="photo-credit">Karen Smith</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block sidebar-links %}
+{% url populaires:populaire short_name=populaire.short_name date=populaire.date|date:"dMY" as populaire_url %}
+<li>
+ <a href="{{ populaire_url }}" class="selected">{{ populaire }}</a>
+</li>
+
+{% if not registration_closed %}
+{% url populaires:form short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
+<li>
+  <a href="{{ form_url }}">Register</a>
+</li>
+{% endif %}
+
+{% if populaire.entry_form_url %}
+<li>
+  <a href="{{ populaire.entry_form_url }}">
+    {{ populaire.entry_form_url_label }}
+  </a>
+</li>
+{% endif %}
+{% endblock %}

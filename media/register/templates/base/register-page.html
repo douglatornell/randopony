@@ -1,0 +1,12 @@
+{% extends "pasture/templates/base/page.html" %}
+
+{% block app-css %}
+<link rel="stylesheet" type="text/css" 
+      href="{{ MEDIA_URL }}register/register.css" />
+{% endblock %}
+
+{% block home-link %}
+<li>
+  <a href="{% url register:home %}">Brevets</a>
+</li>
+{% endblock %}

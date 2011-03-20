@@ -4,12 +4,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
- {% block app-css %}
   <link rel="stylesheet" type="text/css"
-        href="{{ MEDIA_URL }}register/foxy.css" />
-  <link rel="stylesheet" type="text/css"
-        href="{{ MEDIA_URL }}register/register.css" />
-  {% endblock %}
+        href="{{ MEDIA_URL }}foxy/foxy.css" />
+  {% block app-css %}{% endblock %}
   {% block page-css %}{% endblock %}
   <title>{% block title %}{% endblock %}</title>
 </head>
@@ -21,7 +18,7 @@
     <div id="innerheader">
       <div id="title">
         <h1>{% block page-title %}bc randonneurs{% endblock %}</h1>
-        <h2>{% block page-subtitle %}brevet pre-registration{% endblock %}</h2>
+        <h2>{% block page-subtitle %}{% endblock %}</h2>
       </div>
     </div>
   </div>
@@ -37,14 +34,10 @@
     <div id="sidebar">
       <ul>
         {% block home-link %}
-        <li><a href="{% url register:home %}">Home</a></li>
+        <li><a href="{% url pasture:home %}">Home</a></li>
         {% endblock %}
 
-        {% block region-link %}{% endblock %}
-
-        {% block region-list %}{% endblock %}
-
-        {% block brevet-list %}{% endblock %}
+        {% block sidebar-links %}{% endblock %}
 
         {% block info-links %}{% endblock %}
 
@@ -54,12 +47,12 @@
 
         {% block organizer-info-link %}
         <li>
-          <a href="{% url organizer_info %}">Info for Brevet Organizers</a>
+          <a href="{% url pasture:organizer-info %}">Info for Event Organizers</a>
         </li>
         {% endblock %}
 
         {% block pony-info-link %}
-        <li><a href="{% url about_pony %}">What's up with the pony?</a></li>
+        <li><a href="{% url pasture:about-pony %}">What's up with the pony?</a></li>
         {% endblock %}
      </ul>
     </div>
