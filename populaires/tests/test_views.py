@@ -179,9 +179,10 @@ class TestPopulaire(TestCase):
     def test_populaire_page_no_riders(self):
         """populaire view has expected message when no riders are registered
         """
+        from .. import models
         url = reverse(
             'populaires:populaire', args=('VicPop', '27Mar2011'))
-        with patch('randopony.populaires.views.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 2, 26)
             mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
             mock_datetime.strptime = datetime.strptime
@@ -343,7 +344,8 @@ class TestRegistrationFunction(TestCase):
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to pop pg w/ msg
         """
-        from ..models import Rider
+        from .. import models
+        from .. import views
         url = reverse(
             'populaires:form', args=('VicPop', '27Mar2011'))
         params = {
@@ -354,8 +356,8 @@ class TestRegistrationFunction(TestCase):
             'captcha': 2
         }
         context_mgr = nested(
-            patch('randopony.populaires.models.datetime'),
-            patch('randopony.populaires.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2011, 3, 1)
@@ -363,9 +365,11 @@ class TestRegistrationFunction(TestCase):
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.post(url, params, follow=True)
-        rider_id = Rider.objects.order_by('-id')[0].id
+        rider = models.Rider.objects.order_by('-id')[0]
+        self.assertEqual(rider.lowercase_last_name, 'latornell')
         url = reverse(
-            'populaires:prereg-confirm', args=('VicPop', '27Mar2011', rider_id))
+            'populaires:prereg-confirm',
+            args=('VicPop', '27Mar2011', rider.id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')

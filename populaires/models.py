@@ -98,10 +98,11 @@ class Rider(models.Model):
     populaire.
     """
     class Meta:
-        ordering = ['last_name']
+        ordering = ['lowercase_last_name']
         
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    lowercase_last_name = models.CharField(max_length=30)
     email = models.EmailField()
     distance = models.IntegerField()
     populaire = models.ForeignKey(Populaire)
@@ -113,6 +114,14 @@ class Rider(models.Model):
     def _get_full_name(self):
         return '{0} {1}'.format(self.first_name, self.last_name)
     full_name = property(_get_full_name)
+
+
+    def save(self, *args, **kwargs):
+        """Override the default save method to store the lowercased
+        version of the last_name value.
+        """
+        self.lowercase_last_name = self.last_name.lower()
+        super(Rider, self).save(*args, **kwargs)
 
 
 class RiderForm(forms.ModelForm):
@@ -128,7 +137,7 @@ class RiderForm(forms.ModelForm):
 
     class Meta:
         model = Rider
-        exclude = ('populaire', )
+        exclude = ('populaire', 'lowercase_last_name')
 
     captcha = forms.IntegerField()
 
