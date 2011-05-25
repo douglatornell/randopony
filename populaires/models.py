@@ -11,11 +11,6 @@ from django.db import models
 from django.forms.util import ErrorList
 
 
-# The webfaction server hosting randopony is 2 hours ahead of Pacific
-# time.
-SERVER_TZ_OFFSET = 2
-
-
 class Populaire(models.Model):
     """Populaire event model.
     """
@@ -72,18 +67,14 @@ class Populaire(models.Model):
     def _registration_closed(self):
         """Has registration for the populaire closed?
         """
-        closure_datetime = (
-            self.registration_closes + timedelta(hours=SERVER_TZ_OFFSET))
-        return datetime.now() > closure_datetime
+        return datetime.now() > self.registration_closes
     registration_closed = property(_registration_closed)
 
 
     def _started(self):
         """Has populaire started?
         """
-        start_datetime = (datetime.combine(self.date, self.time)
-                          + timedelta(hours=SERVER_TZ_OFFSET))
-        return datetime.now() > start_datetime
+        return datetime.now() > datetime.combine(self.date, self.time)
     started = property(_started)
 
 
