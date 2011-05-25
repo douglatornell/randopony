@@ -144,10 +144,11 @@ class Person(models.Model):
     """
     class Meta:
         abstract = True
-        ordering = ['last_name']
+        ordering = ['lowercase_last_name']
 
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
+    lowercase_last_name = models.CharField(max_length=30)
     email = models.EmailField()
     info_answer = models.CharField(
         'info answer', max_length=100, blank=True)
@@ -161,6 +162,14 @@ class Person(models.Model):
         """
         return '{0} {1}'.format(self.first_name, self.last_name)
     full_name = property(_get_full_name)
+
+
+    def save(self, *args, **kwargs):
+        """Override the default save method to store the lowercased
+        version of the last_name value.
+        """
+        self.lowercase_last_name = self.last_name.lower()
+        super(Person, self).save(*args, **kwargs)
         
 
 class BrevetRider(Person):
@@ -206,10 +215,10 @@ class RiderForm(BaseRiderForm):
 
     class Meta:
         model = BrevetRider
-        exclude = ('brevet', )
+        exclude = ('brevet', 'lowercase_last_name')
 
 
 class RiderFormWithoutInfoQuestion(BaseRiderForm):
     class Meta:
         model = BrevetRider
-        exclude = ('brevet', 'info_answer')
+        exclude = ('brevet', 'lowercase_last_name', 'info_answer')

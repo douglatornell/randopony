@@ -365,9 +365,11 @@ class TestRegistrationFunction(django.test.TestCase):
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.post(url, params, follow=True)
-        rider_id = model.BrevetRider.objects.order_by('-id')[0].id
+        rider = model.BrevetRider.objects.order_by('-id')[0]
+        self.assertEqual(rider.lowercase_last_name, 'latornell')
         url = reverse(
-            'register:prereg-confirm', args=('LM', 300, '01May2010', rider_id))
+            'register:prereg-confirm',
+            args=('LM', 300, '01May2010', rider.id))
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
