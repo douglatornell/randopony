@@ -81,20 +81,20 @@ Install the Packages that RandoPony Depends On
    :envvar:`PYTHONPATH`:
 
     .. code-block:: sh
-    
+
        export PYTHONPATH=$HOME/webapps/randopony/lib/python2.6
 
 #. Install the Python client library for Google data APIs:
 
     .. code-block:: sh
-    
+
         easy_install-2.6 --install-dir=$HOME/webapps/randopony/lib/python2.6/ --script-dir $HOME/webapps/bin gdata
 
 #. Install the South database migration tool for Django:
 
     .. code-block:: sh
-    
-        easy_install-2.6 --install-dir=$HOME/webapps/randopony/lib/python2.6/ --script-dir $HOME/webapps/bin south
+
+        easy_install-2.6 --install-dir=$HOME/webapps/randopony/lib/python2.6/ --script-dir $HOME/webapps/randopony/bin south
 
 
 Create a Django Settings Module
@@ -185,7 +185,7 @@ panel.
 
 #. Use the :guilabel:`E-mails > Mailboxes` menu to create a mailbox
    called :kbd: `randopony`, and set its password to the value you put
-   in the :file:`webfaction-settings.py` file. 
+   in the :file:`webfaction-settings.py` file.
 
 #. Use the :guilabel:`E-mails > E-mail addresses` menu to create an
    address like :kbd: `randopony@sadahome.ca` that matches what you
@@ -229,13 +229,13 @@ Initialize the Database and Start the App
     :kbd:`randopony`:
 
    .. code-block:: sh
-      
+
       python2.6 manage.py migrate register
 
 #. Delete the  temporary copy of :file:`webfaction-settings.py`:
 
    .. code-block:: sh
-      
+
       rm settings.py*
 
 #. Restart Apache:
@@ -250,7 +250,7 @@ The application should now be accessible at
 interface should be operational at
 :kbd:`http://randopony.sadahome.ca/admin/`
 
-.. 
+..
    Local Variables:
    mode: rst
    mode: auto-fill
