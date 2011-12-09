@@ -5,10 +5,11 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
-import unittest2 as unittest
 import uuid
 # Mock:
 from mock import patch
+# Django:
+from django.utils import unittest
 
 
 class TestPopulaire(unittest.TestCase):
