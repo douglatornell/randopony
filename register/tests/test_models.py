@@ -7,11 +7,11 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 import uuid
-import unittest2 as unittest
 # Mock:
 from mock import patch
 # Django:
 from django.conf import settings
+from django.utils import unittest
 
 
 class TestBrevet(unittest.TestCase):
