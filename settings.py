@@ -1,10 +1,10 @@
 """Django settings for development instance of RandoPony site.
-
 """
 from os import path
 
 
 project_path = path.dirname(__file__)
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -15,11 +15,13 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASE_ENGINE = 'sqlite3'
-# Use a different database file name from what's in the
-# webfaction-settings module to avoid nasty surprises if the
-# --delete-excluded option is used in rsync2wf.sh
-DATABASE_NAME = path.join(project_path, 'randopony.db')
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': path.join(project_path, 'randopony.db')
+
+    }
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -57,15 +59,15 @@ SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.load_template_source',
-    'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 ROOT_URLCONF = 'randopony.urls'
@@ -85,6 +87,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
     'south',
