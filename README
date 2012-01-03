@@ -3,8 +3,11 @@ RandoPony
 =========
 
 RandoPony is a Django project for online data management activities
-for the BC Randonneurs Cycling Club. It presently has 1 app, a brevet
-pre-registration system.
+for the BC Randonneurs Cycling Club. It presently has 3 apps:
+
+* ``pasture`` - a framework and container for other pony apps
+* ``register`` - a pre-registration app for brevets
+* ``populaires`` - a pre-registration app for populaire events.
 
 RandoPony is copyright by Doug Latornell. It is released under a New
 BSD License; please see the LICENSE file. The source code is available
