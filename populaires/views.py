@@ -1,5 +1,4 @@
 """View functions for RandoPony populaires app.
-
 """
 from __future__ import absolute_import
 # Standard library:
@@ -111,7 +110,7 @@ def registration_form(request, short_name, date):
     context = RequestContext(request, {
         'populaire': pop,
         'form': form,
-        'captcha_question': 
+        'captcha_question':
             'Are you a human? Are you a cyclist? Please prove it. '
             'A bicycle has ___ wheels. Fill in the blank:',
     })
