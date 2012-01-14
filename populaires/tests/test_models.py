@@ -1,5 +1,4 @@
 """Unit tests for RandoPony populaires app models.
-
 """
 # Standard library:
 from datetime import date
@@ -12,7 +11,7 @@ from mock import patch
 from django.utils import unittest
 
 
-class TestPopulaire(unittest.TestCase):
+class TestPopulaireModel(unittest.TestCase):
     """Unit tests for Populaire model object.
     """
     def _get_target_class(self):
@@ -32,7 +31,7 @@ class TestPopulaire(unittest.TestCase):
         self.assertEqual(
             unicode(pop), u'VicPop {0}'.format(today.strftime('%d-%b-%Y')))
 
-        
+
     def test_uuid_value(self):
         """uuid property returns URL namespace uuid for populaire
         """
@@ -116,7 +115,7 @@ class TestPopulaire(unittest.TestCase):
                 'http://randonneurs.bc.ca/results/11_times/11_times.html')
 
 
-class TestRider(unittest.TestCase):
+class TestRiderModel(unittest.TestCase):
     """Unit tests for Rider model object.
     """
     def _get_target_class(self):
@@ -127,7 +126,7 @@ class TestRider(unittest.TestCase):
     def _make_one(self, *args, **kwargs):
         return self._get_target_class()(*args, **kwargs)
 
-    
+
     def test_unicode(self):
         """__unicode__ returns {first_name} {last_name} for rider
         """
