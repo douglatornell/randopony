@@ -1,5 +1,4 @@
 """View tests for RandoPony populaires app.
-
 """
 from __future__ import absolute_import
 # Standard library:
@@ -16,8 +15,8 @@ from django.core.urlresolvers import reverse
 class TestPopulairesListView(TestCase):
     """Functional tests for populaires-list view.
     """
-    fixtures = ['populaires']
-    
+    fixtures = ['populaires.yaml']
+
     def test_populaires_list_get(self):
         """GET request for populaires-list view works
         """
@@ -71,10 +70,10 @@ class TestPopulairesListView(TestCase):
         self.assertNotContains(response, 'NewYearsPop 01-Jan-2011')
 
 
-class TestPopulaire(TestCase):
+class TestPopulaireView(TestCase):
     """Functional tests for populaire view.
     """
-    fixtures = ['populaires', 'riders']
+    fixtures = ['populaires.yaml', 'riders.yaml']
 
     def test_populaire_get(self):
         """GET request for populaire page works
@@ -229,7 +228,7 @@ class TestPopulaire(TestCase):
 class TestRegistrationFormView(TestCase):
     """Functional tests for registration form view.
     """
-    fixtures = ['populaires']
+    fixtures = ['populaires.yaml']
 
     def test_registration_form_get(self):
         """GET request for registration form page works
@@ -339,7 +338,7 @@ class TestRegistrationFormView(TestCase):
 class TestRegistrationFunction(TestCase):
     """Functional tests of registration for populaires.
     """
-    fixtures = ['populaires']
+    fixtures = ['populaires.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to pop pg w/ msg
@@ -380,7 +379,7 @@ class TestRegistrationFunction(TestCase):
 class TestRiderEmailsView(TestCase):
     """Functional tests for rider email address list view.
     """
-    fixtures = ['populaires', 'riders']
+    fixtures = ['populaires.yaml', 'riders.yaml']
 
     def test_rider_emails_bad_uuid(self):
         """request for rider's emails with bad event uuid raises 404
