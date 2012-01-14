@@ -1,5 +1,4 @@
 """View tests for RandoPony register app.
-
 """
 # Standard library:
 from contextlib import nested
@@ -20,7 +19,7 @@ import randopony.register.models as model
 class TestHomeView(django.test.TestCase):
     """Functional tests for home view.
     """
-    fixtures = ['brevets']
+    fixtures = ['brevets.yaml']
 
     def test_home_get(self):
         """GET request for root page of register app works
@@ -66,7 +65,7 @@ class TestHomeView(django.test.TestCase):
 class TestRegionBrevetsView(django.test.TestCase):
     """Functional tests for region_brevets view.
     """
-    fixtures = ['brevets']
+    fixtures = ['brevets.yaml']
 
     def test_region_brevets_get(self):
         """GET request for region brevets list page of register app works
@@ -108,7 +107,7 @@ class TestRegionBrevetsView(django.test.TestCase):
 class TestBrevetView(django.test.TestCase):
     """Functional tests for brevet view.
     """
-    fixtures = ['brevets', 'riders']
+    fixtures = ['brevets.yaml', 'riders.yaml']
 
     def test_brevet_get(self):
         """GET request for brevet page works
@@ -258,7 +257,7 @@ class TestBrevetView(django.test.TestCase):
 class TestRegistrationFormView(django.test.TestCase):
     """Functional tests for registration form view.
     """
-    fixtures = ['brevets']
+    fixtures = ['brevets.yaml']
 
     def test_registration_form_get(self):
         """GET request for registration form page works
@@ -342,7 +341,7 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     """Functional tests of registration for brevets.
     """
-    fixtures = ['brevets', 'riders']
+    fixtures = ['brevets.yaml', 'riders.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to brevet pg w/ msg
@@ -850,7 +849,7 @@ class TestRegistrationFunction(django.test.TestCase):
 class TestRiderEmailsView(django.test.TestCase):
     """Functional tests for rider email address list view.
     """
-    fixtures = ['brevets', 'riders']
+    fixtures = ['brevets.yaml', 'riders.yaml']
 
 
     def test_rider_emails_bad_uuid(self):

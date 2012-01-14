@@ -18,15 +18,15 @@ from django.core import mail
 class TestAdminPopulaire(django.test.TestCase):
     """Functional tests for the add/change populaire admin form.
     """
-    fixtures = ['populaires']
-    
+    fixtures = ['populaires.yaml']
+
     def setUp(self):
         user = User.objects.create_superuser(
             'test_admin', 'test_admin@example.com', 'foobar42')
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-        
+
     def test_populaire_add_form_get(self):
         """GET request for add populaire form page works
         """

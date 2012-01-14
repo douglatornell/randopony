@@ -1,6 +1,5 @@
 """Functional tests for customized admin elements of RandoPony
 register app.
-
 """
 # Standard library:
 from datetime import date
@@ -16,15 +15,15 @@ from django.core import mail
 class TestAdminBrevet(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
-    fixtures = ['brevets']
-    
+    fixtures = ['brevets.yaml']
+
     def setUp(self):
         user = User.objects.create_superuser(
             'test_admin', 'test_admin@example.com', 'foobar42')
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-        
+
     def test_brevet_add_form_get(self):
         """GET request for add brevet form page works
         """
@@ -185,15 +184,15 @@ class TestAdminBrevet(django.test.TestCase):
 class TestAdminClubEvent(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
-    fixtures = ['club_events']
-    
+    fixtures = ['club_events.yaml']
+
     def setUp(self):
         user = User.objects.create_superuser(
             'test_admin', 'test_admin@example.com', 'foobar42')
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-        
+
     def test_club_event_add_form_get(self):
         """GET request for add brevet form page works
         """
@@ -266,7 +265,7 @@ class TestAdminClubEvent(django.test.TestCase):
             event.organizer_email,
             'mcroy@example.com, dug.andrusiek@example.com')
 
-        
+
     def test_club_event_notify_webmaster_1_event(self):
         """notify webmaster admin action sends email for 1 club event
         """
