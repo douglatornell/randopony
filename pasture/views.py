@@ -29,5 +29,5 @@ def home(request):
         'brevets': brevet_list,
         'populaires': populaire_list,
     })
-    response = render_to_response('pasture/templates/derived/home.html', context)
+    response = render_to_response('pasture/derived/home.html', context)
     return response
