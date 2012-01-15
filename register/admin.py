@@ -1,5 +1,4 @@
 """Admin configuration for RandoPony site register app.
-
 """
 from __future__ import absolute_import
 # Django:
@@ -57,12 +56,12 @@ class BrevetAdmin(admin.ModelAdmin):
         'notify_brevet_organizer',
         'notify_webmaster',
     ]
-    
+
 
     def create_rider_list_spreadsheet(self, request, queryset):
         """Create a Google Docs rider list spreadsheet from the rider
         list template for the brevet(s) in the queryset.
-        
+
         Handler for create_rider_list_spreadsheet admin action.
         """
         client = google_docs_login(DocsClient)
@@ -101,7 +100,7 @@ class BrevetAdmin(admin.ModelAdmin):
         key = google_doc_id.split(':')[1]
         client.UpdateCell(1, 5, info_question, key)
 
-    
+
     def notify_brevet_organizer(self, request, queryset):
         _notify_brevet_organizer(request, queryset)
         brevets_count = queryset.count()
@@ -114,7 +113,7 @@ class BrevetAdmin(admin.ModelAdmin):
     description = 'Send email with brevet URLs to brevet organizer(s)'
     notify_brevet_organizer.short_description = description
 
-    
+
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
         brevets_count = queryset.count()
@@ -169,7 +168,7 @@ class ClubEventAdmin(admin.ModelAdmin):
     description = 'Send email with URL for event to webmaster'
     notify_webmaster.short_description = description
 admin.site.register(ClubEvent, ClubEventAdmin)
-        
+
 
 class RiderAdmin(admin.ModelAdmin):
     """Customize presentation of Entrant instance in admin.
@@ -211,7 +210,7 @@ def _notify_webmaster(request, queryset):
         email = mail.EmailMessage(
             subject='RandoPony Pre-registration Page for {0}'.format(event),
             body=render_to_string(
-                'register/templates/email/to_webmaster.txt',
+                'register/email/to_webmaster.txt',
                 {'event': event,
                  'event_page_url': event_page_url,
                  'admin_email': settings.ADMINS[0][1],
@@ -248,7 +247,7 @@ def _notify_brevet_organizer(request, queryset):
         email = mail.EmailMessage(
             subject='RandoPony URLs for {0}'.format(brevet),
             body=render_to_string(
-                'email/URLs_to_organizer.txt',
+                'register/email/URLs_to_organizer.txt',
                 {'brevet': brevet,
                  'brevet_page_url': brevet_page_url,
                  'rider_list_url': rider_list_url,

@@ -59,7 +59,6 @@ TEMPLATE_DIRS = (
     # Always use absolute paths.
     path.join(project_path, 'site_templates'),
     path.join(project_path, 'admin_templates'),
-    path.join(project_path, 'media/register/templates'),
     path.join(project_path, 'media/populaires/templates'),
 )
 
