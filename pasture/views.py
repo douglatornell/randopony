@@ -1,5 +1,4 @@
 """View functions for RandoPony top level (pasture) app.
-
 """
 from __future__ import absolute_import
 # Standard library:
@@ -29,5 +28,5 @@ def home(request):
         'brevets': brevet_list,
         'populaires': populaire_list,
     })
-    response = render_to_response('pasture/derived/home.html', context)
+    response = render_to_response('pasture/home.html', context)
     return response
