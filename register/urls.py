@@ -1,5 +1,4 @@
 """URL map for RandoPony brevets & events registration app.
-
 """
 # Django:
 from django.conf.urls.defaults import patterns
@@ -30,25 +29,25 @@ urlpatterns = patterns('',
     url(r'(?P<region>({0}))-events/$'.format(REGIONS),
         views.region_brevets,
         name='region-brevets'),
-                       
+
     # Brevet page with rider list
     url('{0}/$'.format(event_pattern), views.brevet, name='brevet'),
-                       
+
     # Brevet page with rider pre-registration confirmation message
     url('{0}/(?P<rider_id>\d+)/$'.format(event_pattern),
         views.brevet,
         name='prereg-confirm'),
-                       
+
     # Brevet page with rider pre-registration duplication message
     url('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
         views.brevet,
         name='prereg-duplicate'),
-                       
+
     # Rider pre-registration form page
     url('{0}/form/$'.format(event_pattern),
         views.registration_form,
         name='form'),
-                       
+
     # List of rider email addresses for brevet
     url('{0}/rider-emails/(?P<uuid>[a-f0-9\-]+)/$'.format(event_pattern),
         views.brevet_rider_emails,
