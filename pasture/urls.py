@@ -19,7 +19,7 @@ urlpatterns = patterns(
     # Info for event organizers page
     url(r'^organizer-info/$', direct_to_template,
         {
-            'template': 'pasture/derived/organizer_info.html',
+            'template': 'pasture/organizer_info.html',
             'extra_context': {
                 'admin_email': email2words(settings.ADMINS[0][1])
             }
@@ -29,7 +29,7 @@ urlpatterns = patterns(
     # What's up with the pony page
     url(r'^about-pony/$', direct_to_template,
         {
-            'template': 'pasture/derived/about_pony.html'
+            'template': 'pasture/about_pony.html'
         },
         name='about-pony'),
 )
