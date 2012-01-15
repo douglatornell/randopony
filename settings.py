@@ -57,8 +57,8 @@ ROOT_URLCONF = 'randopony.urls'
 
 TEMPLATE_DIRS = (
     # Always use absolute paths.
+    path.join(project_path, 'site_templates'),
     path.join(project_path, 'media/register/templates'),
-    path.join(project_path, 'media/pasture/templates'),
     path.join(project_path, 'media/populaires/templates'),
     path.join(project_path, 'media/templates'),
     path.join(project_path, 'media/'),

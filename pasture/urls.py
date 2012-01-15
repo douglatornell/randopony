@@ -1,5 +1,4 @@
 """URL map for RandoPony top level (pasture) app.
-
 """
 from __future__ import absolute_import
 # Django:
@@ -20,17 +19,17 @@ urlpatterns = patterns(
     # Info for event organizers page
     url(r'^organizer-info/$', direct_to_template,
         {
-            'template': 'derived/organizer_info.html',
+            'template': 'pasture/derived/organizer_info.html',
             'extra_context': {
                 'admin_email': email2words(settings.ADMINS[0][1])
             }
         },
         'organizer-info'),
-                       
+
     # What's up with the pony page
     url(r'^about-pony/$', direct_to_template,
         {
-            'template': 'derived/about_pony.html'
+            'template': 'pasture/derived/about_pony.html'
         },
         name='about-pony'),
 )
