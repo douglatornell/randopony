@@ -92,7 +92,7 @@ def brevet(request, region, event, date, rider_id=None):
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
     if brevet.in_past:
-        template = 'pasture/derived/past_event.html'
+        template = 'pasture/past_event.html'
         context = RequestContext(request, {
             'event': brevet,
             'results_url': brevet.in_past
