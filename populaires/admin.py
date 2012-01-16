@@ -1,5 +1,4 @@
 """Admin configuation for RandoPony populaires app.
-
 """
 from __future__ import absolute_import
 # Django:
@@ -18,7 +17,7 @@ from .models import Rider
 from ..helpers import get_rider_list_template
 from ..helpers import google_docs_login
 from ..helpers import share_rider_list_publicly
-        
+
 
 class CustomBrevetAdminForm(forms.ModelForm):
     """Custom brevet admin forms to validate organizer email
@@ -57,11 +56,11 @@ class PopulaireAdmin(admin.ModelAdmin):
         'notify_webmaster',
     ]
 
-    
+
     def create_rider_list_spreadsheet(self, request, queryset):
         """Create a Google Docs rider list spreadsheet from the rider
         list template for the populaire(s) in the queryset.
-        
+
         Handler for create_rider_list_spreadsheet admin action.
         """
         client = google_docs_login(DocsClient)
@@ -92,7 +91,7 @@ class PopulaireAdmin(admin.ModelAdmin):
     description = 'Copy Google Docs rider list template for populaire'
     create_rider_list_spreadsheet.short_description = description
 
-        
+
     def notify_populaire_organizer(self, request, queryset):
         _notify_populaire_organizer(request, queryset)
         pop_count = queryset.count()
@@ -174,7 +173,7 @@ def _notify_populaire_organizer(request, queryset):
         email = mail.EmailMessage(
             subject='RandoPony URLs for {0}'.format(pop),
             body=render_to_string(
-                'populaires/templates/email/URLs_to_organizer.txt',
+                'populaires/email/URLs_to_organizer.txt',
                 {'populaire': pop,
                  'pop_page_url': pop_page_url,
                  'rider_list_url': rider_list_url,
@@ -203,7 +202,7 @@ def _notify_webmaster(request, queryset):
         email = mail.EmailMessage(
             subject='RandoPony Pre-registration Page for {0}'.format(pop),
             body=render_to_string(
-                'populaires/templates/email/to_webmaster.txt',
+                'populaires/email/to_webmaster.txt',
                 {'event': pop,
                  'event_page_url': pop_page_url,
                  'admin_email': settings.ADMINS[0][1],

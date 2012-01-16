@@ -1,4 +1,4 @@
-{% extends "base/populaires-page.html" %}
+{% extends "populaires/populaires_page.html" %}
 
 {% block title %}RandoPony::{{ populaire }}{% endblock %}
 
@@ -23,11 +23,11 @@
 {% if registration_closed and not event_started %}
 <div id="registration-closed">
  <p>
-   Pre-registration for this event is closed. 
+   Pre-registration for this event is closed.
    {% if populaire.entry_form_url %}
    But you can still print out the <a href="{{ populaire.entry_form_url }}"
    title="Event Waiver Form">event waiver form</a> from the club web
-   site, read it carefully, fill it out, and bring it with you to the start. 
+   site, read it carefully, fill it out, and bring it with you to the start.
    {% endif %}
  </p>
 
