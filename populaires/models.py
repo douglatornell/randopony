@@ -1,5 +1,4 @@
 """ Model classes for RandoPony populaires app.
-
 """
 # Standard library:
 from datetime import datetime
@@ -17,7 +16,7 @@ class Populaire(models.Model):
     class Meta:
         ordering = ['date']
 
-        
+
     event_name = models.CharField(max_length=100)
     short_name = models.CharField(
         max_length=20,
@@ -48,7 +47,7 @@ class Populaire(models.Model):
             short_name=self.short_name,
             date=self.date.strftime('%d-%b-%Y'))
 
-    
+
     def _get_uuid(self):
         """Return the URL namespace uuid for the event.
         """
@@ -99,7 +98,7 @@ class Rider(models.Model):
     """
     class Meta:
         ordering = ['lowercase_last_name']
-        
+
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     lowercase_last_name = models.CharField(max_length=30)

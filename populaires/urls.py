@@ -1,5 +1,4 @@
 """URL map for RandoPony populaires app.
-
 """
 from __future__ import absolute_import
 # Django:
@@ -29,7 +28,7 @@ urlpatterns = patterns(
     # Populaire page with rider pre-registration confirmation message
     url('{0}/(?P<rider_id>\d+)/$'.format(event_pattern),
         views.populaire, name='prereg-confirm'),
-                       
+
     # Populaire page with rider pre-registration duplication message
     url('{0}/(?P<rider_id>\d+)/duplicate/$'.format(event_pattern),
         views.populaire, name='prereg-duplicate'),
@@ -37,7 +36,7 @@ urlpatterns = patterns(
     # Populaire re-registration form page
     url('{0}/form/$'.format(event_pattern),
         views.registration_form, name='form'),
-                       
+
     # List of rider email addresses for populaire
     url('{0}/rider-emails/(?P<uuid>[a-f0-9\-]+)/$'.format(event_pattern),
         views.rider_emails, name='rider-emails'),

@@ -4,7 +4,6 @@ from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta
-import os
 # Django:
 from django.conf import settings
 from django.core import mail
@@ -26,22 +25,17 @@ from .models import Rider
 from .models import RiderForm
 
 
-def _qualify_template(template):
-    return os.path.join('populaires/templates', template)
-
-
 def populaires_list(request):
     """Display the populaire re-registration welcome information and
     list of events in the sidebar.
     """
     seven_days_ago = datetime.today().date() - timedelta(days=7)
     pop_list = Populaire.objects.exclude(date__lt=(seven_days_ago))
-    template = _qualify_template('derived/populaires_list.html')
     context = RequestContext(request, {
         'events': pop_list,
         'admin_email': email2words(settings.ADMINS[0][1]),
     })
-    response = render_to_response(template, context)
+    response = render_to_response('populaires/populaires_list.html', context)
     return response
 
 
@@ -54,7 +48,7 @@ def populaire(request, short_name, date, rider_id=None):
         Populaire, short_name=short_name,
         date=datetime.strptime(date, '%d%b%Y').date())
     if pop.in_past:
-        template = 'pasture/templates/derived/past_event.html'
+        template = 'pasture/past_event.html'
         context = RequestContext(request, {
             'event': pop,
             'results_url': pop.in_past,
@@ -66,7 +60,7 @@ def populaire(request, short_name, date, rider_id=None):
             rider = Rider.objects.get(pk=int(rider_id))
         except (Rider.DoesNotExist, TypeError):
             rider = None
-        template = _qualify_template('derived/populaire.html')
+        template = 'populaires/populaire.html'
         context = RequestContext(request, {
             'populaire': pop,
             'registration_closed': pop.registration_closed,
@@ -106,7 +100,6 @@ def registration_form(request, short_name, date):
     else:
         # Unbound form to render entry form
         form = RiderForm(distance_choices=distance_choices)
-    template = _qualify_template('derived/registration_form.html')
     context = RequestContext(request, {
         'populaire': pop,
         'form': form,
@@ -114,7 +107,7 @@ def registration_form(request, short_name, date):
             'Are you a human? Are you a cyclist? Please prove it. '
             'A bicycle has ___ wheels. Fill in the blank:',
     })
-    response = render_to_response(template, context)
+    response = render_to_response('populaires/registration_form.html', context)
     return response
 
 
@@ -184,11 +177,10 @@ def _email_to_rider(populaire, rider, host):
         'populaires:populaire',
         args=(populaire.short_name, populaire.date.strftime('%d%b%Y')))
     pop_page_url = 'http://{0}{1}'.format(host, pop_page)
-    template = _qualify_template('email/to_rider.txt')
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0}'.format(populaire),
         body=render_to_string(
-            template,
+            'populaires/email/to_rider.txt',
             {'populaire': populaire,
              'pop_page_url': pop_page_url}),
         from_email=populaire.organizer_email,
@@ -208,12 +200,11 @@ def _email_to_organizer(populaire, rider, host):
         'populaires:populaire',
         args=(populaire.short_name, populaire.date.strftime('%d%b%Y')))
     pop_page_url = 'http://{0}{1}'.format(host, pop_page)
-    template = _qualify_template('email/to_organizer.txt')
     email = mail.EmailMessage(
         subject='{0} has Pre-registered for the {1}'
                 .format(rider.full_name, populaire),
         body=render_to_string(
-            template,
+            'populaires/email/to_organizer.txt',
             {'populaire': populaire,
              'rider': rider,
              'pop_page_url': pop_page_url,
