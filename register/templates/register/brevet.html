@@ -127,11 +127,11 @@ Nobody has pre-registered.
 {% if show_filler_photo %}
 {% if brevet.route_name|lower != 'n/a' %}
 <img class="filler_img"
-     src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
+     src="{{ STATIC_URL }}register/images/brevet_picture.jpg"
      alt="Pre-registration list" />
 {% else %}
 <img class="filler_img_extra_margins"
-     src="{{ MEDIA_URL }}register/images/brevet_picture.jpg"
+     src="{{ STATIC_URL }}register/images/brevet_picture.jpg"
      alt="Pre-registration list" />
 {% endif %}
 {% endif %}
