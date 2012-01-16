@@ -2,7 +2,7 @@
 
 {% block app-css %}
 <link rel="stylesheet" type="text/css"
-      href="{{ MEDIA_URL }}pasture/pasture.css" />
+      href="{{ STATIC_URL }}pasture/pasture.css" />
 {% endblock %}
 
 {% block title %}RandoPony::{{ event }}{% endblock %}
@@ -16,7 +16,7 @@
 </p>
 <p>{{ results_url|urlize }}</p>
 
-<img class="filler_img" src="{{ MEDIA_URL }}pasture/images/ItsOver.jpg"
+<img class="filler_img" src="{{ STATIC_URL }}pasture/images/ItsOver.jpg"
      alt="It's Over!" />
 {% endblock %}
 

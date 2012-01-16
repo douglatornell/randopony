@@ -30,20 +30,18 @@ SITE_ID = 1
 
 USE_I18N = False
 
-# Absolute path to the directory that holds media.
-MEDIA_ROOT = path.join(project_path, 'media')
+STATIC_URL = '/static/'
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash if there is a path component (optional in other cases).
-MEDIA_URL = 'http://localhost/~doug/django_media/randopony/'
+ADMIN_MEDIA_PREFIX = '/static/admin/'
 
-ADMIN_MEDIA_PREFIX = '/media/'
-
-SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+)
 
 TEMPLATE_LOADERS = (
-    'django.template.loaders.app_directories.Loader',
     'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -53,7 +51,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
+SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
+
 ROOT_URLCONF = 'randopony.urls'
+
+STATICFILES_DIRS = (
+    # Always use absolute paths.
+    path.join(project_path, 'site_static'),
+)
 
 TEMPLATE_DIRS = (
     # Always use absolute paths.
@@ -68,6 +73,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
     'south',
     'randopony.pasture',
     'randopony.register',
