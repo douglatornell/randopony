@@ -4,13 +4,14 @@ Deployment of RandoPony on WebFaction
 
 :Author: Doug Latornell
 :Created: 2009-12-27
-:Revised: 2011-02-13
+:Revised: 2012-01-21
 
 
 These notes describe the process of deploying RandoPony on the
 WebFaction_ shared hosting service. Specifically, what is described is
-a deployment under my :kbd:`sadahome.ca` domain, but it shouldn't be
-hard to extrapolate from these notes to deploy under another domain.
+a deployment under the :kbd:`randonneurs.bc.ca` domain, but it
+shouldn't be hard to extrapolate from these notes to deploy under
+another domain.
 
 .. _WebFaction: http://webfaction.com
 
@@ -26,7 +27,7 @@ Create the Django and Static Media Applications
 
 #. Log into the WebFaction control panel.
 #. Use the :guilabel:`Domains / websites > Applications` menu to
-    create a :kbd:`Django 1.2.5/mod_wsgi 3.2/Python 2.6` application
+    create a :kbd:`Django 1.3.1 (mod_wsgi 3.3/Python 2.7)` application
     called :kbd:`randopony`.
 
 To reduce memory consumption (the primary resource limitation and
@@ -35,16 +36,13 @@ the app, create static applications to serve media files (CSS, images,
 JavaScript, etc.) for RandoPony and the Django admin:
 
 #. Use the :guilabel:`Domains / websites > Applications` menu to
-   create a :kbd:`Symbolic link to static-only app` application called
-   :kbd:`randopony_media` that links to
-   :kbd:`/home/dlatornell/webapps/randopony/randopony/media` (this is
+   create a :kbd:`Symbolic link to static/cgi/php53 app` application
+   called :kbd:`randopony_static` that links to
+   :kbd:`/home/bcrandonneur/webapps/randopony/randopony/media` (this is
    the value to enter in the :guilabel:`Extra Info:` field.
-#. Also create a :kbd:`Symbolic link to static-only app` application
-   called :kbd:`randopony_admin_media` that links to
-   :kbd:`/home/dlatornell/webapps/randopony/lib/python2.6/django/contrib/admin/media`.
-#. Finally, create a :kbd:`Symbolic link to static-only app`
+#. Also, create a :kbd:`Symbolic link to static/cgi/php53 app`
    application called :kbd:`randopony_docs` that links to
-   :kbd:`/home/dlatornell/webapps/randopony/randopony/docs/_build/html`
+   :kbd:`/home/bcrandonneur/webapps/randopony/randopony/docs/_build/html`
 
 
 Create the :kbd:`randopony` Subdomain
@@ -53,22 +51,23 @@ Create the :kbd:`randopony` Subdomain
 Create a subdomain from which the randopony app will be served:
 
 #. Use the :guilabel:`Domains / websites > Domains` menu to add a
-   :kbd:`randopony` subdomain prefix to the :kbd:`sadahome.ca` domain.
+   :kbd:`randopony` subdomain prefix to the :kbd:`randonneurs.bc.ca`
+   domain.
 
 
 Create the Website Entry
 ========================
 
-Configure WebFaction to proxy requests to the Django app, and static media apps:
+Configure WebFaction to proxy requests to the Django app, static, and
+docs apps:
 
 #. Use the :guilabel:`Domains / websites > Websites` menu to create a
    site called :kbd: `randopony` connected to the
-   :kbd:`randopony.sadahome.ca` subdomain, with the following site
-   apps added to it:
+   :kbd:`randopony.randonneurs.bc.ca` subdomain, with the following
+   site apps added to it:
 
    * :kbd:`randopony` mounted at :kbd:`/`
-   * :kbd:`randopony_media` mounted at :kbd:`/media`
-   * :kbd:`randopony_admin_media` mounted at :kbd:`/media/admin`
+   * :kbd:`randopony_static` mounted at :kbd:`/static`
    * :kbd:`randopony_docs` mounted at :kbd:`/docs`
 
 
@@ -82,62 +81,68 @@ Install the Packages that RandoPony Depends On
 
     .. code-block:: sh
 
-       export PYTHONPATH=$HOME/webapps/randopony/lib/python2.6
+       export PYTHONPATH=$HOME/webapps/randopony/lib/python2.7
 
 #. Install the Python client library for Google data APIs:
 
     .. code-block:: sh
 
-        easy_install-2.6 --install-dir=$HOME/webapps/randopony/lib/python2.6/ --script-dir $HOME/webapps/bin gdata
+        easy_install-2.7 --install-dir=$HOME/webapps/randopony/lib/python2.7/ gdata
 
 #. Install the South database migration tool for Django:
 
     .. code-block:: sh
 
-        easy_install-2.6 --install-dir=$HOME/webapps/randopony/lib/python2.6/ --script-dir $HOME/webapps/randopony/bin south
+        easy_install-2.7 --install-dir=$HOME/webapps/randopony/lib/python2.7/ south
 
 
-Create a Django Settings Module
-===============================
+Configure Production and Private Settings
+=========================================
 
-#. Copy :file:`randopony/settings.py` to
-   :file:`randopony/webfaction-settings.py` and edit it make the
-   settings appropriate for the deployment:
+#. Edit :file:`randopony/production_settings.py` to make the
+   settings appropriate for your deployment:
 
-   .. code-block:: python
+#. Create :file:`randopony/private_settings.py` and put values in it
+   for:
 
-      DEBUG = False
+   * SECRET_KEY
+   * GOOGLE_DOCS_PASSWORD
+   * EMAIL_HOST_PASSWORD
 
-      ADMINS = (
-          ('Your Name', 'you@example.com'),
-      )
+   :file:`randopony/private_settings.py` should have tight
+   permissions; e.g. 600, and should be excluded from version control
+   tracking.
 
-      SECRET_KEY = 'a string of random characters, the longer the better'
-
-      EMAIL_USER_PASSWORD = 'password for the randopony email sender account''
-
-Review the other settings and change any that you think you need to,
-:kbd:`TIME_ZONE`, for example.  Note that you can change the
-:kbd:`REGISTRATION_FORM_CAPTCHA_QUESTION` and its answer, but the view
-code assumes that the answer is an integer.
+#. Review the :file:`randopony/settings.py` module and change any
+   values that you think you need to, :kbd:`TIME_ZONE`, for example.
+   Note that you can change the
+   :kbd:`REGISTRATION_FORM_CAPTCHA_QUESTION` and its answer, but the
+   view code assumes that the answer is an integer.
 
 
 Copy RandoPony to WebFaction
 ============================
 
-There are lots of ways to do this, but the :file:`randopony/Makefile`
-target :kbd:`rsync-proj` uses :command:`rsync` to create the initial
-deployment on WebFaction as well as providing a means of updating the
-deployed files when changes are made in your local development
-copy.
+There are lots of ways to do this, but the
+:file:`randopony/fabfile.py` module includes a :kbd:`deploy_code`
+Fabric_ task that can be used to create the initial deployment on
+WebFaction.
 
    .. code-block:: sh
 
-      make rsync-proj
+      fab deploy_code
 
 excludes a bunch of files that don't need to, or shouldn't be copied
 to WebFaction; e.g. the local version of the database, development
 settings file, etc.
+
+:file:`randopony/fabfile.py` also includes a :kbd:`deploy` task that
+provides a means of updating the deployed files when changes are made
+in your local development copy, collecting the static files, and
+restarting Apache. The :kbd:`deploy` task is the default task in
+:file:`randopony/fabfile.py`.
+
+.. _Fabric: http://fabfile.org
 
 
 Configure the RandoPony Installation on WebFaction
@@ -167,13 +172,13 @@ Configure the RandoPony Installation on WebFaction
 
    .. code-block:: python
 
-      os.environ['DJANGO_SETTINGS_MODULE'] = randopony.webfaction-settings
+      os.environ['DJANGO_SETTINGS_MODULE'] = randopony.settings
 
 #. Edit the :file:`apache2/conf/httpd.conf` file to set the WSGI script alias:
 
    .. code-block:: none
 
-      WSGIScriptAlias / /home/dlatornell/webapps/randopony/randopony.wsgi
+      WSGIScriptAlias / /home/bcrandonneur/webapps/randopony/randopony.wsgi
 
 
 Create a Mailbox and Email Address for RandoPony
@@ -185,58 +190,44 @@ panel.
 
 #. Use the :guilabel:`E-mails > Mailboxes` menu to create a mailbox
    called :kbd: `randopony`, and set its password to the value you put
-   in the :file:`webfaction-settings.py` file.
+   in the :file:`private_settings.py` module.
 
 #. Use the :guilabel:`E-mails > E-mail addresses` menu to create an
-   address like :kbd: `randopony@sadahome.ca` that matches what you
-   put in the :file:`webfaction-settings.py` file, and target it at
-   the :kbd:`randopony` mailbox. You can create a fun auto-responder
+   address like :kbd: `randopony@randonneurs.bc.ca` that matches what
+   you put in the :file:`settings.py` module, and target it at the
+   :kbd:`randopony` mailbox. You can create a fun auto-responder
    message too, if you want.
 
 
 Initialize the Database and Start the App
 =========================================
 
-#. Rename the :file:`.webfaction_secret_key` file to
-   :file:`.secret_key`.
-
-#. Initialize the database, and create a superuser. We need to
-   temporarily copy :file:`webfaction-settings.py` to
-   :file:`settings.py` for this step because that's the name that
-   :command:`manage.py` expects:
+#. Initialize the database, and create a superuser:
 
    .. code-block:: sh
 
       cd ~/webapps/randopony/randopony
-      cp webfaction-settings.py settings.py
-      python2.6 manage.py syncdb
+      ../bin/django-admin.py syncdb --pythonpath="$HOME/bcrandonneur/webapps/randopony" --settings=randopony.settings
       ...
 
-#. Tighten up security by making the database, settings, and password
-   files read-write by owner only, and invisible to everyone else, and
-   removing world execute permission from the :file:`manage.py` file:
+#. Use South to apply all of the database migrations necessary to
+   bring the database into sync with the current version of
+   :kbd:`randopony`:
+
+   .. code-block:: sh
+
+      cd ~/webapps/randopony/randopony
+      ../bin/django-admin.py migrate --pythonpath="$HOME/bcrandonneur/webapps/randopony" --settings=randopony.settings
+      ...
+
+#. Tighten up security by making the database, and settings files
+   read-write by owner only, and invisible to everyone else:
 
    .. code-block:: sh
 
       cd ~/webapps/randopony/randopony/
       chmod go-rw randopony-production.db
-      chmod go-rw webfaction-settings.py settings.py
-      chmod go-rw .email_host_password .google_docs_password
-      chmod o-x manage.py
-
-#. Use South to apply all of the database migrations necessary to
-    bring the database into sync with the current version of
-    :kbd:`randopony`:
-
-   .. code-block:: sh
-
-      python2.6 manage.py migrate register
-
-#. Delete the  temporary copy of :file:`webfaction-settings.py`:
-
-   .. code-block:: sh
-
-      rm settings.py*
+      chmod go-rw settings.py production_settings.py private_settings.py
 
 #. Restart Apache:
 
@@ -246,9 +237,9 @@ Initialize the Database and Start the App
 
 
 The application should now be accessible at
-:kbd:`http://randopony.sadahome.ca/register/` and the Django admin
+:kbd:`http://randopony.randonneurs.bc.ca/` and the Django admin
 interface should be operational at
-:kbd:`http://randopony.sadahome.ca/admin/`
+:kbd:`http://randopony.randonneurs.bc.ca/admin/`
 
 ..
    Local Variables:
