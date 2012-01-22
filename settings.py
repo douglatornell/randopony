@@ -5,22 +5,11 @@ from os import path
 project_path = path.dirname(__file__)
 
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = (
     ('Doug Latornell', 'djl@douglatornell.ca'),
 )
 
 MANAGERS = ADMINS
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.join(project_path, 'randopony.db')
-
-    }
-}
 
 TIME_ZONE = 'America/Vancouver'
 
@@ -29,10 +18,6 @@ LANGUAGE_CODE = 'en-ca'
 SITE_ID = 1
 
 USE_I18N = False
-
-STATIC_URL = '/static/'
-
-ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -50,8 +35,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
-
-SECRET_KEY = open(path.join(project_path, '.secret_key'), 'r').read()
 
 ROOT_URLCONF = 'randopony.urls'
 
@@ -98,15 +81,30 @@ REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
 # messages from admin
 WEBMASTER_EMAIL = 'eric_fergusson@telus.net'
 
-# SMTP server settings
-#
-# Use the Python standard library SMTP DebuggingServer to handle email
-# by printing it to stdout. Run the server with:
-#    python -m smtpd -n -c DebuggingServer localhost:1025
-EMAIL_HOST = '127.0.0.1'
-EMAIL_PORT = 1025
-
-# Google Docs settings
+# Email address for associated Google Docs account
 GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
-GOOGLE_DOCS_PASSWORD = open(
-    path.join(project_path, '.google_docs_password'), 'r').read()
+
+# Settings that differ between development and production environments
+try:
+    from dev_settings import DEBUG
+    from dev_settings import TEMPLATE_DEBUG
+    from dev_settings import DATABASES
+    from dev_settings import STATIC_URL
+    # Use the Python standard library SMTP DebuggingServer to handle email
+    # by printing it to stdout. Run the server with:
+    #    python -m smtpd -n -c DebuggingServer <EMAIL_HOST>:<EMAIL_PORT>
+    from dev_settings import EMAIL_HOST
+    from dev_settings import EMAIL_PORT
+except ImportError:
+    from production_settings import DEBUG
+    from production_settings import DATABASES
+    from production_settings import STATIC_ROOT
+    from production_settings import STATIC_URL
+    from production_settings import ADMIN_MEDIA_PREFIX
+    from production_settings import EMAIL_HOST
+    from production_settings import EMAIL_HOST_USER
+
+# Settings that should be kept secret:
+from private_settings import SECRET_KEY
+from private_settings import GOOGLE_DOCS_PASSWORD
+from private_settings import EMAIL_HOST_PASSWORD
