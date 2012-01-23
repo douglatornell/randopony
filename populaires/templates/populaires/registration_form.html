@@ -9,6 +9,7 @@
 
 {% url populaires:form short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
 <form action="{{ form_url }}" method="POST">
+ {% csrf_token %}
  {{ form.first_name.errors }}
   <p>
     <label for="id_first_name">First name:</label>
