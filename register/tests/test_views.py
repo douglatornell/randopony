@@ -341,7 +341,7 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     """Functional tests of registration for brevets.
     """
-    fixtures = ['brevets.yaml', 'riders.yaml']
+    fixtures = ['brevets.yaml', 'riders.yaml', 'email_addresses.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to brevet pg w/ msg
@@ -677,7 +677,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'Doug Latornell has Pre-registered for the LM300 01-May-2010')
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
-            mail.outbox[1].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[1].from_email, 'randopony@randonneurs.bc.ca')
         self.assertTrue(
             'Doug Latornell (djl@example.com) has pre-registered for the '
             'LM300 01-May-2010 brevet'
@@ -842,8 +842,7 @@ class TestRegistrationFunction(django.test.TestCase):
             mail.outbox[0].extra_headers['Reply-To'],
             'mcroy@example.com, dug.andrusiek@example.com')
         self.assertEqual(
-            mail.outbox[0].extra_headers['Sender'],
-            settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].extra_headers['Sender'], 'randopony@randonneurs.bc.ca')
 
 
 class TestRiderEmailsView(django.test.TestCase):

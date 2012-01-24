@@ -338,7 +338,7 @@ class TestRegistrationFormView(TestCase):
 class TestRegistrationFunction(TestCase):
     """Functional tests of registration for populaires.
     """
-    fixtures = ['populaires.yaml']
+    fixtures = ['populaires.yaml', 'email_addresses.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to pop pg w/ msg

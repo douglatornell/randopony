@@ -1,3 +1,7 @@
 - fields: {email: webmaster@example.com, key: webmaster}
   model: pasture.emailaddress
   pk: 1
+
+- fields: {email: randopony@randonneurs.bc.ca, key: from_randopony}
+  model: pasture.emailaddress
+  pk: 2

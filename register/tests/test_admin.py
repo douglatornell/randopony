@@ -116,7 +116,7 @@ class TestAdminBrevet(django.test.TestCase):
             'RandoPony Pre-registration Page for LM300 01-May-2010')
         self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
-            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
         self.assertTrue(
             'pre-registration page for the LM300 01-May-2010 event' in body)
@@ -162,7 +162,7 @@ class TestAdminBrevet(django.test.TestCase):
             'RandoPony URLs for LM300 01-May-2010')
         self.assertEqual(mail.outbox[0].to, ['pumpkinrider@example.com'])
         self.assertEqual(
-            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
         self.assertTrue(
             'pre-registration page for the LM300 01-May-2010 brevet' in body)
@@ -282,7 +282,7 @@ class TestAdminClubEvent(django.test.TestCase):
             'RandoPony Pre-registration Page for Dinner 16-Mar-2010')
         self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
-            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
         self.assertTrue(
             'pre-registration page for the Dinner 16-Mar-2010 event' in body)

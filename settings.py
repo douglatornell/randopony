@@ -74,10 +74,6 @@ REGISTRATION_FORM_CAPTCHA_QUESTION = (
 )
 REGISTRATION_FORM_CAPTCHA_ANSWER = 400
 
-# Email from address for messages from registration form handler to
-# brevet organizer
-REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
-
 # Email address for associated Google Docs account
 GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
 
