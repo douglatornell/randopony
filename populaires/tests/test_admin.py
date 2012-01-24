@@ -85,7 +85,7 @@ class TestAdminPopulaire(django.test.TestCase):
             'RandoPony Pre-registration Page for VicPop 27-Mar-2011')
         self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
-            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
         self.assertTrue(
             'pre-registration page for the VicPop 27-Mar-2011 event' in body)
@@ -114,7 +114,7 @@ class TestAdminPopulaire(django.test.TestCase):
             'RandoPony URLs for VicPop 27-Mar-2011')
         self.assertEqual(mail.outbox[0].to, ['mjansson@example.com'])
         self.assertEqual(
-            mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
         self.assertTrue(
             'pre-registration page for the VicPop 27-Mar-2011 event' in body)

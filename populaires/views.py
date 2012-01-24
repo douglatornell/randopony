@@ -18,11 +18,12 @@ from django.template.loader import render_to_string
 # Google Docs:
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
-from ..pasture.helpers import email2words
-from ..pasture.helpers import google_docs_login
 from .models import Populaire
 from .models import Rider
 from .models import RiderForm
+from ..pasture.helpers import email2words
+from ..pasture.helpers import google_docs_login
+from ..pasture.models import EmailAddress
 
 
 def populaires_list(request):
@@ -177,6 +178,7 @@ def _email_to_rider(populaire, rider, host):
         'populaires:populaire',
         args=(populaire.short_name, populaire.date.strftime('%d%b%Y')))
     pop_page_url = 'http://{0}{1}'.format(host, pop_page)
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0}'.format(populaire),
         body=render_to_string(
@@ -186,7 +188,7 @@ def _email_to_rider(populaire, rider, host):
         from_email=populaire.organizer_email,
         to=[rider.email],
         headers={
-            'Sender': settings.REGISTRATION_EMAIL_FROM,
+            'Sender': from_randopony,
             'Reply-To': populaire.organizer_email}
     )
     email.send()
@@ -200,6 +202,7 @@ def _email_to_organizer(populaire, rider, host):
         'populaires:populaire',
         args=(populaire.short_name, populaire.date.strftime('%d%b%Y')))
     pop_page_url = 'http://{0}{1}'.format(host, pop_page)
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='{0} has Pre-registered for the {1}'
                 .format(rider.full_name, populaire),
@@ -209,7 +212,7 @@ def _email_to_organizer(populaire, rider, host):
              'rider': rider,
              'pop_page_url': pop_page_url,
              'admin_email': settings.ADMINS[0][1]}),
-        from_email=settings.REGISTRATION_EMAIL_FROM,
+        from_email=from_randopony,
         to=[addr.strip() for addr in populaire.organizer_email.split(',')]
     )
     email.send()

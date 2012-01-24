@@ -203,6 +203,7 @@ def _notify_webmaster(request, queryset):
     Handler for notify_webmaster admin action.
     """
     webmaster_email = EmailAddress.objects.get(key='webmaster').email
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     for event in queryset:
         event_page = reverse(
             'register:brevet',
@@ -218,7 +219,7 @@ def _notify_webmaster(request, queryset):
                  'admin_email': settings.ADMINS[0][1],
                 }
             ),
-            from_email=settings.REGISTRATION_EMAIL_FROM,
+            from_email=from_randopony,
             to=[webmaster_email],
         )
         email.send()
@@ -235,6 +236,7 @@ def _notify_brevet_organizer(request, queryset):
     for the brevet(s) in the queryset.
     """
     host = request.get_host()
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     for brevet in queryset:
         brevet_page = reverse(
             'register:brevet',
@@ -257,7 +259,7 @@ def _notify_brevet_organizer(request, queryset):
                  'admin_email': settings.ADMINS[0][1],
                 },
             ),
-            from_email=settings.REGISTRATION_EMAIL_FROM,
+            from_email=from_randopony,
             to=[addr.strip() for addr in brevet.organizer_email.split(',')],
         )
         email.send()

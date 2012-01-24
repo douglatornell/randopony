@@ -18,9 +18,10 @@ from django.template.loader import render_to_string
 # Google Docs:
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
+from . import models as model
 from ..pasture.helpers import email2words
 from ..pasture.helpers import google_docs_login
-import randopony.register.models as model
+from ..pasture.models import EmailAddress
 
 
 def home(request):
@@ -249,6 +250,7 @@ def _email_to_rider(brevet, rider, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0} Brevet'
                 .format(brevet),
@@ -260,7 +262,7 @@ def _email_to_rider(brevet, rider, host):
         from_email=brevet.organizer_email,
         to=[rider.email],
         headers={
-            'Sender': settings.REGISTRATION_EMAIL_FROM,
+            'Sender': from_randopony,
             'Reply-To': brevet.organizer_email}
     )
     email.send()
@@ -273,6 +275,7 @@ def _email_to_organizer(brevet, rider, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='{0} has Pre-registered for the {1}'
                 .format(rider.full_name, brevet),
@@ -282,7 +285,7 @@ def _email_to_organizer(brevet, rider, host):
              'rider': rider,
              'brevet_page_url': brevet_page_url,
              'admin_email': settings.ADMINS[0][1]}),
-        from_email=settings.REGISTRATION_EMAIL_FROM,
+        from_email=from_randopony,
         to=[addr.strip() for addr in brevet.organizer_email.split(',')]
     )
     email.send()

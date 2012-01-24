@@ -160,6 +160,7 @@ def _notify_populaire_organizer(request, queryset):
     for the populaire(s) in the queryset.
     """
     host = request.get_host()
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     for pop in queryset:
         pop_page = reverse(
             'populaires:populaire',
@@ -182,7 +183,7 @@ def _notify_populaire_organizer(request, queryset):
                  'admin_email': settings.ADMINS[0][1],
                 },
             ),
-            from_email=settings.REGISTRATION_EMAIL_FROM,
+            from_email=from_randopony,
             to=[addr.strip() for addr in pop.organizer_email.split(',')],
         )
         email.send()
@@ -195,6 +196,7 @@ def _notify_webmaster(request, queryset):
     Handler for notify_webmaster admin action.
     """
     webmaster_email = EmailAddress.objects.get(key='webmaster').email
+    from_randopony = EmailAddress.objects.get(key='from_randopony').email
     for pop in queryset:
         pop_page = reverse(
             'populaires:populaire',
@@ -210,7 +212,7 @@ def _notify_webmaster(request, queryset):
                  'admin_email': settings.ADMINS[0][1],
                 }
             ),
-            from_email=settings.REGISTRATION_EMAIL_FROM,
+            from_email=from_randopony,
             to=[webmaster_email],
         )
         email.send()
