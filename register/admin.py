@@ -1,4 +1,4 @@
-"""Admin configuration for RandoPony site register app.
+"""Admin configuration for RandoPony register app.
 """
 from __future__ import absolute_import
 # Django:
