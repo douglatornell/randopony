@@ -19,6 +19,7 @@ from .models import ClubEvent
 from ..pasture.helpers import get_rider_list_template
 from ..pasture.helpers import google_docs_login
 from ..pasture.helpers import share_rider_list_publicly
+from ..pasture.models import EmailAddress
 
 
 class CustomBrevetAdminForm(forms.ModelForm):
@@ -201,6 +202,7 @@ def _notify_webmaster(request, queryset):
 
     Handler for notify_webmaster admin action.
     """
+    webmaster_email = EmailAddress.objects.get(key='webmaster').email
     for event in queryset:
         event_page = reverse(
             'register:brevet',
@@ -217,7 +219,7 @@ def _notify_webmaster(request, queryset):
                 }
             ),
             from_email=settings.REGISTRATION_EMAIL_FROM,
-            to=[settings.WEBMASTER_EMAIL],
+            to=[webmaster_email],
         )
         email.send()
 
