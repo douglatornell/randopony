@@ -18,7 +18,7 @@ from django.core import mail
 class TestAdminPopulaire(django.test.TestCase):
     """Functional tests for the add/change populaire admin form.
     """
-    fixtures = ['populaires.yaml']
+    fixtures = ['populaires.yaml', 'email_addresses.yaml']
 
     def setUp(self):
         user = User.objects.create_superuser(
@@ -83,7 +83,7 @@ class TestAdminPopulaire(django.test.TestCase):
         self.assertEqual(
             mail.outbox[0].subject,
             'RandoPony Pre-registration Page for VicPop 27-Mar-2011')
-        self.assertEqual(mail.outbox[0].to, [settings.WEBMASTER_EMAIL])
+        self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
         body = mail.outbox[0].body

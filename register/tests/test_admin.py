@@ -15,7 +15,7 @@ from django.core import mail
 class TestAdminBrevet(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
-    fixtures = ['brevets.yaml']
+    fixtures = ['brevets.yaml', 'email_addresses.yaml']
 
     def setUp(self):
         user = User.objects.create_superuser(
@@ -114,7 +114,7 @@ class TestAdminBrevet(django.test.TestCase):
         self.assertEqual(
             mail.outbox[0].subject,
             'RandoPony Pre-registration Page for LM300 01-May-2010')
-        self.assertEqual(mail.outbox[0].to, [settings.WEBMASTER_EMAIL])
+        self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
         body = mail.outbox[0].body
@@ -184,7 +184,7 @@ class TestAdminBrevet(django.test.TestCase):
 class TestAdminClubEvent(django.test.TestCase):
     """Functional tests for the add/change brevet admin form.
     """
-    fixtures = ['club_events.yaml']
+    fixtures = ['club_events.yaml', 'email_addresses.yaml']
 
     def setUp(self):
         user = User.objects.create_superuser(
@@ -280,7 +280,7 @@ class TestAdminClubEvent(django.test.TestCase):
         self.assertEqual(
             mail.outbox[0].subject,
             'RandoPony Pre-registration Page for Dinner 16-Mar-2010')
-        self.assertEqual(mail.outbox[0].to, [settings.WEBMASTER_EMAIL])
+        self.assertEqual(mail.outbox[0].to, ['webmaster@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, settings.REGISTRATION_EMAIL_FROM)
         body = mail.outbox[0].body

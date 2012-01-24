@@ -78,10 +78,6 @@ REGISTRATION_FORM_CAPTCHA_ANSWER = 400
 # brevet organizer
 REGISTRATION_EMAIL_FROM = 'randopony@sadahome.ca'
 
-# Email address of club webmaster for pre-registration page setup
-# messages from admin
-WEBMASTER_EMAIL = 'eric_fergusson@telus.net'
-
 # Email address for associated Google Docs account
 GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
 
