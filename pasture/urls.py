@@ -8,7 +8,7 @@ from django.conf.urls.defaults import url
 from django.views.generic.simple import direct_to_template
 # RandoPony:
 from . import views
-from ..helpers import email2words
+from .helpers import email2words
 
 
 urlpatterns = patterns(
