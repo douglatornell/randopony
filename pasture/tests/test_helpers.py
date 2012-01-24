@@ -5,7 +5,7 @@ from __future__ import absolute_import
 # Django:
 import django.test
 # RandoPony:
-from ...helpers import email2words
+from ..helpers import email2words
 
 
 class TestHelpers(django.test.TestCase):

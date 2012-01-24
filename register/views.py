@@ -18,8 +18,8 @@ from django.template.loader import render_to_string
 # Google Docs:
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
-from ..helpers import email2words
-from ..helpers import google_docs_login
+from ..pasture.helpers import email2words
+from ..pasture.helpers import google_docs_login
 import randopony.register.models as model
 
 
