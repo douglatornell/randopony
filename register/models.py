@@ -1,6 +1,5 @@
 """Model classes for RandoPony register app (for brevets & club event
 pre-registration).
-
 """
 # Standard library:
 from datetime import datetime
@@ -30,7 +29,7 @@ class BaseEvent(models.Model):
     REGION_CHOICES = [
         (key, REGIONS[key]) for key in sorted(REGIONS.keys())
     ]
-    
+
     class Meta:
         abstract = True
         ordering = ['date']
@@ -124,7 +123,7 @@ class Brevet(BaseEvent):
         brevet_started = datetime.now() >= brevet_date_time + one_hour
         return brevet_started
     started = property(_started)
-    
+
 
 class ClubEvent(BaseEvent):
     """Non-brevet club event model.
@@ -170,7 +169,7 @@ class Person(models.Model):
         """
         self.lowercase_last_name = self.last_name.lower()
         super(Person, self).save(*args, **kwargs)
-        
+
 
 class BrevetRider(Person):
     """Brevet rider model for people who have pre-registered to ride
@@ -178,7 +177,7 @@ class BrevetRider(Person):
     """
     club_member = models.BooleanField('club member?', default=False)
     brevet = models.ForeignKey(Brevet)
-        
+
 
 class EventParticipant(Person):
     """Event participant model for people who have pre-registered for
