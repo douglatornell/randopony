@@ -33,7 +33,7 @@ Location:</strong> {{ brevet.location }}</p>
 <div id="registration-closed">
   {% if region.long_name != "Club Events" %}
   <p>Pre-registration for this event is closed, but you can still
-  print out the <a href="http://www.randonneurs.bc.ca/organize/eventform.pdf"
+  print out the <a href="{{ event_waiver_url }}"
   title="BC Randonneurs Event Waiver Form">event waiver form</a> from
   the club web site, read it carefully, fill it out, and bring it with
   you to the start.</p>
@@ -58,11 +58,10 @@ Location:</strong> {{ brevet.location }}</p>
 
   {% if brevet.route_name|lower != 'n/a' %}
   <p>You can print out the
-  <a href="http://www.randonneurs.bc.ca/organize/eventform.pdf"
-  title="BC Randonneurs Event Waiver Form">event waiver form</a> from
-  the club web site, read it carefully, fill it out, and bring it with
-  you to the start to save time and make the organizers like you even
-  more.</p>
+  <a href="{{ event_waiver_url }}" title="BC Randonneurs Event Waiver
+  Form">event waiver form</a> from the club web site, read it
+  carefully, fill it out, and bring it with you to the start to save
+  time and make the organizers like you even more.</p>
 
   {% if not rider.club_member %}
   <p>You have indicated that you are <strong>NOT</strong> a member of the
@@ -157,9 +156,7 @@ Nobody has pre-registered.
 {% endif %}
 {% if not brevet_started %}
 <li>
-  <a href="http://www.randonneurs.bc.ca/organize/eventform.pdf">
-    Event Entry Form (PDF)
-  </a>
+  <a href="{{ event_waiver_url }}">Event Entry Form (PDF)</a>
 </li>
 <li>
   <a href="http://www.randonneurs.bc.ca/organize/2011_membership-and-waiver.pdf">

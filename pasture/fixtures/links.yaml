@@ -1,0 +1,3 @@
+- fields: {key: event_waiver_url, url: 'http://www.randonneurs.bc.ca/organize/eventform.pdf'}
+  model: pasture.link
+  pk: 1
