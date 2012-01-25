@@ -1,10 +1,11 @@
 """Helper functions for the RandoPony apps.
-
 """
 # Google Docs:
 import gdata.acl.data
 # Django:
 from django.conf import settings
+#RandoPony:
+from .models import EmailAddress
 
 
 def email2words(email):
@@ -18,8 +19,8 @@ def email2words(email):
 def google_docs_login(service):
     client = service()
     client.ssl = True
-    client.ClientLogin(
-        settings.GOOGLE_DOCS_EMAIL, settings.GOOGLE_DOCS_PASSWORD, 'randopony')
+    username = EmailAddress.objects.get(key='google_docs').email
+    client.ClientLogin(username, settings.GOOGLE_DOCS_PASSWORD, 'randopony')
     return client
 
 

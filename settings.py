@@ -74,9 +74,6 @@ REGISTRATION_FORM_CAPTCHA_QUESTION = (
 )
 REGISTRATION_FORM_CAPTCHA_ANSWER = 400
 
-# Email address for associated Google Docs account
-GOOGLE_DOCS_EMAIL = 'randopony@sadahome.ca'
-
 # Settings that differ between development and production environments
 try:
     from dev_settings import DEBUG
