@@ -25,7 +25,7 @@ def google_docs_login(service):
 
 
 def get_rider_list_template(template_name, client):
-    docs = client.GetDocList()
+    docs = client.get_resources()
     for doc in docs.entry:
         if doc.title.text == template_name:
             template = doc
