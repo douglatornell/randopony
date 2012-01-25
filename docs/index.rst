@@ -9,7 +9,6 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   2011Plans
    Design-EventReg
    Development
    Deployment
