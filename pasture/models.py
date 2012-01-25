@@ -17,3 +17,17 @@ class EmailAddress(models.Model):
 
     def __unicode__(self):
         return '{0.key} <{0.email}>'.format(self)
+
+
+class Link(models.Model):
+    """Off-site link model.
+
+    Storage for URLs content outside the RandoPony app; e.g. event
+    waiver on club site.
+    """
+    key = models.CharField(max_length=50)
+    url = models.URLField()
+
+
+    def __unicode__(self):
+        return self.key
