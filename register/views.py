@@ -22,6 +22,7 @@ from . import models as model
 from ..pasture.helpers import email2words
 from ..pasture.helpers import google_docs_login
 from ..pasture.models import EmailAddress
+from ..pasture.models import Link
 
 
 def home(request):
@@ -89,6 +90,7 @@ def brevet(request, region, event, date, rider_id=None):
     sometimes the registration confirmation, or duplicate registration
     flash message.
     """
+    event_waiver_url = Link.objects.get(key='event_waiver_url').url
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
@@ -118,6 +120,7 @@ def brevet(request, region, event, date, rider_id=None):
             'rider': rider,
             'rider_email': rider_email,
             'duplicate_registration': request.path.endswith('duplicate/'),
+            'event_waiver_url': event_waiver_url,
         })
     response = render_to_response(template, context)
     return response
@@ -126,6 +129,7 @@ def brevet(request, region, event, date, rider_id=None):
 def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
+    event_waiver_url = Link.objects.get(key='event_waiver_url').url
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
@@ -153,7 +157,8 @@ def registration_form(request, region, event, date):
         'brevet': brevet,
         'region_name': model.REGIONS[region],
         'form': form,
-        'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION
+        'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION,
+        'event_waiver_url': event_waiver_url,
     })
     response = render_to_response('register/registration_form.html', context)
     return response
@@ -250,6 +255,7 @@ def _email_to_rider(brevet, rider, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    event_waiver_url = Link.objects.get(key='event_waiver_url').url
     from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0} Brevet'
@@ -258,7 +264,8 @@ def _email_to_rider(brevet, rider, host):
             'register/email/to_rider.txt',
             {'brevet': brevet,
              'rider': rider,
-             'brevet_page_url': brevet_page_url}),
+             'brevet_page_url': brevet_page_url,
+             'event_waiver_url': event_waiver_url}),
         from_email=brevet.organizer_email,
         to=[rider.email],
         headers={

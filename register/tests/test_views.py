@@ -107,7 +107,7 @@ class TestRegionBrevetsView(django.test.TestCase):
 class TestBrevetView(django.test.TestCase):
     """Functional tests for brevet view.
     """
-    fixtures = ['brevets.yaml', 'riders.yaml']
+    fixtures = ['brevets.yaml', 'riders.yaml', 'links.yaml']
 
     def test_brevet_get(self):
         """GET request for brevet page works
@@ -257,7 +257,7 @@ class TestBrevetView(django.test.TestCase):
 class TestRegistrationFormView(django.test.TestCase):
     """Functional tests for registration form view.
     """
-    fixtures = ['brevets.yaml']
+    fixtures = ['brevets.yaml', 'links.yaml']
 
     def test_registration_form_get(self):
         """GET request for registration form page works
@@ -341,7 +341,7 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     """Functional tests of registration for brevets.
     """
-    fixtures = ['brevets.yaml', 'riders.yaml', 'email_addresses.yaml']
+    fixtures = ['brevets.yaml', 'riders.yaml', 'email_addresses.yaml', 'links.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to brevet pg w/ msg
