@@ -235,11 +235,31 @@ Initialize the Database and Start the App
 
       ~/webapps/randopony/apache2/bin/restart
 
-
 The application should now be accessible at
 :kbd:`http://randopony.randonneurs.bc.ca/` and the Django admin
 interface should be operational at
 :kbd:`http://randopony.randonneurs.bc.ca/admin/`
+
+
+Add Deployment-Specific Settings to Database
+============================================
+
+#. Log in to the admin interface.
+
+#. In the :kbd:`Email address` table of the :kbd:`Pasture` app, add
+   email addresses with the following keys:
+
+   * :kbd:`webmaster`
+       The email address of the club site webmaster that will receive
+       notifications when events are added to the pony
+
+   * :kbd:`from_randopony`
+       The email address to use as the :kbd:`From` address for emails
+       that the pony sents
+
+   * :kbd:`google_docs` The email address used to log into the Google
+       Docs account associated with the pony, where the rider list
+       spreadsheets are stored
 
 ..
    Local Variables:
