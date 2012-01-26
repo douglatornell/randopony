@@ -90,7 +90,6 @@ def brevet(request, region, event, date, rider_id=None):
     sometimes the registration confirmation, or duplicate registration
     flash message.
     """
-    event_waiver_url = Link.objects.get(key='event_waiver_url').url
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
@@ -110,6 +109,8 @@ def brevet(request, region, event, date, rider_id=None):
         except (TypeError, model.BrevetRider.DoesNotExist, AttributeError):
             rider = rider_email = None
         template = 'register/brevet.html'
+        event_waiver_url = Link.objects.get(key='event_waiver_url').url
+        membership_form_url = Link.objects.get(key='membership_form_url').url
         context = RequestContext(request, {
             'brevet': brevet,
             'region': dict(abbrev=region, long_name=model.REGIONS[region]),
@@ -121,6 +122,7 @@ def brevet(request, region, event, date, rider_id=None):
             'rider_email': rider_email,
             'duplicate_registration': request.path.endswith('duplicate/'),
             'event_waiver_url': event_waiver_url,
+            'membership_form_url': membership_form_url,
         })
     response = render_to_response(template, context)
     return response
@@ -129,7 +131,6 @@ def brevet(request, region, event, date, rider_id=None):
 def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
-    event_waiver_url = Link.objects.get(key='event_waiver_url').url
     brevet = get_object_or_404(
         model.Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
@@ -153,12 +154,15 @@ def registration_form(request, region, event, date):
     else:
         # Unbound form to render entry form
         form = form_class()
+    event_waiver_url = Link.objects.get(key='event_waiver_url').url
+    membership_form_url = Link.objects.get(key='membership_form_url').url
     context = RequestContext(request, {
         'brevet': brevet,
         'region_name': model.REGIONS[region],
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION,
         'event_waiver_url': event_waiver_url,
+        'membership_form_url': membership_form_url,
     })
     response = render_to_response('register/registration_form.html', context)
     return response
@@ -256,6 +260,7 @@ def _email_to_rider(brevet, rider, host):
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
     event_waiver_url = Link.objects.get(key='event_waiver_url').url
+    membership_form_url = Link.objects.get(key='membership_form_url').url
     from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='Pre-registration Confirmation for {0} Brevet'
@@ -265,7 +270,9 @@ def _email_to_rider(brevet, rider, host):
             {'brevet': brevet,
              'rider': rider,
              'brevet_page_url': brevet_page_url,
-             'event_waiver_url': event_waiver_url}),
+             'event_waiver_url': event_waiver_url,
+             'membership_form_url': membership_form_url,
+             }),
         from_email=brevet.organizer_email,
         to=[rider.email],
         headers={

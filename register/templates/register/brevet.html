@@ -67,11 +67,10 @@ Location:</strong> {{ brevet.location }}</p>
   <p>You have indicated that you are <strong>NOT</strong> a member of the
   BC Randonneurs. You must be a member of the club to ride this
   brevet. You can print out the
-  <a href="http://www.randonneurs.bc.ca/organize/2011_membership-and-waiver.pdf"
-  title="BC Randonneurs Club Membership Form">club membership form</a>
-  from the club web site, read it carefully, fill it out, and bring it
-  and the membership fee with you to the start.</p>
-  {% endif %}
+  <a href="{{ membership_form_url }}" title="BC Randonneurs Club
+  Membership Form">club membership form</a> from the club web site,
+  read it carefully, fill it out, and bring it and the membership fee
+  with you to the start.</p>  {% endif %}
 
   <p>Have a great ride!</p>
   {% endif %}
@@ -159,9 +158,7 @@ Nobody has pre-registered.
   <a href="{{ event_waiver_url }}">Event Entry Form (PDF)</a>
 </li>
 <li>
-  <a href="http://www.randonneurs.bc.ca/organize/2011_membership-and-waiver.pdf">
-    Club Membership Form (PDF)
-  </a>
+  <a href="{{ membership_form_url }}">Club Membership Form (PDF)</a>
 </li>
 {% endif %}
 {% endblock %}
