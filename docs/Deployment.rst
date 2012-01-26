@@ -261,6 +261,15 @@ Add Deployment-Specific Settings to Database
        Docs account associated with the pony, where the rider list
        spreadsheets are stored
 
+#. In the :kbd:`Links` table of the :kbd:`Pasture` app, add URLs with
+   the following keys:
+
+   * :kbd:`event_waiver_url`
+       The URL of the event waiver on the club web site
+
+   * :kbd:`membership_form_url`
+       The URL of the membership and waiver form on the club web site
+
 ..
    Local Variables:
    mode: rst
