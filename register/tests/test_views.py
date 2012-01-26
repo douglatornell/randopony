@@ -659,18 +659,17 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
-        self.assertTrue(
-            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet'
-            in mail.outbox[0].body)
-        self.assertTrue(
-            'http://testserver/register/LM300/01May2010/'
-            in mail.outbox[0].body)
-        self.assertTrue(
-            'print out the event waiver form' in mail.outbox[0].body)
-        self.assertTrue(
+        body = mail.outbox[0].body
+        self.assertIn(
+            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet', body)
+        self.assertIn(
+            '<http://testserver/register/LM300/01May2010/>', body)
+        self.assertIn('print out the event waiver form', body)
+        self.assertIn(
+            '<http://www.randonneurs.bc.ca/organize/eventform.pdf>', body)
+        self.assertIn(
             'auto-generated email, but you can reply to it '
-            'to contact the brevet organizer'
-            in mail.outbox[0].body)
+            'to contact the brevet organizer', body)
         # Email to organizer
         self.assertEqual(
             mail.outbox[1].subject,
@@ -678,15 +677,13 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
             mail.outbox[1].from_email, 'randopony@randonneurs.bc.ca')
+        body = mail.outbox[0].body
         self.assertTrue(
             'Doug Latornell (djl@example.com) has pre-registered for the '
-            'LM300 01-May-2010 brevet'
-            in mail.outbox[1].body)
+            'LM300 01-May-2010 brevet', body)
+        self.assertTrue('has indicated that zhe is a club member', body)
         self.assertTrue(
-            'has indicated that zhe is a club member' in mail.outbox[1].body)
-        self.assertTrue(
-            'please send email to {0}'.format(settings.ADMINS[0][1])
-            in mail.outbox[1].body)
+            'please send email to {0}'.format(settings.ADMINS[0][1]), body)
 
 
     def test_registration_form_sends_email_for_non_member(self):
