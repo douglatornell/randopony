@@ -12,7 +12,7 @@ class EmailAddress(models.Model):
     settings module.
     """
     key = models.CharField(max_length=50)
-    email = models.CharField(max_length=100)
+    email = models.EmailField()
 
 
     def __unicode__(self):
