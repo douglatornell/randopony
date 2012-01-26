@@ -710,14 +710,16 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
         self.assertEqual(mail.outbox[0].to, ['fibber@example.com'])
-        self.assertTrue(
-            'indicated that you are NOT a member' in mail.outbox[0].body)
+        self.assertIn(
+            'indicated that you are NOT a member', mail.outbox[0].body)
+        self.assertIn(
+            '<http://www.randonneurs.bc.ca/organize/2012_membership-and-waiver.pdf>',
+            mail.outbox[0].body)
         # Email to organizer
-        self.assertTrue(
-            'has indicated that zhe is NOT a club member'
-            in mail.outbox[1].body)
-        self.assertTrue(
-            'join beforehand, or at the start' in mail.outbox[1].body)
+        self.assertIn(
+            'has indicated that zhe is NOT a club member', mail.outbox[1].body)
+        self.assertIn(
+            'join beforehand, or at the start', mail.outbox[1].body)
 
 
     def test_registration_form_sends_email_with_qualifying_info(self):
