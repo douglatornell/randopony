@@ -677,7 +677,7 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(mail.outbox[1].to, ['pumpkinrider@example.com'])
         self.assertEqual(
             mail.outbox[1].from_email, 'randopony@randonneurs.bc.ca')
-        body = mail.outbox[0].body
+        body = mail.outbox[1].body
         self.assertTrue(
             'Doug Latornell (djl@example.com) has pre-registered for the '
             'LM300 01-May-2010 brevet', body)
@@ -718,7 +718,7 @@ class TestRegistrationFunction(django.test.TestCase):
             in mail.outbox[1].body)
         self.assertTrue(
             'join beforehand, or at the start' in mail.outbox[1].body)
-         
+
 
     def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
@@ -869,7 +869,7 @@ class TestRiderEmailsView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-        
+
 
     def test_no_rider_emails_returns_msg(self):
         """request for rider's emails for event w/ no riders returns msg
