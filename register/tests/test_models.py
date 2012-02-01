@@ -1,6 +1,6 @@
 """Unit test for RandoPony register app models.
-
 """
+from __future__ import absolute_import
 # Standard library:
 from datetime import date
 from datetime import datetime
@@ -18,7 +18,7 @@ class TestBrevet(unittest.TestCase):
     """Unit tests for Brevet model object.
     """
     def _get_target_class(self):
-        from randopony.register.models import Brevet
+        from ..models import Brevet
         return Brevet
 
 
@@ -49,9 +49,10 @@ class TestBrevet(unittest.TestCase):
     def test_registration_closed_false_week_before_brevet(self):
         """registration_closed property is False 7 days before brevet
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2010, 4, 10, 11, 0)
             mock_datetime.combine = datetime.combine
             self.assertFalse(brevet.registration_closed)
@@ -60,9 +61,10 @@ class TestBrevet(unittest.TestCase):
     def test_registration_closed_true_evening_before_brevet(self):
         """registration_closed property is True evening before brevet
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2010, 4, 16, 20, 0)
             mock_datetime.combine = datetime.combine
             self.assertTrue(brevet.registration_closed)
@@ -71,9 +73,10 @@ class TestBrevet(unittest.TestCase):
     def test_registration_closed_true_week_after_brevet(self):
         """registration_closed property is True 7 days after brevet
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2010, 4, 24, 11, 0)
             mock_datetime.combine = datetime.combine
             self.assertTrue(brevet.registration_closed)
@@ -82,9 +85,10 @@ class TestBrevet(unittest.TestCase):
     def test_in_past_false_before_brevet(self):
         """in_past property is False before brevet start date
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             self.assertFalse(brevet.in_past)
 
@@ -92,9 +96,10 @@ class TestBrevet(unittest.TestCase):
     def test_in_past_results_url_week_after_brevet(self):
         """in_past property is results URL on club site 8 days after brevet
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 25)
             self.assertEqual(
                 brevet.in_past,
@@ -104,9 +109,10 @@ class TestBrevet(unittest.TestCase):
     def test_started_false_before_brevet(self):
         """started property is False before brevet start datetime
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17), time=time(7,0))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.now.return_value = datetime(2010, 4, 10, 11, 0)
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
@@ -116,21 +122,22 @@ class TestBrevet(unittest.TestCase):
     def test_started_true_1_plus_hr_after_start(self):
         """started property is True for > 1 hr after brevet start time
         """
+        from .. import models
         brevet = self._make_one(
             region='LM', event='200', date=date(2010, 4, 17), time=time(7,0))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             # Server that hosts randopony is 2 hrs ahead of Pacific time
             mock_datetime.now.return_value = datetime(2010, 4, 17, 10, 1)
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             self.assertTrue(brevet.started)
-        
+
 
 class TestClubEvent(unittest.TestCase):
     """Unit tests for ClubEvent model object.
     """
     def _get_target_class(self):
-        from randopony.register.models import ClubEvent
+        from ..models import ClubEvent
         return ClubEvent
 
 
@@ -163,7 +170,7 @@ class TestBrevetRider(unittest.TestCase):
     """Unit tests for BrevetRider model object.
     """
     def _get_target_class(self):
-        from randopony.register.models import BrevetRider
+        from ..models import BrevetRider
         return BrevetRider
 
 
@@ -191,7 +198,7 @@ class TestEventParticipant(unittest.TestCase):
     """Unit tests for EventParticipant model object.
     """
     def _get_target_class(self):
-        from randopony.register.models import EventParticipant
+        from ..models import EventParticipant
         return EventParticipant
 
 
@@ -219,7 +226,7 @@ class TestRiderForm(unittest.TestCase):
     """Unit tests for RiderForm pre-registration form.
     """
     def _get_target_class(self):
-        from randopony.register.models import RiderForm
+        from ..models import RiderForm
         return RiderForm
 
 
@@ -276,7 +283,7 @@ class TestRiderFormWithoutInfoQuestion(unittest.TestCase):
     """Unit tests for RiderFormWithoutInfoQuestion pre-registration form.
     """
     def _get_target_class(self):
-        from randopony.register.models import RiderFormWithoutInfoQuestion
+        from ..models import RiderFormWithoutInfoQuestion
         return RiderFormWithoutInfoQuestion
 
 
