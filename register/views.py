@@ -18,7 +18,11 @@ from django.template.loader import render_to_string
 # Google Docs:
 from gdata.spreadsheet.service import SpreadsheetsService
 # RandoPony:
-from . import models as model
+from .models import Brevet
+from .models import BrevetRider
+from .models import REGIONS
+from .models import RiderForm
+from .models import RiderFormWithoutInfoQuestion
 from ..pasture.helpers import email2words
 from ..pasture.helpers import google_docs_login
 from ..pasture.models import EmailAddress
@@ -29,11 +33,11 @@ def home(request):
     """Display the welcome information and list of regions in the sidebar.
     """
     seven_days_ago = datetime.today().date() - timedelta(days=7)
-    brevet_list = model.Brevet.objects.exclude(date__lt=(seven_days_ago))
+    brevet_list = Brevet.objects.exclude(date__lt=(seven_days_ago))
     regions = sorted(list(set([brevet.region for brevet in brevet_list])))
     region_list = [{
         'abbrev': region,
-        'long_name': model.REGIONS[region]
+        'long_name': REGIONS[region]
         } for region in regions]
     context = RequestContext(request, {
         'regions': region_list,
@@ -47,7 +51,7 @@ def region_brevets(request, region):
     """Display a region image and the list of brevets in the sidebar.
     """
     seven_days_ago = datetime.today().date() - timedelta(days=7)
-    brevet_list = model.Brevet.objects.filter(
+    brevet_list = Brevet.objects.filter(
             region=region
         ).exclude(
             date__lt=(seven_days_ago)
@@ -77,7 +81,7 @@ def region_brevets(request, region):
     context = RequestContext(request, {
         'region': {
             'abbrev': region,
-            'long_name': model.REGIONS[region]},
+            'long_name': REGIONS[region]},
         'image': mapping[region],
         'brevets': brevet_list,
     })
@@ -91,7 +95,7 @@ def brevet(request, region, event, date, rider_id=None):
     flash message.
     """
     brevet = get_object_or_404(
-        model.Brevet, region=region, event=event,
+        Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
     if brevet.in_past:
         template = 'pasture/past_event.html'
@@ -100,20 +104,20 @@ def brevet(request, region, event, date, rider_id=None):
             'results_url': brevet.in_past
         })
     else:
-        rider_list = model.BrevetRider.objects.filter(
+        rider_list = BrevetRider.objects.filter(
             brevet__region=region, brevet__event=event,
             brevet__date=brevet.date)
         try:
-            rider = model.BrevetRider.objects.get(pk=int(rider_id))
+            rider = BrevetRider.objects.get(pk=int(rider_id))
             rider_email = email2words(rider.email)
-        except (TypeError, model.BrevetRider.DoesNotExist, AttributeError):
+        except (TypeError, BrevetRider.DoesNotExist, AttributeError):
             rider = rider_email = None
         template = 'register/brevet.html'
         event_waiver_url = Link.objects.get(key='event_waiver_url').url
         membership_form_url = Link.objects.get(key='membership_form_url').url
         context = RequestContext(request, {
             'brevet': brevet,
-            'region': dict(abbrev=region, long_name=model.REGIONS[region]),
+            'region': dict(abbrev=region, long_name=REGIONS[region]),
             'registration_closed': brevet.registration_closed,
             'brevet_started': brevet.started,
             'show_filler_photo': len(rider_list) < 15,
@@ -132,16 +136,16 @@ def registration_form(request, region, event, date):
     """Brevet registration form page.
     """
     brevet = get_object_or_404(
-        model.Brevet, region=region, event=event,
+        Brevet, region=region, event=event,
         date=datetime.strptime(date, '%d%b%Y').date())
     if brevet.registration_closed:
         raise Http404
-    form_class = (model.RiderForm if brevet.info_question
-                  else model.RiderFormWithoutInfoQuestion)
+    form_class = (RiderForm if brevet.info_question
+                  else RiderFormWithoutInfoQuestion)
     if request.method == 'POST':
         # Process submitted form data
         rider = form_class(
-            request.POST, instance=model.BrevetRider(brevet=brevet))
+            request.POST, instance=BrevetRider(brevet=brevet))
         try:
             new_rider = rider.save(commit=False)
         except ValueError:
@@ -158,7 +162,7 @@ def registration_form(request, region, event, date):
     membership_form_url = Link.objects.get(key='membership_form_url').url
     context = RequestContext(request, {
         'brevet': brevet,
-        'region_name': model.REGIONS[region],
+        'region_name': REGIONS[region],
         'form': form,
         'captcha_question': settings.REGISTRATION_FORM_CAPTCHA_QUESTION,
         'event_waiver_url': event_waiver_url,
@@ -181,10 +185,10 @@ def brevet_rider_emails(request, region, event, date, uuid):
     """
     brevet_date = datetime.strptime(date, '%d%b%Y').date()
     brevet = get_object_or_404(
-        model.Brevet, region=region, event=event, date=brevet_date)
+        Brevet, region=region, event=event, date=brevet_date)
     if uuid != str(brevet.uuid) or brevet.in_past:
         raise Http404
-    rider_list = model.BrevetRider.objects.filter(
+    rider_list = BrevetRider.objects.filter(
         brevet__region=region, brevet__event=event, brevet__date=brevet_date)
     email_list = (', '.join(rider.email for rider in rider_list)
                   or 'No riders have registered yet!')
@@ -198,13 +202,13 @@ def _process_registration(brevet, rider, request):
         brevet, brevet.date.strftime('%d%b%Y'))
     # Check for duplicate registration
     try:
-        check_rider = model.BrevetRider.objects.get(
+        check_rider = BrevetRider.objects.get(
             first_name=rider.first_name, last_name=rider.last_name,
             email=rider.email, brevet=brevet)
         # Redirect to brevet page with duplicate flag to
         # trigger appropriate flash message
         return '/{0}/{1:d}/duplicate/'.format(brevet_page, check_rider.id)
-    except model.BrevetRider.DoesNotExist:
+    except BrevetRider.DoesNotExist:
         # Save new rider pre-registration and send emails to
         # rider and brevet organizer
         rider.save()
@@ -225,7 +229,7 @@ def _update_google_spreadsheet(brevet):
     key = brevet.google_doc_id.split(':')[1]
     spreadsheet_list = client.GetListFeed(key)
     spreadsheet_rows = len(spreadsheet_list.entry)
-    rider_list = model.BrevetRider.objects.filter(
+    rider_list = BrevetRider.objects.filter(
         brevet__region=brevet.region, brevet__event=brevet.event,
         brevet__date=brevet.date)
     # Update the rows already in the spreadsheet
