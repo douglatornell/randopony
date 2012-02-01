@@ -1,5 +1,6 @@
 """View tests for RandoPony register app.
 """
+from __future__ import absolute_import
 # Standard library:
 from contextlib import nested
 from datetime import date
@@ -12,8 +13,6 @@ import django.test
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
-# RandoPony:
-import randopony.register.models as model
 
 
 class TestHomeView(django.test.TestCase):
@@ -31,7 +30,8 @@ class TestHomeView(django.test.TestCase):
     def test_home_context(self):
         """home view has correct context
         """
-        with patch('randopony.register.views.datetime') as mock_datetime:
+        from .. import views
+        with patch.object(views, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.get(reverse('register:home'))
         self.assertTrue(response.context['regions'])
@@ -51,7 +51,8 @@ class TestHomeView(django.test.TestCase):
     def test_home_regions_list(self):
         """home view renders regions list
         """
-        with patch('randopony.register.views.datetime') as mock_datetime:
+        from .. import views
+        with patch.object(views, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'Lower Mainland')
@@ -77,7 +78,8 @@ class TestRegionBrevetsView(django.test.TestCase):
     def test_region_brevets_context(self):
         """region_brevets view has correct context
         """
-        with patch('randopony.register.views.datetime') as mock_datetime:
+        from .. import views
+        with patch.object(views, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.get('/register/LM-events/')
         self.assertTrue(response.context['region'])
@@ -87,17 +89,20 @@ class TestRegionBrevetsView(django.test.TestCase):
     def test_region_brevets_list(self):
         """region_brevets view renders brevets list
         """
-        with patch('randopony.register.views.datetime') as mock_datetime:
+        from .. import views
+        from ..models import Brevet
+        with patch.object(views, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.get('/register/LM-events/')
-        for brevet in model.Brevet.objects.filter(region='LM'):
+        for brevet in Brevet.objects.filter(region='LM'):
             self.assertContains(response, unicode(brevet))
 
 
     def test_region_brevets_list_excludes_past_events(self):
         """region_brevets view excludes past events correctly
         """
-        with patch('randopony.register.views.datetime') as mock_datetime:
+        from .. import views
+        with patch.object(views, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 27)
             response = self.client.get('/register/LM-events/')
         self.assertContains(response, 'LM400 22-May-2010')
@@ -136,8 +141,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -152,8 +158,9 @@ class TestBrevetView(django.test.TestCase):
     def test_past_brevet_page(self):
         """page for brevet >7 days ago is pointer to club site
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 5, 9)
             mock_datetime.now.return_value = datetime(2010, 5, 9, 19, 21)
             mock_datetime.combine = datetime.combine
@@ -172,8 +179,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_started_page(self):
         """registration closed message suppressed 1 hour after brevet s
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -186,8 +194,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_no_riders(self):
         """brevet page has expected msg when no riders are registered
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -199,8 +208,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_1_rider(self):
         """brevet view renders correct page body with 1 registered rider
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 400, '22May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -216,8 +226,9 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_2_riders(self):
         """brevet view renders correct page body with 2 registered riders
         """
+        from .. import models
         url = reverse('register:brevet', args=('LM', 200, '17Apr2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -229,9 +240,10 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_prereg_confirmation(self):
         """brevet view w/ rider id includes pre-registration confirmation msg
         """
+        from .. import models
         url = reverse(
             'register:prereg-confirm', args=('LM', 400, '22May2010', 1))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -243,9 +255,10 @@ class TestBrevetView(django.test.TestCase):
     def test_brevet_page_duplicate_prereg(self):
         """brevet view includes duplicate pre-registration msg when appropos
         """
+        from .. import models
         url = reverse(
             'register:prereg-duplicate', args=('LM', 400, '22May2010', 1))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -262,8 +275,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_registration_form_get(self):
         """GET request for registration form page works
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -275,8 +289,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_sidebar(self):
         """registration form view renders correct sidebar
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -291,8 +306,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_with_qual_info(self):
         """registration form view renders page with qual info question
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -311,8 +327,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -324,8 +341,9 @@ class TestRegistrationFormView(django.test.TestCase):
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -346,6 +364,9 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to brevet pg w/ msg
         """
+        from .. import models
+        from .. import views
+        from ..models import BrevetRider
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Doug',
@@ -355,8 +376,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -364,7 +385,7 @@ class TestRegistrationFunction(django.test.TestCase):
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.post(url, params, follow=True)
-        rider = model.BrevetRider.objects.order_by('-id')[0]
+        rider = BrevetRider.objects.order_by('-id')[0]
         self.assertEqual(rider.lowercase_last_name, 'latornell')
         url = reverse(
             'register:prereg-confirm',
@@ -381,6 +402,9 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_clean_submit_non_member(self):
         """registration from submit redirects to brevet pg w/ non-member msg
         """
+        from .. import models
+        from .. import views
+        from ..models import BrevetRider
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Fibber',
@@ -390,8 +414,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -399,7 +423,7 @@ class TestRegistrationFunction(django.test.TestCase):
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.post(url, params, follow=True)
-        rider_id = model.BrevetRider.objects.order_by('-id')[0].id
+        rider_id = BrevetRider.objects.order_by('-id')[0].id
         url = reverse(
             'register:prereg-confirm', args=('LM', 300, '01May2010', rider_id))
         self.assertRedirects(response, url)
@@ -414,6 +438,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_first_name_required(self):
         """registration form first name field must not be empty
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'last_name': 'McGee',
@@ -421,7 +446,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -434,6 +459,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_last_name_required(self):
         """registration form last name field must not be empty
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Fibber',
@@ -441,7 +467,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -454,6 +480,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_required(self):
         """registration form email field must not be empty
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Doug',
@@ -461,7 +488,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -474,6 +501,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_valid(self):
         """registration form email field must be valid
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Fibber',
@@ -482,7 +510,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -495,6 +523,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_qual_info_required(self):
         """registration form qualifying info field must not be empty
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -503,7 +532,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -516,6 +545,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_required(self):
         """registration form CAPTCHA answer field must not be missing
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -524,7 +554,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'qual_info': 'LM300',
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
@@ -534,6 +564,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_is_int(self):
         """registration form CAPTCHA answer field must be an integer
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -543,7 +574,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'qual_info': 'LM300',
             'captcha': 'afdga',
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.post(url, params)
         self.assertContains(response, 'Enter a whole number.')
@@ -553,6 +584,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -562,7 +594,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'qual_info': 'LM300',
             'captcha': ''
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
@@ -572,6 +604,7 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_captcha_answer_wrong(self):
         """registration form CAPTCHA wrong answer
         """
+        from .. import models
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -581,7 +614,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'qual_info': 'LM300',
             'captcha': 200
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             response = self.client.post(url, params)
         self.assertContains(response, 'Wrong! See hint.')
@@ -591,10 +624,13 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_handles_duplicate_entry(self):
         """registration form rejects duplicate entry w/ msg on brevet page
         """
+        from .. import models
+        from ..models import Brevet
+        from ..models import BrevetRider
         # Register for the brevet
-        brevet = model.Brevet.objects.get(
+        brevet = Brevet.objects.get(
             region='LM', event=300, date=date(2010, 5, 1))
-        model.BrevetRider(
+        BrevetRider(
             first_name='Doug',
             last_name='Latornell',
             email='djl@example.com',
@@ -608,14 +644,14 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
             mock_datetime.timedelta = timedelta
             response = self.client.post(url, params, follow=True)
         # Confirm the redriect, and flash message content
-        rider = model.BrevetRider.objects.filter(
+        rider = BrevetRider.objects.filter(
             first_name='Doug', last_name='Latornell',
             email='djl@example.com', brevet=brevet)
         url = reverse(
@@ -633,6 +669,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_for_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Doug',
@@ -642,8 +680,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -689,6 +727,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_for_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('VI', 600, '07Aug2010'))
         params = {
             'first_name': 'Fibber',
@@ -698,8 +738,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
@@ -725,6 +765,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('LM', 400, '22May2010'))
         params = {
             'first_name': 'Fibber',
@@ -735,8 +777,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -763,6 +805,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_has_rider_address(self):
         """registration email to organizer contains rider email address
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('LM', 300, '01May2010'))
         params = {
             'first_name': 'Doug',
@@ -772,8 +816,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 4, 1)
@@ -788,6 +832,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_to_2_organizers(self):
         """registration email goes to multiple organizers
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('VI', 600, '07Aug2010'))
         params = {
             'first_name': 'Doug',
@@ -797,8 +843,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
@@ -815,6 +861,8 @@ class TestRegistrationFunction(django.test.TestCase):
     def test_registration_form_email_replyto_2_organizers(self):
         """registration email to rider has 2 organizers in reply-to header
         """
+        from .. import models
+        from .. import views
         url = reverse('register:form', args=('VI', 600, '07Aug2010'))
         params = {
             'first_name': 'Doug',
@@ -824,8 +872,8 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         context_mgr = nested(
-            patch('randopony.register.models.datetime'),
-            patch('randopony.register.views._update_google_spreadsheet'),
+            patch.object(models, 'datetime'),
+            patch.object(views, '_update_google_spreadsheet'),
         )
         with context_mgr as (mock_datetime, mock_update):
             mock_datetime.today.return_value = datetime(2010, 8, 1)
@@ -862,11 +910,12 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_rider_emails_event_past(self):
         """request for rider's emails for event >7 days ago raises 404
         """
+        from .. import models
         url = reverse(
             'register:rider-emails',
             args=('LM', '200', '17Apr2010',
                   'eb45e7d4-46b5-5efc-9d17-8d25a74fcae0'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 27)
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
@@ -876,11 +925,12 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_no_rider_emails_returns_msg(self):
         """request for rider's emails for event w/ no riders returns msg
         """
+        from .. import models
         url = reverse(
             'register:rider-emails',
             args=('LM', '300', '01May2010',
                   'dc554a2d-50ce-5c67-ba40-aa541ab3bf2d'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
@@ -890,11 +940,12 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_1_rider_email(self):
         """request for rider's emails for event w/ 1 rider returns address
         """
+        from .. import models
         url = reverse(
             'register:rider-emails',
             args=('LM', 400, '22May2010',
                   'eb280730-b798-5560-a665-b849a908feb7'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
@@ -904,11 +955,12 @@ class TestRiderEmailsView(django.test.TestCase):
     def test_2_rider_emails(self):
         """request for rider's emails for event w/ 2 riders returns list
         """
+        from .. import models
         url = reverse(
             'register:rider-emails',
             args=('LM', '200', '17Apr2010',
                   'eb45e7d4-46b5-5efc-9d17-8d25a74fcae0'))
-        with patch('randopony.register.models.datetime') as mock_datetime:
+        with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)

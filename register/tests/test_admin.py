@@ -1,6 +1,7 @@
 """Functional tests for customized admin elements of RandoPony
 register app.
 """
+from __future__ import absolute_import
 # Standard library:
 from datetime import date
 from datetime import time
@@ -35,7 +36,7 @@ class TestAdminBrevet(django.test.TestCase):
     def test_brevet_add_form(self):
         """Submission of brevet form adds brevet to database
         """
-        from randopony.register.models import Brevet
+        from ..models import Brevet
         brevet_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'VI',
@@ -59,7 +60,7 @@ class TestAdminBrevet(django.test.TestCase):
     def test_brevet_add_2_org_email_no_space(self):
         """Comma separated organizer email addresses validate correctly
         """
-        from randopony.register.models import Brevet
+        from ..models import Brevet
         brevet_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'VI',
@@ -81,7 +82,7 @@ class TestAdminBrevet(django.test.TestCase):
     def test_brevet_add_2_org_email_with_space(self):
         """Comma-space separated organizer email addresses validate correctly
         """
-        from randopony.register.models import Brevet
+        from ..models import Brevet
         brevet_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'VI',
@@ -164,18 +165,18 @@ class TestAdminBrevet(django.test.TestCase):
         self.assertEqual(
             mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
         body = mail.outbox[0].body
-        self.assertTrue(
-            'pre-registration page for the LM300 01-May-2010 brevet' in body)
-        self.assertTrue(
-            'The URL is http://testserver/register/LM300/01May2010/' in body)
-        self.assertTrue(
-            'The rider list URL is https://spreadsheets.google.com/ccc?key=foo'
-            in body)
-        self.assertTrue(
+        self.assertIn(
+            'pre-registration page for the LM300 01-May-2010 brevet', body)
+        self.assertIn(
+            'The URL is <http://testserver/register/LM300/01May2010/>', body)
+        self.assertIn(
+            'The rider list URL is <https://spreadsheets.google.com/ccc?key=foo>',
+            body)
+        self.assertIn(
             'The riders email address list URL is '
-            'http://testserver/register/LM300/01May2010/rider-emails/'
-            'dc554a2d-50ce-5c67-ba40-aa541ab3bf2d/'
-            in body)
+            '<http://testserver/register/LM300/01May2010/rider-emails/'
+            'dc554a2d-50ce-5c67-ba40-aa541ab3bf2d/>',
+            body)
         self.assertTrue(
             'please send email to {0}'.format(settings.ADMINS[0][1])
             in body)
@@ -204,7 +205,7 @@ class TestAdminClubEvent(django.test.TestCase):
     def test_club_event_add_form(self):
         """Submission of club event form adds club event to database
         """
-        from randopony.register.models import ClubEvent
+        from ..models import ClubEvent
         event_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'Club',
@@ -227,7 +228,7 @@ class TestAdminClubEvent(django.test.TestCase):
     def test_club_event_add_2_org_email_no_space(self):
         """Comma separated organizer email addresses validate correctly
         """
-        from randopony.register.models import ClubEvent
+        from ..models import ClubEvent
         event_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'Club',
@@ -248,7 +249,7 @@ class TestAdminClubEvent(django.test.TestCase):
     def test_club_event_add_2_org_email_with_space(self):
         """Comma-space separated organizer email addresses validate correctly
         """
-        from randopony.register.models import ClubEvent
+        from ..models import ClubEvent
         event_date = date.today() + timedelta(days=10)
         post_data = {
             'region': 'Club',
