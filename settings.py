@@ -9,7 +9,7 @@ import djcelery
 
 project_path = os.path.dirname(__file__)
 if project_path not in sys.path:
-    sys.path.insert(0, project_path)
+    sys.path.append(project_path)
 
 djcelery.setup_loader()
 BROKER_URL = 'django://'
@@ -70,9 +70,9 @@ INSTALLED_APPS = (
     'south',
     'djkombu',
     'djcelery',
-    'pasture',
-    'register',
-    'populaires',
+    'randopony.pasture',
+    'randopony.register',
+    'randopony.populaires',
 )
 
 
