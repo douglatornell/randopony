@@ -14,10 +14,10 @@ from gdata.docs.client import DocsClient
 # RandoPony:
 from .models import Populaire
 from .models import Rider
-from ..pasture.helpers import get_rider_list_template
-from ..pasture.helpers import google_docs_login
-from ..pasture.helpers import share_rider_list_publicly
-from ..pasture.models import EmailAddress
+from pasture.helpers import get_rider_list_template
+from pasture.helpers import google_docs_login
+from pasture.helpers import share_rider_list_publicly
+from pasture.models import EmailAddress
 
 
 class CustomBrevetAdminForm(forms.ModelForm):
