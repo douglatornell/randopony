@@ -1,9 +1,18 @@
 """Django settings for RandoPony project.
 """
-from os import path
+# Standard library:
+import os
+import sys
+# Django-Celery:
+import djcelery
 
-project_path = path.dirname(__file__)
 
+project_path = os.path.dirname(__file__)
+if project_path not in sys.path:
+    sys.path.insert(0, project_path)
+
+djcelery.setup_loader()
+BROKER_URL = 'django://'
 
 ADMINS = (
     ('Doug Latornell', 'djl@douglatornell.ca'),
@@ -41,13 +50,13 @@ ROOT_URLCONF = 'randopony.urls'
 
 STATICFILES_DIRS = (
     # Always use absolute paths.
-    path.join(project_path, 'site_static'),
+    os.path.join(project_path, 'site_static'),
 )
 
 TEMPLATE_DIRS = (
     # Always use absolute paths.
-    path.join(project_path, 'site_templates'),
-    path.join(project_path, 'admin_templates'),
+    os.path.join(project_path, 'site_templates'),
+    os.path.join(project_path, 'admin_templates'),
 )
 
 INSTALLED_APPS = (
@@ -59,10 +68,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
     'south',
-    'randopony.pasture',
-    'randopony.register',
-    'randopony.populaires',
+    'djkombu',
+    'djcelery',
+    'pasture',
+    'register',
+    'populaires',
 )
+
 
 # Application-specific settings:
 
