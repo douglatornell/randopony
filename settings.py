@@ -13,6 +13,8 @@ if project_path not in sys.path:
 
 djcelery.setup_loader()
 BROKER_URL = 'django://'
+CELERYD_CONCURRENCY = 1
+CELERY_SEND_TASK_ERROR_EMAILS = True
 
 ADMINS = (
     ('Doug Latornell', 'djl@douglatornell.ca'),
@@ -105,6 +107,7 @@ except ImportError:
     from production_settings import ADMIN_MEDIA_PREFIX
     from production_settings import EMAIL_HOST
     from production_settings import EMAIL_HOST_USER
+    from production_settings import SERVER_EMAIL
 
 # Settings that should be kept secret:
 from private_settings import SECRET_KEY

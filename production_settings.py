@@ -20,3 +20,4 @@ ADMIN_MEDIA_PREFIX = 'http://randopony.randonneurs.bc.ca/static/admin/'
 
 EMAIL_HOST = 'smtp.webfaction.com'
 EMAIL_HOST_USER = 'randopony'
+SERVER_EMAIL = 'randopony@randonneurs.bc.ca'
