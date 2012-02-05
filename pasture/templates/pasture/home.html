@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% load url from future %}
 
 {% block app-css %}
 <link rel="stylesheet" type="text/css"
@@ -23,16 +24,18 @@
 
 
 {% block home-link %}
-<li><a href="{% url pasture:home %}" class="selected">Home</a></li>
+<li><a href="{% url 'pasture:home' %}" class="selected">Home</a></li>
 {% endblock %}
 
 
 {% block sidebar-links %}
 {% if brevets %}
-<li><a href="{% url register:home %}">Register for Brevets</a></li>
+<li><a href="{% url 'register:home' %}">Register for Brevets</a></li>
 {% endif %}
 
 {% if populaires %}
-<li><a href="{% url populaires:populaires-list %}">Register for Populaires</a></li>
+<li>
+  <a href="{% url 'populaires:populaires-list' %}">Register for Populaires</a>
+</li>
 {% endif %}
 {% endblock %}

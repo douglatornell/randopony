@@ -1,4 +1,5 @@
 {% extends "populaires/populaires_page.html" %}
+{% load url from future %}
 
 {% block title %}RandoPony::Populaires{% endblock %}
 {% block page-subtitle %}Populaire Pre-registration{% endblock %}
@@ -28,13 +29,13 @@ organizers. Feedback about this site can be sent to
 
 {% block home-link %}
 <li>
-  <a href="{% url populaires:populaires-list %}" class="selected">Populaires</a>
+  <a href="{% url 'populaires:populaires-list' %}" class="selected">Populaires</a>
 </li>
 {% endblock %}
 
 {% block sidebar-links %}
 {% for event in events %}
-{% url populaires:populaire short_name=event.short_name date=event.date|date:"dMY" as event_url %}
+{% url 'populaires:populaire' short_name=event.short_name date=event.date|date:"dMY" as event_url %}
 <li>
  <a href="{{ event_url }}">{{ event }}</a>
 </li>

@@ -1,4 +1,5 @@
 {% extends "populaires/populaires_page.html" %}
+{% load url from future %}
 
 {% block title %}RandoPony::{{ populaire }}{% endblock %}
 
@@ -7,7 +8,7 @@
 {% block content %}
 <h3>{{ populaire.event_name }}</h3>
 
-{% url populaires:form short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
+{% url 'populaires:form' short_name=populaire.short_name date=populaire.date|date:"dMY" as form_url %}
 <form action="{{ form_url }}" method="POST">
  {% csrf_token %}
  {{ form.first_name.errors }}
@@ -49,7 +50,7 @@
 {% endblock %}
 
 {% block sidebar-links %}
-{% url populaires:populaire short_name=populaire.short_name date=populaire.date|date:"dMY" as populaire_url %}
+{% url 'populaires:populaire' short_name=populaire.short_name date=populaire.date|date:"dMY" as populaire_url %}
 <li>
  <a href="{{ populaire_url }}">{{ populaire }}</a>
 </li>

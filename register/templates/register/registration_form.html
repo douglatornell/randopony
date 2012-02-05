@@ -1,4 +1,5 @@
 {% extends "register/register_page.html" %}
+{% load url from future %}
 
 {% block title %}RandoPony::{{ brevet }}{% endblock %}
 
@@ -9,7 +10,7 @@
 
 <p><strong>Route:</strong> {{ brevet.route_name }}</p>
 
-{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url %}
+{% url 'register:form' region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url %}
 <form action="{{ form_url }}" method="POST">
   {% csrf_token %}
   {{ form.first_name.errors }}
@@ -56,11 +57,11 @@
 {% endblock %}
 
 {% block info-links %}
-{% url register:brevet region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as brevet_url %}
+{% url 'register:brevet' region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as brevet_url %}
 <li>
   <a href="{{ brevet_url }}">{{ brevet }}</a>
 </li>
-{% url register:form region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url%}
+{% url 'register:form' region=brevet.region event=brevet.event date=brevet.date|date:"dMY" as form_url%}
 <li>
   <a href="{{ form_url }}" class="selected">Register</a>
 </li>

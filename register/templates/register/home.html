@@ -1,4 +1,5 @@
 {% extends "register/register_page.html" %}
+{% load url from future %}
 
 {% block title %}RandoPony::Brevets{% endblock %}
 {% block page-subtitle %}Brevet Pre-registration{% endblock %}
@@ -29,7 +30,7 @@
   <kbd>{{ admin_email }}</kbd>
 </p>
 <p>If you are a brevet organizer and would like set up pre-registration
-for your ride, please read the <a href="{% url pasture:organizer-info %}">Info
+for your ride, please read the <a href="{% url 'pasture:organizer-info' %}">Info
 for Brevet Organizers</a> page.
 </p>
 {% endblock %}
@@ -37,13 +38,13 @@ for Brevet Organizers</a> page.
 
 {% block home-link %}
 <li>
-  <a href="{% url register:home %}" class="selected">Brevets</a>
+  <a href="{% url 'register:home' %}" class="selected">Brevets</a>
 </li>
 {% endblock %}
-    
+
 {% block sidebar-links %}
 {% for region in regions %}
-{% url register:region-brevets region.abbrev as region_url %}
+{% url 'register:region-brevets' region.abbrev as region_url %}
 <li>
  <a href="{{ region_url }}">{{ region.long_name }}</a>
 </li>

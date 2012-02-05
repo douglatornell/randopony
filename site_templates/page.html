@@ -12,6 +12,7 @@
 </head>
 
 <body>
+{% load url from future %}
 <div id="wrap">
 
  <div id="header">
@@ -34,7 +35,7 @@
     <div id="sidebar">
       <ul>
         {% block home-link %}
-        <li><a href="{% url pasture:home %}">Home</a></li>
+        <li><a href="{% url 'pasture:home' %}">Home</a></li>
         {% endblock %}
 
         {% block sidebar-links %}{% endblock %}
@@ -47,12 +48,16 @@
 
         {% block organizer-info-link %}
         <li>
-          <a href="{% url pasture:organizer-info %}">Info for Event Organizers</a>
+          <a href="{% url 'pasture:organizer-info' %}">
+            Info for Event Organizers
+          </a>
         </li>
         {% endblock %}
 
         {% block pony-info-link %}
-        <li><a href="{% url pasture:about-pony %}">What's up with the pony?</a></li>
+        <li>
+          <a href="{% url 'pasture:about-pony' %}">What's up with the pony?</a>
+        </li>
         {% endblock %}
      </ul>
     </div>
