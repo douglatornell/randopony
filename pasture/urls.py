@@ -5,10 +5,20 @@ from __future__ import absolute_import
 from django.conf import settings
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url
-from django.views.generic.simple import direct_to_template
+from django.views.generic.base import TemplateView
 # RandoPony:
 from . import views
 from .helpers import email2words
+
+
+class OrganizerInfoTemplateView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super(
+            OrganizerInfoTemplateView, self).get_context_data(**kwargs)
+        context.update({
+            'admin_email': email2words(settings.ADMINS[0][1])
+        })
+        return context
 
 
 urlpatterns = patterns(
@@ -17,19 +27,12 @@ urlpatterns = patterns(
     url(r'^$', views.home, name='home'),
 
     # Info for event organizers page
-    url(r'^organizer-info/$', direct_to_template,
-        {
-            'template': 'pasture/organizer_info.html',
-            'extra_context': {
-                'admin_email': email2words(settings.ADMINS[0][1])
-            }
-        },
+    url(r'^organizer-info/$',
+        TemplateView.as_view(template_name='pasture/organizer_info.html'),
         'organizer-info'),
 
     # What's up with the pony page
-    url(r'^about-pony/$', direct_to_template,
-        {
-            'template': 'pasture/about_pony.html'
-        },
+    url(r'^about-pony/$',
+        TemplateView.as_view(template_name='pasture/about_pony.html'),
         name='about-pony'),
 )
