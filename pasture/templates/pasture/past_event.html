@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% load url from future %}
 
 {% block app-css %}
 <link rel="stylesheet" type="text/css"
@@ -21,7 +22,7 @@
 {% endblock %}
 
 {% block sidebar-links %}
-<li><a href="{% url register:home %}">Brevets</a></li>
+<li><a href="{% url 'register:home' %}">Brevets</a></li>
 
-<li><a href="{% url populaires:populaires-list %}">Populaires</a></li>
+<li><a href="{% url 'populaires:populaires-list' %}">Populaires</a></li>
 {% endblock %}

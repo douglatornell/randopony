@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% load url from future %}
 
 {% block app-css %}
 <link rel="stylesheet" type="text/css"
@@ -7,6 +8,6 @@
 
 {% block home-link %}
 <li>
-  <a href="{% url populaires:populaires-list %}">Populaires</a>
+  <a href="{% url 'populaires:populaires-list' %}">Populaires</a>
 </li>
 {% endblock %}

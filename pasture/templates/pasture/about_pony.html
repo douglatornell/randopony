@@ -1,4 +1,5 @@
 {% extends "page.html" %}
+{% load url from future %}
 
 {% block title %}RandoPony::About{% endblock %}
 
@@ -33,6 +34,6 @@ link</a> to check them out.</p>
 
 {% block pony-info-link %}
 <li>
-  <a href="{% url pasture:about-pony %}" class="selected">What's up with the pony?</a>
+  <a href="{% url 'pasture:about-pony' %}" class="selected">What's up with the pony?</a>
 </li>
 {% endblock %}
