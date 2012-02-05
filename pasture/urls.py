@@ -28,8 +28,9 @@ urlpatterns = patterns(
 
     # Info for event organizers page
     url(r'^organizer-info/$',
-        TemplateView.as_view(template_name='pasture/organizer_info.html'),
-        'organizer-info'),
+        OrganizerInfoTemplateView.as_view(
+            template_name='pasture/organizer_info.html'),
+        name='organizer-info'),
 
     # What's up with the pony page
     url(r'^about-pony/$',
