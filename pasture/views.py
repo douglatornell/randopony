@@ -1,6 +1,5 @@
 """View functions for RandoPony top level (pasture) app.
 """
-from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta

@@ -1,6 +1,5 @@
 """Admin configuation for RandoPony populaires app.
 """
-from __future__ import absolute_import
 # Django:
 from django import forms
 from django.conf import settings
@@ -57,7 +56,6 @@ class PopulaireAdmin(admin.ModelAdmin):
         'notify_webmaster',
     ]
 
-
     def create_rider_list_spreadsheet(self, request, queryset):
         """Create a Google Docs rider list spreadsheet from the rider
         list template for the populaire(s) in the queryset.
@@ -92,7 +90,6 @@ class PopulaireAdmin(admin.ModelAdmin):
     description = 'Copy Google Docs rider list template for populaire'
     create_rider_list_spreadsheet.short_description = description
 
-
     def notify_populaire_organizer(self, request, queryset):
         _notify_populaire_organizer(request, queryset)
         pop_count = queryset.count()
@@ -104,7 +101,6 @@ class PopulaireAdmin(admin.ModelAdmin):
             request, '{0} sent to organizer(s)'.format(msg_bit))
     description = 'Send email with populaire URLs to event organizer(s)'
     notify_populaire_organizer.short_description = description
-
 
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
@@ -216,4 +212,3 @@ def _notify_webmaster(request, queryset):
             to=[webmaster_email],
         )
         email.send()
-

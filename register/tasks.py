@@ -1,6 +1,5 @@
 """Asynchronous tasks for RandoPony register app.
 """
-from __future__ import absolute_import
 # Celery:
 from celery.task import task
 # Django:
