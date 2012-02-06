@@ -1,8 +1,6 @@
 """View tests for RandoPony register app.
 """
-from __future__ import absolute_import
 # Standard library:
-from contextlib import nested
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -26,7 +24,6 @@ class TestHomeView(django.test.TestCase):
         response = self.client.get(reverse('register:home'))
         self.assertContains(response, 'RandoPony::Brevets')
 
-
     def test_home_context(self):
         """home view has correct context
         """
@@ -37,7 +34,6 @@ class TestHomeView(django.test.TestCase):
         self.assertTrue(response.context['regions'])
         self.assertTrue(response.context['admin_email'])
 
-
     def test_home_base_sidebar(self):
         """home view renders standard sidebar tabs
         """
@@ -46,7 +42,6 @@ class TestHomeView(django.test.TestCase):
         self.assertContains(response, 'randonneurs.bc.ca')
         self.assertContains(response, 'Info for Event Organizers')
         self.assertContains(response, "What's up with the pony?")
-
 
     def test_home_regions_list(self):
         """home view renders regions list
@@ -74,7 +69,6 @@ class TestRegionBrevetsView(django.test.TestCase):
         response = self.client.get('/register/LM-events/')
         self.assertContains(response, 'RandoPony::Lower Mainland')
 
-
     def test_region_brevets_context(self):
         """region_brevets view has correct context
         """
@@ -84,7 +78,6 @@ class TestRegionBrevetsView(django.test.TestCase):
             response = self.client.get('/register/LM-events/')
         self.assertTrue(response.context['region'])
         self.assertTrue(response.context['brevets'])
-
 
     def test_region_brevets_list(self):
         """region_brevets view renders brevets list
@@ -96,7 +89,6 @@ class TestRegionBrevetsView(django.test.TestCase):
             response = self.client.get('/register/LM-events/')
         for brevet in Brevet.objects.filter(region='LM'):
             self.assertContains(response, unicode(brevet))
-
 
     def test_region_brevets_list_excludes_past_events(self):
         """region_brevets view excludes past events correctly
@@ -121,7 +113,6 @@ class TestBrevetView(django.test.TestCase):
         response = self.client.get(url)
         self.assertContains(response, 'RandoPony::LM300 01-May-2010')
 
-
     def test_brevet_get_nonexistent_brevet_past(self):
         """GET request for nonexistent brevet in past fails with 404
         """
@@ -129,14 +120,12 @@ class TestBrevetView(django.test.TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-
     def test_brevet_get_nonexistent_brevet_future(self):
         """GET request for nonexistent brevet in future fails with 404
         """
         url = reverse('register:brevet', args=('LM', 200, '25Dec2099'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-
 
     def test_brevet_page_sidebar(self):
         """brevet view renders correct sidebar
@@ -153,7 +142,6 @@ class TestBrevetView(django.test.TestCase):
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
-
 
     def test_past_brevet_page(self):
         """page for brevet >7 days ago is pointer to club site
@@ -175,7 +163,6 @@ class TestBrevetView(django.test.TestCase):
             'http://randonneurs.bc.ca/results/10_times/10_times.html')
         self.assertNotContains(response, 'Be the first!')
 
-
     def test_brevet_started_page(self):
         """registration closed message suppressed 1 hour after brevet s
         """
@@ -190,7 +177,6 @@ class TestBrevetView(django.test.TestCase):
         self.assertNotContains(
             response, 'Pre-registration for this event is closed')
 
-
     def test_brevet_page_no_riders(self):
         """brevet page has expected msg when no riders are registered
         """
@@ -203,7 +189,6 @@ class TestBrevetView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'Be the first!')
-
 
     def test_brevet_page_1_rider(self):
         """brevet view renders correct page body with 1 registered rider
@@ -222,7 +207,6 @@ class TestBrevetView(django.test.TestCase):
         self.assertNotContains(response, 'registered for this brevet. Cool!')
         self.assertNotContains(response, 'Be the first!')
 
-
     def test_brevet_page_2_riders(self):
         """brevet view renders correct page body with 2 registered riders
         """
@@ -235,7 +219,6 @@ class TestBrevetView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, '2 Pre-registered')
-
 
     def test_brevet_page_prereg_confirmation(self):
         """brevet view w/ rider id includes pre-registration confirmation msg
@@ -250,7 +233,6 @@ class TestBrevetView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'for this event. Cool!')
-
 
     def test_brevet_page_duplicate_prereg(self):
         """brevet view includes duplicate pre-registration msg when appropos
@@ -285,7 +267,6 @@ class TestRegistrationFormView(django.test.TestCase):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-
     def test_brevet_registration_form_sidebar(self):
         """registration form view renders correct sidebar
         """
@@ -301,7 +282,6 @@ class TestRegistrationFormView(django.test.TestCase):
         self.assertContains(response, 'Register')
         self.assertContains(response, 'Event Entry Form (PDF)')
         self.assertContains(response, 'Club Membership Form (PDF)')
-
 
     def test_brevet_registration_form_body_with_qual_info(self):
         """registration form view renders page with qual info question
@@ -323,7 +303,6 @@ class TestRegistrationFormView(django.test.TestCase):
             response, 'recent 300 km brevet; e.g. LM300 1-May-')
         self.assertContains(response, 'Brevet info:')
 
-
     def test_brevet_registration_form_body_wo_qual_info(self):
         """registration form view renders correct page w/o qual info question
         """
@@ -336,7 +315,6 @@ class TestRegistrationFormView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertNotContains(response, 'Brevet info:')
-
 
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
@@ -359,7 +337,8 @@ class TestRegistrationFormView(django.test.TestCase):
 class TestRegistrationFunction(django.test.TestCase):
     """Functional tests of registration for brevets.
     """
-    fixtures = ['brevets.yaml', 'riders.yaml', 'email_addresses.yaml', 'links.yaml']
+    fixtures = ['brevets.yaml', 'riders.yaml',
+                'email_addresses.yaml', 'links.yaml']
 
     def test_registration_form_clean_submit(self):
         """registration form submit w/ valid data redirects to brevet pg w/ msg
@@ -375,11 +354,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -398,7 +375,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertNotContains(
             response, 'You must be a member of the club to ride')
 
-
     def test_registration_form_clean_submit_non_member(self):
         """registration from submit redirects to brevet pg w/ non-member msg
         """
@@ -413,11 +389,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -433,7 +407,6 @@ class TestRegistrationFunction(django.test.TestCase):
             response, 'fibber at example dot com')
         self.assertContains(
             response, 'You must be a member of the club to ride')
-
 
     def test_registration_form_first_name_required(self):
         """registration form first name field must not be empty
@@ -455,7 +428,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
-
     def test_registration_form_last_name_required(self):
         """registration form last name field must not be empty
         """
@@ -476,7 +448,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
-
     def test_registration_form_email_required(self):
         """registration form email field must not be empty
         """
@@ -496,7 +467,6 @@ class TestRegistrationFunction(django.test.TestCase):
             response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
-
 
     def test_registration_form_email_valid(self):
         """registration form email field must be valid
@@ -519,7 +489,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'Enter a valid e-mail address.')
         self.assertNotContains(response, 'Hint')
 
-
     def test_registration_form_qual_info_required(self):
         """registration form qualifying info field must not be empty
         """
@@ -541,7 +510,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'This field is required.')
         self.assertNotContains(response, 'Hint')
 
-
     def test_registration_form_captcha_answer_required(self):
         """registration form CAPTCHA answer field must not be missing
         """
@@ -559,7 +527,6 @@ class TestRegistrationFunction(django.test.TestCase):
             response = self.client.post(url, params)
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Hint')
-
 
     def test_registration_form_captcha_answer_is_int(self):
         """registration form CAPTCHA answer field must be an integer
@@ -580,7 +547,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'Enter a whole number.')
         self.assertContains(response, 'Hint')
 
-
     def test_registration_form_captcha_answer_not_empty(self):
         """registration form CAPTCHA answer field must not be empty
         """
@@ -600,7 +566,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertContains(response, 'This field is required.')
         self.assertContains(response, 'Hint')
 
-
     def test_registration_form_captcha_answer_wrong(self):
         """registration form CAPTCHA wrong answer
         """
@@ -619,7 +584,6 @@ class TestRegistrationFunction(django.test.TestCase):
             response = self.client.post(url, params)
         self.assertContains(response, 'Wrong! See hint.')
         self.assertContains(response, 'Hint')
-
 
     def test_registration_form_handles_duplicate_entry(self):
         """registration form rejects duplicate entry w/ msg on brevet page
@@ -665,7 +629,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertNotContains(
             response, 'You must be a member of the club to ride')
 
-
     def test_registration_form_sends_email_for_club_member(self):
         """successful registration sends emails to member/rider & organizer
         """
@@ -679,11 +642,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -723,7 +684,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertTrue(
             'please send email to {0}'.format(settings.ADMINS[0][1]), body)
 
-
     def test_registration_form_sends_email_for_non_member(self):
         """successful registration sends emails to non-member/rider & organizer
         """
@@ -737,11 +697,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': False,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -761,7 +719,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertIn(
             'join beforehand, or at the start', mail.outbox[1].body)
 
-
     def test_registration_form_sends_email_with_qualifying_info(self):
         """successful registration email to organizer includes qualifying info
         """
@@ -776,11 +733,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'info_answer': 'LM300',
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -801,7 +756,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertTrue(
             'Fibber McGee has answered LM300.' in mail.outbox[1].body)
 
-
     def test_registration_form_email_has_rider_address(self):
         """registration email to organizer contains rider email address
         """
@@ -815,11 +769,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -827,7 +779,6 @@ class TestRegistrationFunction(django.test.TestCase):
             self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         self.assertTrue('djl@example.com' in mail.outbox[1].body)
-
 
     def test_registration_form_email_to_2_organizers(self):
         """registration email goes to multiple organizers
@@ -842,11 +793,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -856,7 +805,6 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertEqual(
             set(mail.outbox[1].to),
             set('mcroy@example.com dug.andrusiek@example.com'.split()))
-
 
     def test_registration_form_email_replyto_2_organizers(self):
         """registration email to rider has 2 organizers in reply-to header
@@ -871,11 +819,9 @@ class TestRegistrationFunction(django.test.TestCase):
             'club_member': True,
             'captcha': 400
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
             mock_datetime.combine = datetime.combine
@@ -889,14 +835,14 @@ class TestRegistrationFunction(django.test.TestCase):
             mail.outbox[0].extra_headers['Reply-To'],
             'mcroy@example.com, dug.andrusiek@example.com')
         self.assertEqual(
-            mail.outbox[0].extra_headers['Sender'], 'randopony@randonneurs.bc.ca')
+            mail.outbox[0].extra_headers['Sender'],
+            'randopony@randonneurs.bc.ca')
 
 
 class TestRiderEmailsView(django.test.TestCase):
     """Functional tests for rider email address list view.
     """
     fixtures = ['brevets.yaml', 'riders.yaml']
-
 
     def test_rider_emails_bad_uuid(self):
         """request for rider's emails with bad brevet uuid raises 404
@@ -905,7 +851,6 @@ class TestRiderEmailsView(django.test.TestCase):
             'register:rider-emails', args=('LM', '200', '17Apr2010', 'f00'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-
 
     def test_rider_emails_event_past(self):
         """request for rider's emails for event >7 days ago raises 404
@@ -921,7 +866,6 @@ class TestRiderEmailsView(django.test.TestCase):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-
     def test_no_rider_emails_returns_msg(self):
         """request for rider's emails for event w/ no riders returns msg
         """
@@ -936,7 +880,6 @@ class TestRiderEmailsView(django.test.TestCase):
             response = self.client.get(url)
         self.assertContains(response, 'No riders have registered yet!')
 
-
     def test_1_rider_email(self):
         """request for rider's emails for event w/ 1 rider returns address
         """
@@ -950,7 +893,6 @@ class TestRiderEmailsView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'djl@douglatornell.ca')
-
 
     def test_2_rider_emails(self):
         """request for rider's emails for event w/ 2 riders returns list
@@ -967,5 +909,3 @@ class TestRiderEmailsView(django.test.TestCase):
         self.assertEqual(
             set(response.content.split(', ')),
             set('sea@susanallen.ca fibber.mcgee@example.com'.split()))
-
-
