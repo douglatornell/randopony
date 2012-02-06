@@ -1,8 +1,6 @@
 """View tests for RandoPony populaires app.
 """
-from __future__ import absolute_import
 # Standard library:
-from contextlib import nested
 from datetime import datetime
 from datetime import timedelta
 # Mock:
@@ -23,7 +21,6 @@ class TestPopulairesListView(TestCase):
         response = self.client.get(reverse('populaires:populaires-list'))
         self.assertContains(response, 'RandoPony::Populaires')
 
-
     def test_populaires_list_context(self):
         """populaires-list view has correct context
         """
@@ -32,7 +29,6 @@ class TestPopulairesListView(TestCase):
             response = self.client.get(reverse('populaires:populaires-list'))
         self.assertTrue(response.context['events'])
         self.assertTrue(response.context['admin_email'])
-
 
     def test_populaires_list_sidebar(self):
         """populaires-list view renders standard sidebar tabs
@@ -47,7 +43,6 @@ class TestPopulairesListView(TestCase):
         self.assertContains(response, "What's up with the pony?")
         self.assertContains(response, reverse('pasture:about-pony'))
 
-
     def test_populaires_list_events_list(self):
         """populaires-list view renders list of events
         """
@@ -58,7 +53,6 @@ class TestPopulairesListView(TestCase):
         self.assertContains(
             response,
             reverse('populaires:populaire', args=('VicPop', '27Mar2011')))
-
 
     def test_populaires_list_excludes_past_events(self):
         """populaires-list view excludes past events
@@ -82,7 +76,6 @@ class TestPopulaireView(TestCase):
             reverse('populaires:populaire', args=('VicPop', '27Mar2011')))
         self.assertContains(response, 'RandoPony::VicPop 27-Mar-2011')
 
-
     def test_populaire_get_nonexistent_event_past(self):
         """GET request for nonexistent populaire in past fails with 404
         """
@@ -90,15 +83,12 @@ class TestPopulaireView(TestCase):
             reverse('populaires:populaire', args=('Nanaimo', '23Mar2001')))
         self.assertEqual(response.status_code, 404)
 
-
     def test_populaire_get_nonexistent_event_future(self):
         """GET request for nonexistent populaire in future fails with 404
         """
         response = self.client.get(
             reverse('populaires:populaire', args=('CanadaDay', '01Jul2099')))
         self.assertEqual(response.status_code, 404)
-
-
 
     def test_populaire_page_sidebar_w_entry_form(self):
         """populaire view renders correct sidebar for event w/ entry form URL
@@ -125,7 +115,6 @@ class TestPopulaireView(TestCase):
         self.assertContains(response, reverse('pasture:organizer-info'))
         self.assertContains(response, "What's up with the pony?")
         self.assertContains(response, reverse('pasture:about-pony'))
-
 
     def test_populaire_page_sidebar_wo_entry_form(self):
         """populaire view renders correct sidebar for event w/o entry form URL
@@ -154,7 +143,6 @@ class TestPopulaireView(TestCase):
         self.assertContains(response, "What's up with the pony?")
         self.assertContains(response, reverse('pasture:about-pony'))
 
-
     def test_populaire_page_event_info(self):
         """populaire view renders event info correctly
         """
@@ -174,7 +162,6 @@ class TestPopulaireView(TestCase):
             response, 'University of Victoria, Parking Lot 2 '
             '(Gabriola Road, near McKinnon Gym)')
 
-
     def test_populaire_page_no_riders(self):
         """populaire view has expected message when no riders are registered
         """
@@ -192,7 +179,6 @@ class TestPopulaireView(TestCase):
             response,
             reverse('populaires:form', args=('VicPop', '27Mar2011')), 2)
 
-
     def test_populaire_page_1_rider(self):
         """populaire view renders correct page body w/ 1 rider
         """
@@ -209,7 +195,6 @@ class TestPopulaireView(TestCase):
         self.assertContains(response, '60 km')
         self.assertNotContains(response, 'registered for this brevet. Cool!')
         self.assertNotContains(response, 'Be the first!')
-
 
     def test_populaire_page_2_riders(self):
         """populaires view renders correct page body w/ 2 riders
@@ -242,10 +227,8 @@ class TestRegistrationFormView(TestCase):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-
-
     def test_registration_form_sidebar_w_entry_form(self):
-        """registration form renders correct sidebar for event w/ entry form URL
+        """registration form sidebar correct for event w/ entry form URL
         """
         url = reverse(
             'populaires:form', args=('VicPop', '27Mar2011'))
@@ -268,8 +251,6 @@ class TestRegistrationFormView(TestCase):
         self.assertContains(response, reverse('pasture:organizer-info'))
         self.assertContains(response, "What's up with the pony?")
         self.assertContains(response, reverse('pasture:about-pony'))
-
-
 
     def test_registration_form_sidebar_wo_entry_form(self):
         """registartion form sidebar correct for event w/o entry form URL
@@ -297,8 +278,6 @@ class TestRegistrationFormView(TestCase):
         self.assertContains(response, "What's up with the pony?")
         self.assertContains(response, reverse('pasture:about-pony'))
 
-
-
     def test_registration_form_body_multi_distance(self):
         """registration form has expected form fields for multi-distance event
         """
@@ -316,7 +295,6 @@ class TestRegistrationFormView(TestCase):
         self.assertContains(response, '50 km')
         self.assertContains(response, '100 km')
 
-
     def test_brevet_registration_form_has_captcha(self):
         """registration form view renders captcha question
         """
@@ -332,7 +310,6 @@ class TestRegistrationFormView(TestCase):
             response, 'Are you a human? Are you a cyclist? Please prove it.')
         self.assertContains(
             response, 'A bicycle has ___ wheels. Fill in the blank:')
-
 
 
 class TestRegistrationFunction(TestCase):
@@ -354,11 +331,9 @@ class TestRegistrationFunction(TestCase):
             'distance': 100,
             'captcha': 2
         }
-        context_mgr = nested(
-            patch.object(models, 'datetime'),
-            patch.object(views, '_update_google_spreadsheet'),
-        )
-        with context_mgr as (mock_datetime, mock_update):
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2011, 3, 1)
             mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
             mock_datetime.combine = datetime.combine
@@ -375,7 +350,6 @@ class TestRegistrationFunction(TestCase):
         self.assertContains(response, 'djl@example.com')
 
 
-
 class TestRiderEmailsView(TestCase):
     """Functional tests for rider email address list view.
     """
@@ -388,7 +362,6 @@ class TestRiderEmailsView(TestCase):
             'populaires:rider-emails', args=('VicPop', '27Mar2011', 'f00'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
-
 
     def test_rider_emails_event_past(self):
         """request for rider's emails for event >7 days ago raises 404
@@ -403,7 +376,6 @@ class TestRiderEmailsView(TestCase):
             response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-
     def test_no_rider_emails_returns_msg(self):
         """request for rider's emails for event w/ no riders returns msg
         """
@@ -417,7 +389,6 @@ class TestRiderEmailsView(TestCase):
             response = self.client.get(url)
         self.assertContains(response, 'No riders have registered yet!')
 
-
     def test_1_rider_email(self):
         """request for rider's emails for event w/ 1 rider returns address
         """
@@ -430,7 +401,6 @@ class TestRiderEmailsView(TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(response, 'mcroy@example.com')
-
 
     def test_2_rider_emails(self):
         """request for rider's emails for event w/ 2 riders returns list
