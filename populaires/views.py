@@ -1,6 +1,5 @@
 """View functions for RandoPony populaires app.
 """
-from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta
@@ -192,7 +191,6 @@ def _email_to_rider(populaire, rider, host):
             'Reply-To': populaire.organizer_email}
     )
     email.send()
-
 
 
 def _email_to_organizer(populaire, rider, host):

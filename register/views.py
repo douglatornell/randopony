@@ -1,6 +1,5 @@
 """View functions for RandoPony site register app.
 """
-from __future__ import absolute_import
 # Standard library:
 from datetime import datetime
 from datetime import timedelta

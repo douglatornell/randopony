@@ -1,6 +1,6 @@
 """Admin configuration for RandoPony register app.
 """
-from __future__ import absolute_import
+
 # Django:
 from django import forms
 from django.conf import settings
@@ -58,7 +58,6 @@ class BrevetAdmin(admin.ModelAdmin):
         'notify_webmaster',
     ]
 
-
     def create_rider_list_spreadsheet(self, request, queryset):
         """Create a Google Docs rider list spreadsheet from the rider
         list template for the brevet(s) in the queryset.
@@ -95,12 +94,10 @@ class BrevetAdmin(admin.ModelAdmin):
     description = 'Copy Google Docs rider list template for brevet'
     create_rider_list_spreadsheet.short_description = description
 
-
     def _update_rider_list_info_question(self, google_doc_id, info_question):
         client = google_docs_login(SpreadsheetsService)
         key = google_doc_id.split(':')[1]
         client.UpdateCell(1, 5, info_question, key)
-
 
     def notify_brevet_organizer(self, request, queryset):
         _notify_brevet_organizer(request, queryset)
@@ -113,7 +110,6 @@ class BrevetAdmin(admin.ModelAdmin):
             request, '{0} sent to organizer(s)'.format(msg_bit))
     description = 'Send email with brevet URLs to brevet organizer(s)'
     notify_brevet_organizer.short_description = description
-
 
     def notify_webmaster(self, request, queryset):
         _notify_webmaster(request, queryset)
@@ -185,7 +181,6 @@ class RiderAdmin(admin.ModelAdmin):
         ('Qualifying info', {'fields': ['club_member', 'info_answer']})
     ]
 admin.site.register(BrevetRider, RiderAdmin)
-
 
 
 def _clean_email_address_list(data):

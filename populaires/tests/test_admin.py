@@ -1,8 +1,7 @@
 """Functional tests for customized admin elements of RandoPony
 populaires app.
-
 """
-from __future__ import absolute_import
+
 # Standard library:
 from datetime import date
 from datetime import datetime
@@ -26,14 +25,12 @@ class TestAdminPopulaire(django.test.TestCase):
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-
     def test_populaire_add_form_get(self):
         """GET request for add populaire form page works
         """
         response = self.client.get('/admin/populaires/populaire/add/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Add populaire')
-
 
     def test_populaire_add_form(self):
         """submission of populaire form adds populaire to database
@@ -68,7 +65,6 @@ class TestAdminPopulaire(django.test.TestCase):
         for key, value in post_data.iteritems():
             self.assertEqual(getattr(pop, key), value)
 
-
     def test_populaire_notify_webmaster(self):
         """notify webmaster admin action sends email
         """
@@ -95,7 +91,6 @@ class TestAdminPopulaire(django.test.TestCase):
         self.assertTrue(
             'please send email to {0}'.format(settings.ADMINS[0][1])
             in body)
-
 
     def test_populaire_notify_organizer(self):
         """notify populaire organizer(s) admin action sends expected email

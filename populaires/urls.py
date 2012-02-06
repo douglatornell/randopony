@@ -1,6 +1,5 @@
 """URL map for RandoPony populaires app.
 """
-from __future__ import absolute_import
 # Django:
 from django.conf.urls.defaults import patterns
 from django.conf.urls.defaults import url

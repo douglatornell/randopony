@@ -1,7 +1,6 @@
 """Functional tests for customized admin elements of RandoPony
 register app.
 """
-from __future__ import absolute_import
 # Standard library:
 from datetime import date
 from datetime import time
@@ -24,14 +23,12 @@ class TestAdminBrevet(django.test.TestCase):
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-
     def test_brevet_add_form_get(self):
         """GET request for add brevet form page works
         """
         response = self.client.get('/admin/register/brevet/add/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Add brevet')
-
 
     def test_brevet_add_form(self):
         """Submission of brevet form adds brevet to database
@@ -56,7 +53,6 @@ class TestAdminBrevet(django.test.TestCase):
         for key, value in post_data.iteritems():
             self.assertEqual(brevet.__getattribute__(key), value)
 
-
     def test_brevet_add_2_org_email_no_space(self):
         """Comma separated organizer email addresses validate correctly
         """
@@ -78,7 +74,6 @@ class TestAdminBrevet(django.test.TestCase):
             brevet.organizer_email,
             'mcroy@example.com,dug.andrusiek@example.com')
 
-
     def test_brevet_add_2_org_email_with_space(self):
         """Comma-space separated organizer email addresses validate correctly
         """
@@ -99,7 +94,6 @@ class TestAdminBrevet(django.test.TestCase):
         self.assertEqual(
             brevet.organizer_email,
             'mcroy@example.com, dug.andrusiek@example.com')
-
 
     def test_brevet_notify_webmaster_1_brevet(self):
         """notify webmaster admin action sends email for 1 brevet
@@ -127,7 +121,6 @@ class TestAdminBrevet(django.test.TestCase):
             'please send email to {0}'.format(settings.ADMINS[0][1])
             in body)
 
-
     def test_brevet_notify_webmaster_2_brevets(self):
         """notify webmaster admin action sends email for 2 brevets
         """
@@ -146,7 +139,6 @@ class TestAdminBrevet(django.test.TestCase):
             mail.outbox[1].subject,
             'RandoPony Pre-registration Page for LM400 22-May-2010')
 
-
     def test_brevet_notify_brevet_organizer_1_brevet(self):
         """notify brevet organizer(s) admin action sends email for 1 brevet
         """
@@ -156,7 +148,8 @@ class TestAdminBrevet(django.test.TestCase):
         }
         response = self.client.post(
             '/admin/register/brevet/', params, follow=True)
-        self.assertContains(response, 'Email for 1 brevet sent to organizer(s)')
+        self.assertContains(
+            response, 'Email for 1 brevet sent to organizer(s)')
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
@@ -170,7 +163,8 @@ class TestAdminBrevet(django.test.TestCase):
         self.assertIn(
             'The URL is <http://testserver/register/LM300/01May2010/>', body)
         self.assertIn(
-            'The rider list URL is <https://spreadsheets.google.com/ccc?key=foo>',
+            'The rider list URL is <https://spreadsheets.google.com/'
+            'ccc?key=foo>',
             body)
         self.assertIn(
             'The riders email address list URL is '
@@ -193,14 +187,12 @@ class TestAdminClubEvent(django.test.TestCase):
         user.save()
         self.client.login(username='test_admin', password='foobar42')
 
-
     def test_club_event_add_form_get(self):
         """GET request for add brevet form page works
         """
         response = self.client.get('/admin/register/clubevent/add/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Add club event')
-
 
     def test_club_event_add_form(self):
         """Submission of club event form adds club event to database
@@ -224,7 +216,6 @@ class TestAdminClubEvent(django.test.TestCase):
         for key, value in post_data.iteritems():
             self.assertEqual(event.__getattribute__(key), value)
 
-
     def test_club_event_add_2_org_email_no_space(self):
         """Comma separated organizer email addresses validate correctly
         """
@@ -245,7 +236,6 @@ class TestAdminClubEvent(django.test.TestCase):
             event.organizer_email,
             'mcroy@example.com,dug.andrusiek@example.com')
 
-
     def test_club_event_add_2_org_email_with_space(self):
         """Comma-space separated organizer email addresses validate correctly
         """
@@ -265,7 +255,6 @@ class TestAdminClubEvent(django.test.TestCase):
         self.assertEqual(
             event.organizer_email,
             'mcroy@example.com, dug.andrusiek@example.com')
-
 
     def test_club_event_notify_webmaster_1_event(self):
         """notify webmaster admin action sends email for 1 club event
@@ -293,7 +282,6 @@ class TestAdminClubEvent(django.test.TestCase):
         self.assertTrue(
             'please send email to {0}'.format(settings.ADMINS[0][1])
             in body)
-
 
     def test_club_event_notify_webmaster_2_events(self):
         """notify webmaster admin action sends email for 2 club events

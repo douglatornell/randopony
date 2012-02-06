@@ -1,7 +1,6 @@
 """Unit tests for helpers module.
 
 """
-from __future__ import absolute_import
 # Django:
 import django.test
 # RandoPony:
