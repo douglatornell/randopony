@@ -742,9 +742,6 @@ class TestRegistrationFunction(django.test.TestCase):
             self.client.post(url, params)
         self.assertEqual(len(mail.outbox), 2)
         # Email to rider
-        self.assertEqual(
-            mail.outbox[0].subject,
-            'Pre-registration Confirmation for LM300 01-May-2010 Brevet')
         self.assertEqual(mail.outbox[0].to, ['djl@example.com'])
         self.assertEqual(
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
