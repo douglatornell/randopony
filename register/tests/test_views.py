@@ -328,7 +328,8 @@ class TestRegistrationFormView(django.test.TestCase):
             mock_datetime.timedelta = timedelta
             response = self.client.get(url)
         self.assertContains(
-            response, 'Are you a human? Are you a randonneur? Please prove it.')
+            response,
+            'Are you a human? Are you a randonneur? Please prove it.')
         self.assertContains(
             response, 'A Super Randonneur series consists of brevets of '
             '200 km, 300 km, ___ km, and 600 km. Fill in the blank:')
@@ -355,7 +356,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
@@ -370,8 +371,7 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
-        self.assertContains(
-            response, 'djl at example dot com')
+        self.assertContains(response, 'djl@example.com')
         self.assertNotContains(
             response, 'You must be a member of the club to ride')
 
@@ -390,7 +390,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
@@ -403,8 +403,7 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertRedirects(response, url)
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
-        self.assertContains(
-            response, 'fibber at example dot com')
+        self.assertContains(response, 'fibber@example.com')
         self.assertContains(
             response, 'You must be a member of the club to ride')
 
@@ -623,11 +622,102 @@ class TestRegistrationFunction(django.test.TestCase):
             args=('LM', 300, '01May2010', rider[0].id))
         self.assertRedirects(response, url)
         self.assertContains(
-            response, 'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
+            response,
+            'Hmm... Someone using the name <kbd>Doug Latornell</kbd>')
         self.assertContains(
-            response, 'email address <kbd>djl at example dot com</kbd>')
+            response, 'email address <kbd>djl@example.com</kbd>')
         self.assertNotContains(
             response, 'You must be a member of the club to ride')
+
+    def test_registration_queues_update_google_spreadsheet_task(self):
+        """successful registration queues task to update rider list
+        """
+        from .. import models
+        from .. import views
+        from ..models import Brevet
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        task_patch = patch.object(views, 'update_google_spreadsheet')
+        with datetime_patch as mock_datetime, task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        brevet = Brevet.objects.get(
+            region='LM', event=300, date=date(2010, 5, 1))
+        mock_task.delay.assert_called_once_with(brevet.pk)
+
+    def test_registration_queues_email_to_rider_task(self):
+        """successful registration queues task to send email to rider
+        """
+        from .. import models
+        from .. import views
+        from ..models import Brevet
+        from ..models import BrevetRider
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
+        task_patch = patch.object(views, 'email_to_rider')
+        with datetime_patch as mock_datetime, ugs_patch, \
+             task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        brevet = Brevet.objects.get(
+            region='LM', event=300, date=date(2010, 5, 1))
+        rider = BrevetRider.objects.get(
+            first_name='Doug', last_name='Latornell', brevet=brevet)
+        mock_task.delay.assert_called_once_with(
+            brevet.pk, rider.pk, 'testserver')
+
+    def test_registration_queues_email_to_organizer_task(self):
+        """successful registration queues task to send email to organizer
+        """
+        from .. import models
+        from .. import views
+        from ..models import Brevet
+        from ..models import BrevetRider
+        url = reverse('register:form', args=('LM', 300, '01May2010'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'club_member': True,
+            'captcha': 400
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
+        task_patch = patch.object(views, 'email_to_organizer')
+        with datetime_patch as mock_datetime, ugs_patch, \
+             task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2010, 4, 1)
+            mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        brevet = Brevet.objects.get(
+            region='LM', event=300, date=date(2010, 5, 1))
+        rider = BrevetRider.objects.get(
+            first_name='Doug', last_name='Latornell', brevet=brevet)
+        mock_task.delay.assert_called_once_with(
+            brevet.pk, rider.pk, 'testserver')
 
     def test_registration_form_sends_email_for_club_member(self):
         """successful registration sends emails to member/rider & organizer
@@ -643,7 +733,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
@@ -660,7 +750,8 @@ class TestRegistrationFunction(django.test.TestCase):
             mail.outbox[0].from_email, 'pumpkinrider@example.com')
         body = mail.outbox[0].body
         self.assertIn(
-            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet', body)
+            'pre-registered for the BC Randonneurs LM300 01-May-2010 brevet',
+            body)
         self.assertIn(
             '<http://testserver/register/LM300/01May2010/>', body)
         self.assertIn('print out the event waiver form', body)
@@ -698,7 +789,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
@@ -711,7 +802,8 @@ class TestRegistrationFunction(django.test.TestCase):
         self.assertIn(
             'indicated that you are NOT a member', mail.outbox[0].body)
         self.assertIn(
-            '<http://www.randonneurs.bc.ca/organize/2012_membership-and-waiver.pdf>',
+            '<http://www.randonneurs.bc.ca/organize/'
+            '2012_membership-and-waiver.pdf>',
             mail.outbox[0].body)
         # Email to organizer
         self.assertIn(
@@ -734,7 +826,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
@@ -770,7 +862,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 4, 1)
             mock_datetime.now.return_value = datetime(2010, 4, 1, 11, 0)
@@ -794,7 +886,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
@@ -820,7 +912,7 @@ class TestRegistrationFunction(django.test.TestCase):
             'captcha': 400
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2010, 8, 1)
             mock_datetime.now.return_value = datetime(2010, 8, 1, 11, 0)
