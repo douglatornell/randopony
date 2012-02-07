@@ -27,3 +27,21 @@
     email: sea@susanallen.ca
     first_name: Susan
     last_name: Allen
+
+- model: register.BrevetRider
+  pk: 4
+  fields:
+    brevet: 6
+    club_member: false
+    email: fibber.mcgee@example.com
+    first_name: Fibber
+    last_name: McGee
+
+- model: register.BrevetRider
+  pk: 5
+  fields:
+    brevet: 5
+    club_member: true
+    email: ken.bonner@example.com
+    first_name: Ken
+    last_name: Bonner
