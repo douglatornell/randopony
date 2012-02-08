@@ -78,7 +78,7 @@ def email_to_rider(brevet_pk, rider_pk, host):
              'event_waiver_url': event_waiver_url,
              'membership_form_url': membership_form_url,
              }),
-        from_email=brevet.organizer_email,
+        from_email=from_randopony,
         to=[rider.email],
         headers={
             'Sender': from_randopony,
