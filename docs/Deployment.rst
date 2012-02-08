@@ -4,7 +4,7 @@ Deployment of RandoPony on WebFaction
 
 :Author: Doug Latornell
 :Created: 2009-12-27
-:Revised: 2012-01-21
+:Revised: 2012-02-07
 
 
 These notes describe the process of deploying RandoPony on the
@@ -79,21 +79,43 @@ Install the Packages that RandoPony Depends On
 #. Put the :kbd:`randopony` Python library directory on the
    :envvar:`PYTHONPATH`:
 
-    .. code-block:: sh
+   .. code-block:: sh
 
-       export PYTHONPATH=$HOME/webapps/randopony/lib/python2.7
+      $ export PYTHONPATH=$HOME/webapps/randopony/lib/python2.7
 
 #. Install the Python client library for Google data APIs:
 
-    .. code-block:: sh
+   .. code-block:: sh
 
-        easy_install-2.7 --install-dir=$HOME/webapps/randopony/lib/python2.7/ gdata
+       $ easy_install-2.7 \
+         --install-dir=$HOME/webapps/randopony/lib/python2.7/ \
+         gdata
 
 #. Install the South database migration tool for Django:
 
-    .. code-block:: sh
+   .. code-block:: sh
 
-        easy_install-2.7 --install-dir=$HOME/webapps/randopony/lib/python2.7/ south
+      $ easy_install-2.7 \
+        --install-dir=$HOME/webapps/randopony/lib/python2.7/ \
+        south
+
+#. Install the Django-Celery asynchronous task queue framework:
+
+   .. code-block:: sh
+
+      $ easy_install-2.7 \
+        --install-dir=$HOME/webapps/randopony/lib/python2.7/ \
+        --script-dir=$HOME/webapps/randopony/bin \
+        django-celery
+
+#. Install the Django-Kombu task message transport library:
+
+   .. code-block:: sh
+
+      $ easy_install-2.7 \
+        --install-dir=$HOME/webapps/randopony/lib/python2.7/ \
+        --script-dir=$HOME/webapps/randopony/bin \
+        django-kombu
 
 
 Configure Production and Private Settings
@@ -128,9 +150,9 @@ There are lots of ways to do this, but the
 Fabric_ task that can be used to create the initial deployment on
 WebFaction.
 
-   .. code-block:: sh
+.. code-block:: sh
 
-      fab deploy_code
+   $ fab deploy_code
 
 excludes a bunch of files that don't need to, or shouldn't be copied
 to WebFaction; e.g. the local version of the database, development
@@ -154,19 +176,19 @@ Configure the RandoPony Installation on WebFaction
 
    .. code-block:: sh
 
-      cd ~/webapps/randopony
+      $ cd $HOME/webapps/randopony
 
 #. Delete the :file:`myproject` directory created when Django was installed:
 
    .. code-block:: sh
 
-      rm -rf myproject
+      $ rm -rf myproject
 
 #. Rename the :file:`myproject.wsgi` file to :file:`randopony.wsgi`:
 
    .. code-block:: sh
 
-      mv myproject.wsgi randopony.wsgi
+      $ mv myproject.wsgi randopony.wsgi
 
 #. Edit the :file:`randopony.wsgi` file to set the settings module name:
 
@@ -176,7 +198,7 @@ Configure the RandoPony Installation on WebFaction
 
 #. Edit the :file:`apache2/conf/httpd.conf` file to set the WSGI script alias:
 
-   .. code-block:: none
+   .. code-block:: conf
 
       WSGIScriptAlias / /home/bcrandonneur/webapps/randopony/randopony.wsgi
 
@@ -206,8 +228,8 @@ Initialize the Database and Start the App
 
    .. code-block:: sh
 
-      cd ~/webapps/randopony/randopony
-      ../bin/django-admin.py syncdb --pythonpath="$HOME/bcrandonneur/webapps/randopony" --settings=randopony.settings
+      $ cd $HOME/webapps/randopony
+      $ bin/django-admin.py syncdb --pythonpath="$HOME/webapps/randopony" --settings=randopony.settings
       ...
 
 #. Use South to apply all of the database migrations necessary to
@@ -216,8 +238,8 @@ Initialize the Database and Start the App
 
    .. code-block:: sh
 
-      cd ~/webapps/randopony/randopony
-      ../bin/django-admin.py migrate --pythonpath="$HOME/bcrandonneur/webapps/randopony" --settings=randopony.settings
+      $ cd $HOME/webapps/randopony/randopony
+      $ bin/django-admin.py migrate --pythonpath="$HOME/webapps/randopony" --settings=randopony.settings
       ...
 
 #. Tighten up security by making the database, and settings files
@@ -225,15 +247,15 @@ Initialize the Database and Start the App
 
    .. code-block:: sh
 
-      cd ~/webapps/randopony/randopony/
-      chmod go-rw randopony-production.db
-      chmod go-rw settings.py production_settings.py private_settings.py
+      $ cd $HOME/webapps/randopony/randopony/
+      $ chmod go-rw randopony-production.db
+      $ chmod go-rw settings.py production_settings.py private_settings.py
 
 #. Restart Apache:
 
    .. code-block:: sh
 
-      ~/webapps/randopony/apache2/bin/restart
+      $ $HOME/webapps/randopony/apache2/bin/restart
 
 The application should now be accessible at
 :kbd:`http://randopony.randonneurs.bc.ca/` and the Django admin
