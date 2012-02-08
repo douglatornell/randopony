@@ -59,7 +59,7 @@ class TestEmailToRider(django.test.TestCase):
             first_name='Doug', last_name='Latornell', brevet=brevet)
         self._send_one(brevet.pk, rider.pk, 'testserver')
         self.assertEqual(
-            mail.outbox[0].from_email, 'djl@douglatornell.ca')
+            mail.outbox[0].from_email, 'randopony@randonneurs.bc.ca')
 
     def test_email_sender(self):
         """email to rider has correct sender address header
