@@ -26,7 +26,7 @@ def deploy():
     """
     deploy_code()
     collect_static()
-    restart()
+    restart_apache()
 
 
 @task
@@ -59,11 +59,43 @@ def collect_static():
 
 
 @task
-def restart():
+def restart_apache():
     """Restart Apache2 on webfaction
     """
     with cd(os.path.join(app_dir, 'apache2/bin')):
         run('./restart')
+
+
+@task
+def start_supervisord():
+    """Start supervisord on webfaction
+    """
+    with cd(os.path.join(app_dir, app_name)):
+        run('../bin/supervisord')
+
+
+@task
+def restart_supervisord():
+    """Restart supervisord on webfaction
+    """
+    with cd(os.path.join(app_dir, app_name)):
+        run('kill -HUP `cat supervisord.pid`')
+
+
+@task
+def tail_supervisord_log():
+    """Tail supervisord log on webfaction
+    """
+    with cd('logs/user'):
+        run('tail randopony_supervisord.log')
+
+
+@task
+def tail_celeryd_log():
+    """Tail celeryd log on webfaction
+    """
+    with cd('logs/user'):
+        run('tail randopony_celeryd.log')
 
 
 @task

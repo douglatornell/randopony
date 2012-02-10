@@ -117,6 +117,15 @@ Install the Packages that RandoPony Depends On
         --script-dir=$HOME/webapps/randopony/bin \
         django-kombu
 
+#. Install the Supervisor process management tool:
+
+   .. code-block:: sh
+
+      $ easy_install-2.7 \
+        --install-dir=$HOME/webapps/randopony/lib/python2.7/ \
+        --script-dir=$HOME/webapps/randopony/bin \
+        supervisor
+
 
 Configure Production and Private Settings
 =========================================
@@ -256,6 +265,14 @@ Initialize the Database and Start the App
    .. code-block:: sh
 
       $ $HOME/webapps/randopony/apache2/bin/restart
+
+#. Start the celeryd task queue worker via supervisord to that it runs
+   as a daemon:
+
+   .. code-block:: sh
+
+      $ cd $HOME/webapps/randopony/randopony/
+      $ ../bin/supervisord
 
 The application should now be accessible at
 :kbd:`http://randopony.randonneurs.bc.ca/` and the Django admin
