@@ -10,5 +10,7 @@ django-kombu==0.9.4
 django-picklefield==0.1.9
 gdata==2.0.16
 kombu==2.0.0
+meld3==0.6.8
 ordereddict==1.1
 python-dateutil==1.5
+supervisor==3.0a12
