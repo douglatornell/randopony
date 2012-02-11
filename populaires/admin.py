@@ -69,7 +69,7 @@ class PopulaireAdmin(admin.ModelAdmin):
             if not pop.google_doc_id:
                 template = get_rider_list_template(
                     'Populaire Rider List Template', client)
-                created_doc = client.copy(template, unicode(pop))
+                created_doc = client.copy_resource(template, unicode(pop))
                 share_rider_list_publicly(created_doc, client)
                 pop.google_doc_id = created_doc.resource_id.text
                 pop.save()
