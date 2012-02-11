@@ -170,7 +170,7 @@ class TestEmailToRider(django.test.TestCase):
         self._send_one(brevet.pk, rider.pk, 'testserver')
         self.assertIn(
             'auto-generated email, but you can reply to it '
-            'to contact the brevet organizer',
+            'to contact the brevet organizer(s).',
             mail.outbox[0].body)
 
     def test_email_non_member_msg(self):
@@ -283,6 +283,34 @@ class TestEmailToOrganizer(django.test.TestCase):
         self.assertIn(
             'Doug Latornell <djl@douglatornell.ca> has pre-registered for the '
             'LM400 22-May-2010 brevet',
+            mail.outbox[0].body)
+
+    def test_email_confirm_brevet_url(self):
+        """email to organizer has correct brevet page url
+        """
+        from ..models import Brevet
+        from ..models import BrevetRider
+        brevet = Brevet.objects.get(
+            region='LM', event=400, date=date(2010, 5, 22))
+        rider = BrevetRider.objects.get(
+            first_name='Doug', last_name='Latornell', brevet=brevet)
+        self._send_one(brevet.pk, rider.pk, 'testserver')
+        self.assertIn(
+            '<http://testserver/register/LM400/22May2010/>',
+            mail.outbox[0].body)
+
+    def test_email_confirm_rider_list_spreadsheet_url(self):
+        """email to organizer has correct rider list spreadsheet url
+        """
+        from ..models import Brevet
+        from ..models import BrevetRider
+        brevet = Brevet.objects.get(
+            region='LM', event=400, date=date(2010, 5, 22))
+        rider = BrevetRider.objects.get(
+            first_name='Doug', last_name='Latornell', brevet=brevet)
+        self._send_one(brevet.pk, rider.pk, 'testserver')
+        self.assertIn(
+            'https://spreadsheets.google.com/ccc?key=bar',
             mail.outbox[0].body)
 
     def test_email_is_club_member_msg(self):

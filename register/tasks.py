@@ -97,6 +97,9 @@ def email_to_organizer(brevet_pk, rider_pk, host):
         'register:brevet',
         args=(brevet.region, brevet.event, brevet.date.strftime('%d%b%Y')))
     brevet_page_url = 'http://{0}{1}'.format(host, brevet_page)
+    rider_list_url = (
+        'https://spreadsheets.google.com/ccc?key={0}'
+        .format(brevet.google_doc_id.split(':')[1]))
     from_randopony = EmailAddress.objects.get(key='from_randopony').email
     email = mail.EmailMessage(
         subject='{0} has Pre-registered for the {1}'
@@ -106,6 +109,7 @@ def email_to_organizer(brevet_pk, rider_pk, host):
             {'brevet': brevet,
              'rider': rider,
              'brevet_page_url': brevet_page_url,
+             'rider_list_url': rider_list_url,
              'admin_email': settings.ADMINS[0][1]}),
         from_email=from_randopony,
         to=[addr.strip() for addr in brevet.organizer_email.split(',')]
