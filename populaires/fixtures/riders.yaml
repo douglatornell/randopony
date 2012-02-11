@@ -26,3 +26,21 @@
     last_name: Hesjedal
     email: rhesjedal@example.com
     distance: 50
+
+- model: populaires.Rider
+  pk: 4
+  fields:
+    populaire: 2
+    first_name: Mikael
+    last_name: Janson
+    email: mjanson@example.com
+    distance: 100
+
+- model: populaires.Rider
+  pk: 5
+  fields:
+    populaire: 4
+    first_name: Susan
+    last_name: Barr
+    email: sbarr@example.com
+    distance: 145

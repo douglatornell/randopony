@@ -44,3 +44,33 @@
     entry_form_url: ''
     entry_form_url_label: ''
     google_doc_id: spreadsheet:baz
+
+- model: populaires.Populaire
+  pk: 4
+  fields:
+    event_name: Canada Day Populaire
+    short_name: CanadaDay
+    distance: 145 km
+    date: 2012-07-01
+    location: Fort Langley
+    time: '09:00'
+    organizer_email: aliholt@example.com, rogerholt@example.com
+    registration_closes: 2012-06-28 12:00
+    entry_form_url: ''
+    entry_form_url_label: ''
+    google_doc_id: spreadsheet:fum
+
+- model: populaires.Populaire
+  pk: 6
+  fields:
+    event_name: Roger Street Populaire
+    short_name: RogerRide
+    distance: 93 km
+    date: 2012-03-04
+    location: Bean Brothers
+    time: '09:00'
+    organizer_email: sea@example.com
+    registration_closes: 2012-03-23 12:00
+    entry_form_url: ''
+    entry_form_url_label: ''
+    google_doc_id: spreadsheet:bam
