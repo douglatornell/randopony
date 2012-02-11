@@ -26,6 +26,7 @@
     location: New Westminister
     time: '21:00'
     alt_start_time: null
+    google_doc_id: spreadsheet:bar
 
 - model: register.Brevet
   pk: 3
@@ -39,6 +40,7 @@
     location: Who knows?
     time: '07:00'
     alt_start_time: null
+    google_doc_id: spreadsheet:baz
 
 - model: register.Brevet
   pk: 4
@@ -52,6 +54,7 @@
     location: Broadway & Alma St, Vancouver
     time: '06:00'
     alt_start_time: '20:00'
+    google_doc_id: spreadsheet:fum
 
 - model: register.Brevet
   pk: 5
@@ -65,6 +68,7 @@
     location: Tim Horton's, Saanich Plaza, 3501 Ravine Way, Victoria
     time: '05:00'
     alt_start_time: null
+    google_doc_id: spreadsheet:bzzr
 
 - model: register.Brevet
   pk: 6
@@ -78,3 +82,4 @@
     location: Waves Coffee, E 3rd Ave & Commercial, Vancouver
     time: '07:00'
     alt_start_time: null
+    google_doc_id: spreadsheet:bam

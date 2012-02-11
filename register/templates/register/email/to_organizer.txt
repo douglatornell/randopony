@@ -1,4 +1,4 @@
-{{ rider.full_name }} <{{ rider.email }}> has pre-registered for the {{ brevet }} brevet.  Zher name should appear along with the other pre-registered riders on the list at <{{ brevet_page_url }}>.
+{{ rider.full_name }} <{{ rider.email }}> has pre-registered for the {{ brevet }} brevet.  Zher name should appear along with the other pre-registered riders on the list at <{{ brevet_page_url }}> and in the spreadsheet at <{{ rider_list_url }}>.
 
 Zhe should have received a confirmation email that appears to have come from your email address so that zhe can contact you directly, if necessary.
 
