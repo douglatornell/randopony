@@ -16,7 +16,6 @@ class Populaire(models.Model):
     class Meta:
         ordering = ['date']
 
-
     event_name = models.CharField(max_length=100)
     short_name = models.CharField(
         max_length=20,
@@ -41,12 +40,10 @@ class Populaire(models.Model):
         default='Entry Form (PDF)')
     google_doc_id = models.CharField(max_length=200)
 
-
     def __unicode__(self):
         return '{short_name} {date}'.format(
             short_name=self.short_name,
             date=self.date.strftime('%d-%b-%Y'))
-
 
     def _get_uuid(self):
         """Return the URL namespace uuid for the event.
@@ -54,14 +51,11 @@ class Populaire(models.Model):
         return uuid.uuid5(uuid.NAMESPACE_URL, self.get_absolute_url())
     uuid = property(_get_uuid)
 
-
     def get_absolute_url(self):
         url_id = '{short_name}{date}'.format(
             short_name=self.short_name,
             date=self.date.strftime('%d%b%Y'))
         return '/populaires/{0}'.format(url_id)
-
-
 
     def _registration_closed(self):
         """Has registration for the populaire closed?
@@ -69,13 +63,11 @@ class Populaire(models.Model):
         return datetime.now() > self.registration_closes
     registration_closed = property(_registration_closed)
 
-
     def _started(self):
         """Has populaire started?
         """
         return datetime.now() > datetime.combine(self.date, self.time)
     started = property(_started)
-
 
     def _in_past(self):
         """Return a link to the year's results on the club site for
@@ -109,11 +101,9 @@ class Rider(models.Model):
     def __unicode__(self):
         return self.full_name
 
-
     def _get_full_name(self):
         return '{0} {1}'.format(self.first_name, self.last_name)
     full_name = property(_get_full_name)
-
 
     def save(self, *args, **kwargs):
         """Override the default save method to store the lowercased
@@ -131,7 +121,7 @@ class RiderForm(forms.ModelForm):
         super(RiderForm, self).__init__(*args, **kwargs)
         self.fields['distance'].widget = forms.RadioSelect(
             choices=distance_choices)
-        self.fields['distance'].error_messages={
+        self.fields['distance'].error_messages = {
             'required': 'Please choose a distance'}
 
     class Meta:
@@ -139,7 +129,6 @@ class RiderForm(forms.ModelForm):
         exclude = ('populaire', 'lowercase_last_name')
 
     captcha = forms.IntegerField()
-
 
     def clean_captcha(self):
         """Validate the CAPTCHA answer.
