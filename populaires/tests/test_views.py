@@ -167,7 +167,7 @@ class TestPopulaireView(TestCase):
         """
         from .. import models
         url = reverse(
-            'populaires:populaire', args=('VicPop', '27Mar2011'))
+            'populaires:populaire', args=('RogerRide', '04Mar2012'))
         with patch.object(models, 'datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 2, 26)
             mock_datetime.now.return_value = datetime(2011, 2, 26, 12, 35)
@@ -177,7 +177,7 @@ class TestPopulaireView(TestCase):
         self.assertContains(response, 'Be the first!')
         self.assertContains(
             response,
-            reverse('populaires:form', args=('VicPop', '27Mar2011')), 2)
+            reverse('populaires:form', args=('RogerRide', '04Mar2012')), 2)
 
     def test_populaire_page_1_rider(self):
         """populaire view renders correct page body w/ 1 rider
@@ -332,7 +332,7 @@ class TestRegistrationFunction(TestCase):
             'captcha': 2
         }
         datetime_patch = patch.object(models, 'datetime')
-        ugs_patch = patch.object(views, '_update_google_spreadsheet')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
         with datetime_patch as mock_datetime, ugs_patch:
             mock_datetime.today.return_value = datetime(2011, 3, 1)
             mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
@@ -348,6 +348,97 @@ class TestRegistrationFunction(TestCase):
         self.assertContains(
             response, 'You have pre-registered for this event. Cool!')
         self.assertContains(response, 'djl@example.com')
+
+    def test_registration_queues_update_google_spreadsheet_task(self):
+        """successful registration queues task to update rider list
+        """
+        from .. import models
+        from .. import views
+        from ..models import Populaire
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'distance': 100,
+            'captcha': 2
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        task_patch = patch.object(views, 'update_google_spreadsheet')
+        with datetime_patch as mock_datetime, task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        populaire = Populaire.objects.get(
+            short_name='VicPop')
+        mock_task.delay.assert_called_once_with(populaire.pk)
+
+    def test_registration_queues_email_to_rider_task(self):
+        """successful registration queues task to send email to rider
+        """
+        from .. import models
+        from .. import views
+        from ..models import Populaire
+        from ..models import Rider
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'distance': 100,
+            'captcha': 2
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
+        task_patch = patch.object(views, 'email_to_rider')
+        with datetime_patch as mock_datetime, ugs_patch, \
+             task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        populaire = Populaire.objects.get(short_name='VicPop')
+        rider = Rider.objects.get(
+            first_name='Doug', last_name='Latornell', populaire=populaire)
+        mock_task.delay.assert_called_once_with(
+            populaire.pk, rider.pk, 'testserver')
+
+    def test_registration_queues_email_to_organizer_task(self):
+        """successful registration queues task to send email to organizer
+        """
+        from .. import models
+        from .. import views
+        from ..models import Populaire
+        from ..models import Rider
+        url = reverse(
+            'populaires:form', args=('VicPop', '27Mar2011'))
+        params = {
+            'first_name': 'Doug',
+            'last_name': 'Latornell',
+            'email': 'djl@example.com',
+            'distance': 100,
+            'captcha': 2
+        }
+        datetime_patch = patch.object(models, 'datetime')
+        ugs_patch = patch.object(views, 'update_google_spreadsheet')
+        task_patch = patch.object(views, 'email_to_organizer')
+        with datetime_patch as mock_datetime, ugs_patch, \
+             task_patch as mock_task:
+            mock_datetime.today.return_value = datetime(2011, 3, 1)
+            mock_datetime.now.return_value = datetime(2011, 3, 1, 18, 43)
+            mock_datetime.combine = datetime.combine
+            mock_datetime.timedelta = timedelta
+            self.client.post(url, params)
+        populaire = Populaire.objects.get(short_name='VicPop')
+        rider = Rider.objects.get(
+            first_name='Doug', last_name='Latornell', populaire=populaire)
+        mock_task.delay.assert_called_once_with(
+            populaire.pk, rider.pk, 'testserver')
 
 
 class TestRiderEmailsView(TestCase):
@@ -381,8 +472,8 @@ class TestRiderEmailsView(TestCase):
         """
         url = reverse(
             'populaires:rider-emails',
-            args=('VicPop', '27Mar2011',
-                  '2fa8a5ff-d738-59c5-bea4-22fcfa4c9c6e'))
+            args=('RogerRide', '04Mar2012',
+                  '266cafd0-afe6-564b-b5b9-a881996c7aae'))
         with patch('randopony.populaires.models.datetime') as mock_datetime:
             mock_datetime.today.return_value = datetime(2011, 3, 6)
             mock_datetime.timedelta = timedelta
