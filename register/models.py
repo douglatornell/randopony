@@ -47,7 +47,6 @@ class BaseEvent(models.Model):
                   'pre-registration form')
     google_doc_id = models.CharField(max_length=200)
 
-
     def __unicode__(self):
         event_id = '{region}{event} {date}'.format(
             region='' if self.region == 'Club' else self.region,
@@ -55,13 +54,11 @@ class BaseEvent(models.Model):
             date=self.date.strftime('%d-%b-%Y'))
         return event_id
 
-
     def _get_uuid(self):
         """Return the URL namespace uuid for the event.
         """
         return uuid.uuid5(uuid.NAMESPACE_URL, self.get_absolute_url())
     uuid = property(_get_uuid)
-
 
     def get_absolute_url(self):
         url_id = '{region}{event}{date}'.format(
@@ -75,10 +72,10 @@ class Brevet(BaseEvent):
     """Brevet event model.
     """
     EVENT_CHOICES = (
-        ( '200',  '200 km'),
-        ( '300',  '300 km'),
-        ( '400',  '400 km'),
-        ( '600',  '600 km'),
+        ('200',  '200 km'),
+        ('300',  '300 km'),
+        ('400',  '400 km'),
+        ('600',  '600 km'),
         ('1000', '1000 km'),
     )
 
@@ -86,7 +83,6 @@ class Brevet(BaseEvent):
     route_name = models.CharField(max_length=100)
     alt_start_time = models.TimeField(
         'alternate start time', blank=True, null=True)
-
 
     def _in_past(self):
         """Return a link to the year's results on the club site for
@@ -102,7 +98,6 @@ class Brevet(BaseEvent):
         return results_url
     in_past = property(_in_past)
 
-
     def _registration_closed(self):
         """ Registration for brevets closes at noon on the day before the
         event.
@@ -113,7 +108,6 @@ class Brevet(BaseEvent):
             datetime.now() >= datetime.combine(self.date - one_day, noon))
         return registration_closed
     registration_closed = property(_registration_closed)
-
 
     def _started(self):
         """Start window for brevet closes 1 hour after brevet start time.
@@ -155,13 +149,11 @@ class Person(models.Model):
     def __unicode__(self):
         return self.full_name
 
-
     def _get_full_name(self):
         """Return the person's full name.
         """
         return '{0} {1}'.format(self.first_name, self.last_name)
     full_name = property(_get_full_name)
-
 
     def save(self, *args, **kwargs):
         """Override the default save method to store the lowercased
@@ -210,7 +202,6 @@ class RiderForm(BaseRiderForm):
         """
         super(RiderForm, self).__init__(*args, **kwargs)
         self.fields['info_answer'].required = True
-
 
     class Meta:
         model = BrevetRider
